@@ -145,7 +145,7 @@ private fun AlbumDetail(album: Album, modifier: Modifier) {
         if (album.tracks.isEmpty()) {
             item { EmptySectionText(stringResource(R.string.album_no_tracks)) }
         } else {
-            itemsIndexed(album.tracks, key = { _, track -> track.id }) { index, track ->
+            itemsIndexed(album.tracks, key = { _, track -> "track_${track.id}" }) { index, track ->
                 TrackRow(position = index + 1, track = track)
             }
         }
@@ -156,7 +156,7 @@ private fun AlbumDetail(album: Album, modifier: Modifier) {
         if (album.comments.isEmpty()) {
             item { EmptySectionText(stringResource(R.string.album_no_comments)) }
         } else {
-            items(album.comments, key = { it.id }) { comment -> CommentRow(comment) }
+            items(album.comments, key = { "comment_${it.id}" }) { comment -> CommentRow(comment) }
         }
     }
 }
