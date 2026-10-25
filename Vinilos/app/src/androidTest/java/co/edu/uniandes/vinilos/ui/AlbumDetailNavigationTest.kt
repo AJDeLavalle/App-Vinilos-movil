@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -23,7 +24,7 @@ import org.junit.runner.RunWith
 import java.io.IOException
 
 /**
- * HU02 — Detalle de álbum (CP-05, CP-06 y CP-10).
+ * HU02 — Detalle de álbum (CP-05, CP-06, CP-10 y CP-11).
  * La UI es Compose, así que las aserciones usan Compose UI Test; el botón Atrás del sistema
  * se simula con Espresso.pressBack().
  */
@@ -50,6 +51,24 @@ class AlbumDetailNavigationTest {
         composeRule.onNodeWithText("Sello discográfico: Elektra").assertIsDisplayed()
         composeRule.onNodeWithTag(AlbumDetailTags.CONTENT).performScrollToNode(hasText("1. Decisiones"))
         composeRule.onNodeWithText("1. Decisiones").assertIsDisplayed()
+    }
+
+    @Test
+    fun cp11_detalleMuestraComentarios_oMensajeSiNoHay() {
+        launch()
+
+        composeRule.onNodeWithTag(AlbumListTags.item(100)).performClick()
+        composeRule.onNodeWithTag(AlbumDetailTags.CONTENT).performScrollToNode(hasText("Un clásico de la salsa."))
+        composeRule.onNodeWithTag(AlbumDetailTags.COMMENTS).assertIsDisplayed()
+        composeRule.onNodeWithText("Un clásico de la salsa.").assertIsDisplayed()
+        composeRule.onNodeWithTag(AlbumDetailTags.CONTENT)
+            .performScrollToNode(hasContentDescription("Calificación: 4 de 5"))
+
+        Espresso.pressBack()
+        composeRule.onNodeWithTag(AlbumListTags.item(101)).performClick()
+        composeRule.onNodeWithTag(AlbumDetailTags.CONTENT)
+            .performScrollToNode(hasText("Este álbum aún no tiene comentarios."))
+        composeRule.onNodeWithText("Este álbum aún no tiene comentarios.").assertIsDisplayed()
     }
 
     @Test

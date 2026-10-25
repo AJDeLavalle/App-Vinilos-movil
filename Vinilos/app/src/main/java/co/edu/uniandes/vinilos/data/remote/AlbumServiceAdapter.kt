@@ -1,10 +1,12 @@
 package co.edu.uniandes.vinilos.data.remote
 
 import co.edu.uniandes.vinilos.data.remote.dto.AlbumDto
+import co.edu.uniandes.vinilos.data.remote.dto.CommentDto
 import co.edu.uniandes.vinilos.data.remote.dto.PerformerDto
 import co.edu.uniandes.vinilos.data.remote.dto.TrackDto
 import co.edu.uniandes.vinilos.domain.model.Album
 import co.edu.uniandes.vinilos.domain.model.AlbumNotFoundException
+import co.edu.uniandes.vinilos.domain.model.Comment
 import co.edu.uniandes.vinilos.domain.model.Performer
 import co.edu.uniandes.vinilos.domain.model.Track
 import retrofit2.HttpException
@@ -41,6 +43,7 @@ internal fun AlbumDto.toDomain(): Album? {
         recordLabel = recordLabel.orEmpty(),
         tracks = tracks.orEmpty().mapNotNull { it.toDomain() },
         performers = performers.orEmpty().mapNotNull { it.toDomain() },
+        comments = comments.orEmpty().mapNotNull { it.toDomain() },
     )
 }
 
@@ -49,3 +52,6 @@ internal fun TrackDto.toDomain(): Track? =
 
 internal fun PerformerDto.toDomain(): Performer? =
     id?.let { Performer(id = it, name = name.orEmpty(), image = image.orEmpty()) }
+
+internal fun CommentDto.toDomain(): Comment? =
+    id?.let { Comment(id = it, description = description.orEmpty(), rating = (rating ?: 0).coerceIn(0, 5)) }
