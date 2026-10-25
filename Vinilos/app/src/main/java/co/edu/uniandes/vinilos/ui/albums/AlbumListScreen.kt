@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,7 +66,9 @@ fun AlbumListContent(
     onAlbumClick: (Int) -> Unit,
 ) {
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.albums_title)) }) },
+        topBar = {
+            TopAppBar(title = { Text(stringResource(R.string.albums_title), fontWeight = FontWeight.Bold) })
+        },
     ) { innerPadding ->
         val modifier = Modifier.padding(innerPadding)
         when (state) {
@@ -103,22 +107,29 @@ private fun AlbumItem(album: Album, onClick: () -> Unit) {
             .testTag(AlbumListTags.item(album.id))
             .clickable(onClick = onClick),
     ) {
-        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            AlbumCover(album, Modifier.size(72.dp))
-            Spacer(Modifier.width(16.dp))
+        // Maqueta P01: portada, nombre, "Artista · Año" y enlace "Ver detalles".
+        Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            AlbumCover(album, Modifier.size(80.dp))
+            Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(
                     text = album.name,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = album.performerNames.ifBlank { stringResource(R.string.album_unknown_artist) },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = album.subtitle(" · ").ifBlank { stringResource(R.string.album_unknown_artist) },
+                    style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.album_view_details),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -135,7 +146,7 @@ fun AlbumCover(album: Album, modifier: Modifier = Modifier) {
         error = placeholder,
         fallback = placeholder,
         contentScale = ContentScale.Crop,
-        modifier = modifier.clip(RoundedCornerShape(8.dp)),
+        modifier = modifier.clip(RoundedCornerShape(4.dp)),
     )
 }
 

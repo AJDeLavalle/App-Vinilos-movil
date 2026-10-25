@@ -18,6 +18,10 @@ data class Album(
     /** Nombres de los intérpretes separados por coma; vacío si el backend no los asocia. */
     val performerNames: String
         get() = performers.joinToString(", ") { it.name }
+
+    /** Línea "Artista · Año" de la maqueta, omitiendo las partes vacías. */
+    fun subtitle(separator: String): String =
+        listOf(performerNames, releaseYear).filter { it.isNotBlank() }.joinToString(separator)
 }
 
 data class Track(
