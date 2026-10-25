@@ -12,7 +12,12 @@ Aplicación móvil Android de Vinilos, desarrollada en Kotlin con Jetpack Compos
 | Jetpack Compose BOM | 2026.02.01 |
 | Material 3 | vía Compose BOM |
 | Activity Compose | 1.13.0 |
-| Lifecycle Runtime KTX | 2.11.0 |
+| Lifecycle (Runtime, ViewModel, Compose) | 2.11.0 |
+| Navigation Compose | 2.8.9 |
+| Retrofit / Gson converter | 2.11.0 |
+| OkHttp (logging, MockWebServer) | 4.12.0 |
+| Coil Compose (portadas) | 2.7.0 |
+| Kotlin Coroutines Test | 1.10.2 |
 | minSdk | 26 (Android 8.0) |
 | targetSdk | 37 |
 | Java | 11 |
@@ -37,6 +42,22 @@ Aplicación móvil Android de Vinilos, desarrollada en Kotlin con Jetpack Compos
 
 2. Abre la carpeta `Vinilos/` en Android Studio (`File > Open`).
 3. Espera a que Gradle sincronice las dependencias. Si Android Studio lo solicita, instala el SDK faltante desde el SDK Manager.
+
+## Configuración del backend (BackVynils)
+
+La app consume [BackVynils](https://github.com/TheSoftwareDesignLab/BackVynils) (`GET /albums` y `GET /albums/{id}`).
+
+1. Levanta el backend en tu máquina (puerto 3000), por ejemplo con `docker compose up` desde el repositorio de BackVynils.
+2. Por defecto la app apunta a `http://10.0.2.2:3000/`, que desde el **emulador** equivale al `localhost` del computador.
+3. Para usar otra URL (dispositivo físico, servidor desplegado), compila con la propiedad `vinilos.apiUrl`:
+
+   ```bash
+   ./gradlew assembleDebug -Pvinilos.apiUrl=http://192.168.0.10:3000/
+   ```
+
+   También se puede fijar en `Vinilos/gradle.properties` con `vinilos.apiUrl=...`. La URL debe terminar en `/`.
+
+> Si el emulador muestra "No pudimos conectarnos con el servidor" con el backend encendido, el firewall de Windows puede estar bloqueando el puerto 3000. Alternativa sin tocar el firewall: `adb reverse tcp:3000 tcp:3000` y compilar con `-Pvinilos.apiUrl=http://localhost:3000/`.
 
 ## Uso
 
@@ -65,13 +86,57 @@ Ubícate en la carpeta `Vinilos/`:
 
 El APK generado queda en `Vinilos/app/build/outputs/apk/debug/`.
 
+Reportes de pruebas: `Vinilos/app/build/reports/tests/testDebugUnitTest/index.html` (unitarias) y `Vinilos/app/build/reports/androidTests/connected/debug/index.html` (instrumentadas).
+
+## Arquitectura (MVVM + Repository + Service Adapter)
+
+```
+UI (Compose)  →  ViewModel (StateFlow)  →  AlbumRepository  →  AlbumServiceAdapter  →  Retrofit / BackVynils
+```
+
+| Capa | Clases | Responsabilidad |
+|---|---|---|
+| UI | `AlbumListScreen`, `AlbumDetailScreen`, `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
+| ViewModel | `AlbumListViewModel`, `AlbumDetailViewModel` | Estados `Loading`, `Success`, `Empty`, `Error` y reintento; sobreviven a la rotación |
+| Repository | `AlbumRepository` (interfaz), `AlbumRepositoryImpl` | Punto único de acceso a los datos; se reemplaza por un fake en las pruebas |
+| Service Adapter | `AlbumServiceAdapter`, `AlbumApiService`, DTO | Traduce JSON y códigos HTTP (404 → `AlbumNotFoundException`) al modelo de dominio |
+| Dominio | `Album`, `Track`, `Performer` | Modelo independiente de la UI y de la red |
+
+Las dependencias se crean en `di/AppContainer.kt` (inyección manual) y se exponen desde `VinilosApplication`.
+
+## Pruebas del Sprint 1
+
+| Caso | HU | Prueba | Tipo |
+|---|---|---|---|
+| CP-01 | HU01 | `AlbumCatalogTest.cp01_conAlbumes_muestraListaConNombreYArtista` | UI instrumentada |
+| CP-02 | HU01 | `AlbumCatalogTest.cp02_sinAlbumes_muestraEstadoVacio` | UI instrumentada |
+| CP-03 | HU01 | `AlbumCatalogTest.cp03_apiInaccesible_muestraError_yReintentarCargaLaLista` | UI instrumentada |
+| CP-04 | HU01 | `AlbumCatalogTest.cp04_respuestaDemorada_muestraIndicadorDeCarga` | UI instrumentada |
+| CP-05 | HU02 | `AlbumDetailNavigationTest.cp05_seleccionarAlbum_muestraDetalleDelMismoAlbum` | E2E UI |
+| CP-06 | HU02 | `AlbumDetailNavigationTest.cp06_botonAtrasDelSistema_regresaAlCatalogo` (Espresso `pressBack`) | E2E UI |
+| CP-07 | HU02 | `AlbumServiceAdapterTest.getAlbum_404_lanzaAlbumNotFound`, `AlbumDetailViewModelTest.idInexistente_estadoErrorNotFound` | Integración / unitaria |
+| CP-10 | Ambas | `AlbumDetailNavigationTest.cp10_flujoCatalogoDetalleVolver_conBotonDeLaBarra` | E2E UI |
+
+Las pruebas de UI usan un `FakeAlbumRepository` con datos fijos, así que no dependen del backend. Como la interfaz está en Jetpack Compose, las aserciones usan Compose UI Test (`androidx.compose.ui.test`); Espresso se usa para acciones del sistema, como el botón Atrás. CP-08 (rotación) y CP-09 (instalación del APK) se validan manualmente.
+
+Capturas en el emulador: [catálogo](docs/evidencias/sprint-1/HU01-catalogo.png) y [detalle](docs/evidencias/sprint-1/HU02-detalle.png).
+
 ## Estructura del repositorio
 
 ```
 App-Vinilos-movil/
 ├── README.md
+├── docs/evidencias/  # Capturas de las entregas
 └── Vinilos/          # Proyecto Android (abrir esta carpeta en Android Studio)
-    ├── app/          # Módulo de la aplicación
+    ├── app/
+    │   └── src/
+    │       ├── main/java/co/edu/uniandes/vinilos/
+    │       │   ├── data/        # remote (Retrofit, DTO, Service Adapter) y repository
+    │       │   ├── domain/      # modelo e interfaz AlbumRepository
+    │       │   ├── di/          # AppContainer
+    │       │   └── ui/          # albums, detail, navigation, common, theme
+    │       ├── test/            # Unitarias e integración HTTP (JUnit, MockWebServer)
+    │       └── androidTest/     # UI instrumentadas (Compose UI Test + Espresso)
     ├── gradle/       # Wrapper y catálogo de versiones (libs.versions.toml)
     └── build.gradle.kts
 ```

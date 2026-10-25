@@ -10,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import co.edu.uniandes.vinilos.testutil.FakeAlbumRepository
 import co.edu.uniandes.vinilos.ui.albums.AlbumListTags
 import co.edu.uniandes.vinilos.ui.common.StateTags
+import co.edu.uniandes.vinilos.ui.navigation.TopLevelDestination
 import co.edu.uniandes.vinilos.ui.navigation.VinilosApp
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 import kotlinx.coroutines.CompletableDeferred
@@ -36,8 +37,19 @@ class AlbumCatalogTest {
         composeRule.onNodeWithTag(AlbumListTags.LIST).assertIsDisplayed()
         composeRule.onNodeWithTag(AlbumListTags.item(100)).assertIsDisplayed()
         composeRule.onNodeWithText("Buscando América").assertIsDisplayed()
-        composeRule.onNodeWithText("Rubén Blades Bellido de Luna").assertIsDisplayed()
+        composeRule.onNodeWithText("Rubén Blades Bellido de Luna · 1984").assertIsDisplayed()
         composeRule.onNodeWithText("Poeta del pueblo").assertIsDisplayed()
+    }
+
+    @Test
+    fun barraInferior_pestanaArtistas_yRegresoAAlbumes() {
+        launch(FakeAlbumRepository())
+
+        composeRule.onNodeWithTag(TopLevelDestination.ARTISTS.testTag).performClick()
+        composeRule.onNodeWithText("Esta sección estará disponible en un próximo sprint.").assertIsDisplayed()
+
+        composeRule.onNodeWithTag(TopLevelDestination.ALBUMS.testTag).performClick()
+        composeRule.onNodeWithTag(AlbumListTags.LIST).assertIsDisplayed()
     }
 
     @Test
