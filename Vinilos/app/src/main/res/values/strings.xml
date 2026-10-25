@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Vinilos</string>
+
+    <!-- HU01: catálogo de álbumes -->
+    <string name="albums_title">Álbumes</string>
+    <string name="albums_empty">Aún no hay álbumes registrados.</string>
+    <string name="albums_loading">Cargando álbumes…</string>
+    <string name="album_cover_description">Portada de %1$s</string>
+    <string name="album_unknown_artist">Artista no registrado</string>
+
+    <!-- Errores comunes -->
+    <string name="error_network">No pudimos conectarnos con el servidor. Revisa tu conexión.</string>
+    <string name="error_unknown">Ocurrió un error inesperado.</string>
+    <string name="retry">Reintentar</string>
 </resources>
