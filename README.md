@@ -9,26 +9,29 @@ Aplicación móvil Android de Vinilos, desarrollada en Kotlin con Jetpack Compos
 | Lenguaje | Kotlin 2.2.10 |
 | Android Gradle Plugin | 9.4.1 |
 | Gradle | 9.6.0 (wrapper incluido) |
-| Jetpack Compose BOM | 2026.02.01 |
+| Jetpack Compose BOM | 2025.06.00 (Compose 1.8) |
 | Material 3 | vía Compose BOM |
-| Activity Compose | 1.13.0 |
-| Lifecycle (Runtime, ViewModel, Compose) | 2.11.0 |
+| Activity Compose | 1.10.1 |
+| Core KTX | 1.16.0 |
+| Lifecycle (Runtime, ViewModel, Compose) | 2.9.1 |
 | Navigation Compose | 2.8.9 |
 | Retrofit / Gson converter | 2.11.0 |
 | OkHttp (logging, MockWebServer) | 4.12.0 |
 | Coil Compose (portadas) | 2.7.0 |
 | Kotlin Coroutines Test | 1.10.2 |
-| minSdk | 26 (Android 8.0) |
+| minSdk | 22 (Android 5.1) |
 | targetSdk | 37 |
 | Java | 11 |
 | applicationId | `co.edu.uniandes.vinilos` |
+
+> **minSdk 22:** las versiones más recientes de Compose, Activity, Lifecycle y Core exigen API 23 o superior. Por eso esas librerías están fijadas en las últimas versiones compatibles con API 21/22; no las actualices sin revisar su `minSdk`.
 
 ## Requisitos previos
 
 - [Android Studio](https://developer.android.com/studio) en una versión compatible con AGP 9.4.1 (la más reciente estable).
 - JDK 11 o superior (incluido con Android Studio).
 - Android SDK con la plataforma API 37 instalada.
-- Un emulador Android (API 26 o superior) o un dispositivo físico con la depuración USB activada.
+- Un emulador Android (API 22 o superior) o un dispositivo físico con la depuración USB activada.
 - Git.
 
 ## Instalación
