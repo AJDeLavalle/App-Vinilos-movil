@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Disco de vinilo usado cuando la portada no carga o no existe. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFE0E0E0"
+        android:pathData="M0,0h24v24h-24z" />
+    <path
+        android:fillColor="#FF616161"
+        android:pathData="M12,3a9,9 0,1 0,0 18a9,9 0,1 0,0 -18zM12,14.5a2.5,2.5 0,1 1,0 -5a2.5,2.5 0,1 1,0 5z" />
+</vector>
