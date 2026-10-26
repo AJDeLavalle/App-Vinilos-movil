@@ -43,7 +43,7 @@ Aplicación móvil Android de Vinilos, desarrollada en Kotlin con Jetpack Compos
    cd App-Vinilos-movil
    ```
 
-2. Abre la carpeta `Vinilos/` en Android Studio (`File > Open`).
+2. Abre la carpeta raíz `App-Vinilos-movil/` en Android Studio (`File > Open`).
 3. Espera a que Gradle sincronice las dependencias. Si Android Studio lo solicita, instala el SDK faltante desde el SDK Manager.
 
 ## Configuración del backend (BackVynils)
@@ -58,7 +58,7 @@ La app consume [BackVynils](https://github.com/TheSoftwareDesignLab/BackVynils) 
    ./gradlew assembleDebug -Pvinilos.apiUrl=http://192.168.0.10:3000/
    ```
 
-   También se puede fijar en `Vinilos/gradle.properties` con `vinilos.apiUrl=...`. La URL debe terminar en `/`.
+   También se puede fijar en `gradle.properties` con `vinilos.apiUrl=...`. La URL debe terminar en `/`.
 
 > Si el emulador muestra "No pudimos conectarnos con el servidor" con el backend encendido, el firewall de Windows puede estar bloqueando el puerto 3000. Alternativa sin tocar el firewall: `adb reverse tcp:3000 tcp:3000` y compilar con `-Pvinilos.apiUrl=http://localhost:3000/`.
 
@@ -71,7 +71,7 @@ La app consume [BackVynils](https://github.com/TheSoftwareDesignLab/BackVynils) 
 
 ### Desde la línea de comandos
 
-Ubícate en la carpeta `Vinilos/`:
+Desde la raíz del repositorio:
 
 ```bash
 # Compilar el APK de depuración
@@ -87,9 +87,9 @@ Ubícate en la carpeta `Vinilos/`:
 ./gradlew connectedAndroidTest
 ```
 
-El APK generado queda en `Vinilos/app/build/outputs/apk/debug/`.
+El APK generado queda en `app/build/outputs/apk/debug/`.
 
-Reportes de pruebas: `Vinilos/app/build/reports/tests/testDebugUnitTest/index.html` (unitarias) y `Vinilos/app/build/reports/androidTests/connected/debug/index.html` (instrumentadas).
+Reportes de pruebas: `app/build/reports/tests/testDebugUnitTest/index.html` (unitarias) y `app/build/reports/androidTests/connected/debug/index.html` (instrumentadas).
 
 ## Arquitectura (MVVM + Repository + Service Adapter)
 
@@ -130,18 +130,18 @@ Capturas en el emulador: [catálogo](docs/evidencias/sprint-1/HU01-catalogo.png)
 App-Vinilos-movil/
 ├── README.md
 ├── docs/evidencias/  # Capturas de las entregas
-└── Vinilos/          # Proyecto Android (abrir esta carpeta en Android Studio)
-    ├── app/
-    │   └── src/
-    │       ├── main/java/co/edu/uniandes/vinilos/
-    │       │   ├── data/        # remote (Retrofit, DTO, Service Adapter) y repository
-    │       │   ├── domain/      # modelo e interfaz AlbumRepository
-    │       │   ├── di/          # AppContainer
-    │       │   └── ui/          # albums, detail, navigation, common, theme
-    │       ├── test/            # Unitarias e integración HTTP (JUnit, MockWebServer)
-    │       └── androidTest/     # UI instrumentadas (Compose UI Test + Espresso)
-    ├── gradle/       # Wrapper y catálogo de versiones (libs.versions.toml)
-    └── build.gradle.kts
+├── app/
+│   └── src/
+│       ├── main/java/co/edu/uniandes/vinilos/
+│       │   ├── data/        # remote (Retrofit, DTO, Service Adapter) y repository
+│       │   ├── domain/      # modelo e interfaz AlbumRepository
+│       │   ├── di/          # AppContainer
+│       │   └── ui/          # albums, detail, navigation, common, theme
+│       ├── test/            # Unitarias e integración HTTP (JUnit, MockWebServer)
+│       └── androidTest/     # UI instrumentadas (Compose UI Test + Espresso)
+├── gradle/           # Wrapper y catálogo de versiones (libs.versions.toml)
+├── build.gradle.kts
+└── settings.gradle.kts
 ```
 
 ## Flujo de ramas
