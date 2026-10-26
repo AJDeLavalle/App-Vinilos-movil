@@ -123,6 +123,8 @@ Las dependencias se crean en `di/AppContainer.kt` (inyección manual) y se expon
 
 Las pruebas de UI usan un `FakeAlbumRepository` con datos fijos, así que no dependen del backend. Como la interfaz está en Jetpack Compose, las aserciones usan Compose UI Test (`androidx.compose.ui.test`); Espresso se usa para acciones del sistema, como el botón Atrás. CP-08 (rotación) y CP-09 (instalación del APK) se validan manualmente.
 
+Resultados de ejecución y defectos encontrados: [reporte de defectos del Sprint 1](docs/pruebas/sprint-1/defectos.md).
+
 Capturas en el emulador: [catálogo](docs/evidencias/sprint-1/HU01-catalogo.png) y [detalle](docs/evidencias/sprint-1/HU02-detalle.png).
 
 ## Estructura del repositorio
