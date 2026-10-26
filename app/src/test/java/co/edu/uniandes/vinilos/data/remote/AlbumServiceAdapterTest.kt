@@ -65,6 +65,26 @@ class AlbumServiceAdapterTest {
         assertTrue(adapter.getAlbums().isEmpty())
     }
 
+    @Test
+    fun getAlbum_mapeaComentarios_yAcotaLaCalificacion() = runTest {
+        server.enqueue(
+            MockResponse().setBody(
+                """{"id":100,"name":"Buscando América","comments":[
+                  {"id":1,"description":"Un clásico","rating":5},
+                  {"id":2,"description":"Fuera de rango","rating":9},
+                  {"id":null,"description":"Sin id","rating":3}]}"""
+            )
+        )
+
+        val album = adapter.getAlbum(100)
+
+        assertEquals("/albums/100", server.takeRequest().path)
+        assertEquals(2, album.comments.size)
+        assertEquals("Un clásico", album.comments[0].description)
+        assertEquals(5, album.comments[0].rating)
+        assertEquals(5, album.comments[1].rating)
+    }
+
     @Test(expected = AlbumNotFoundException::class)
     fun getAlbum_404_lanzaAlbumNotFound() = runTest {
         server.enqueue(

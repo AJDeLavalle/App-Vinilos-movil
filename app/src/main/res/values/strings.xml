@@ -24,6 +24,9 @@
     <string name="album_tracks">Tracks</string>
     <string name="album_track_item">%1$d. %2$s</string>
     <string name="album_no_tracks">Este álbum no tiene tracks registrados.</string>
+    <string name="album_comments">Comentarios</string>
+    <string name="album_no_comments">Este álbum aún no tiene comentarios.</string>
+    <string name="album_comment_rating">Calificación: %1$d de 5</string>
     <string name="navigate_back">Volver</string>
 
     <!-- Errores comunes -->

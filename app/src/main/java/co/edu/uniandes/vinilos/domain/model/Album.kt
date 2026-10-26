@@ -10,6 +10,7 @@ data class Album(
     val recordLabel: String,
     val tracks: List<Track> = emptyList(),
     val performers: List<Performer> = emptyList(),
+    val comments: List<Comment> = emptyList(),
 ) {
     /** Año de lanzamiento extraído de la fecha ISO que entrega el backend (p. ej. "1984-08-01T00:00:00.000Z"). */
     val releaseYear: String
@@ -28,6 +29,13 @@ data class Track(
     val id: Int,
     val name: String,
     val duration: String,
+)
+
+data class Comment(
+    val id: Int,
+    val description: String,
+    /** Calificación de 1 a 5 que asigna el coleccionista. */
+    val rating: Int,
 )
 
 data class Performer(

@@ -99,11 +99,11 @@ UI (Compose)  →  ViewModel (StateFlow)  →  AlbumRepository  →  AlbumServic
 
 | Capa | Clases | Responsabilidad |
 |---|---|---|
-| UI | `AlbumListScreen`, `AlbumDetailScreen`, `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
+| UI | `AlbumListScreen`, `AlbumDetailScreen` (info, tracks y comentarios), `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
 | ViewModel | `AlbumListViewModel`, `AlbumDetailViewModel` | Estados `Loading`, `Success`, `Empty`, `Error` y reintento; sobreviven a la rotación |
 | Repository | `AlbumRepository` (interfaz), `AlbumRepositoryImpl` | Punto único de acceso a los datos; se reemplaza por un fake en las pruebas |
 | Service Adapter | `AlbumServiceAdapter`, `AlbumApiService`, DTO | Traduce JSON y códigos HTTP (404 → `AlbumNotFoundException`) al modelo de dominio |
-| Dominio | `Album`, `Track`, `Performer` | Modelo independiente de la UI y de la red |
+| Dominio | `Album`, `Track`, `Performer`, `Comment` | Modelo independiente de la UI y de la red |
 
 Las dependencias se crean en `di/AppContainer.kt` (inyección manual) y se exponen desde `VinilosApplication`.
 
@@ -119,6 +119,7 @@ Las dependencias se crean en `di/AppContainer.kt` (inyección manual) y se expon
 | CP-06 | HU02 | `AlbumDetailNavigationTest.cp06_botonAtrasDelSistema_regresaAlCatalogo` (Espresso `pressBack`) | E2E UI |
 | CP-07 | HU02 | `AlbumServiceAdapterTest.getAlbum_404_lanzaAlbumNotFound`, `AlbumDetailViewModelTest.idInexistente_estadoErrorNotFound` | Integración / unitaria |
 | CP-10 | Ambas | `AlbumDetailNavigationTest.cp10_flujoCatalogoDetalleVolver_conBotonDeLaBarra` | E2E UI |
+| CP-11 | HU02 | `AlbumDetailNavigationTest.cp11_detalleMuestraComentarios_oMensajeSiNoHay`, `AlbumServiceAdapterTest.getAlbum_mapeaComentarios_yAcotaLaCalificacion` | E2E UI / integración |
 
 Las pruebas de UI usan un `FakeAlbumRepository` con datos fijos, así que no dependen del backend. Como la interfaz está en Jetpack Compose, las aserciones usan Compose UI Test (`androidx.compose.ui.test`); Espresso se usa para acciones del sistema, como el botón Atrás. CP-08 (rotación) y CP-09 (instalación del APK) se validan manualmente.
 

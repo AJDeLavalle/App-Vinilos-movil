@@ -13,12 +13,19 @@ data class AlbumDto(
     val recordLabel: String?,
     val tracks: List<TrackDto>?,
     val performers: List<PerformerDto>?,
+    val comments: List<CommentDto>?,
 )
 
 data class TrackDto(
     val id: Int?,
     val name: String?,
     val duration: String?,
+)
+
+data class CommentDto(
+    val id: Int?,
+    val description: String?,
+    val rating: Int?,
 )
 
 data class PerformerDto(

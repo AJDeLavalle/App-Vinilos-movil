@@ -40,6 +40,11 @@ android {
         compose = true
         buildConfig = true
     }
+    // -g concede los permisos de ejecución al instalar (installDebug y pruebas instrumentadas),
+    // así el permiso de red local de debug no muestra el diálogo en desarrollo.
+    installation {
+        installOptions += "-g"
+    }
 }
 
 dependencies {

@@ -2,6 +2,7 @@ package co.edu.uniandes.vinilos.testutil
 
 import co.edu.uniandes.vinilos.domain.model.Album
 import co.edu.uniandes.vinilos.domain.model.AlbumNotFoundException
+import co.edu.uniandes.vinilos.domain.model.Comment
 import co.edu.uniandes.vinilos.domain.model.Performer
 import co.edu.uniandes.vinilos.domain.model.Track
 import co.edu.uniandes.vinilos.domain.repository.AlbumRepository
@@ -41,6 +42,7 @@ class FakeAlbumRepository(
                 recordLabel = "Elektra",
                 tracks = listOf(Track(1, "Decisiones", "5:05"), Track(2, "Desapariciones", "6:29")),
                 performers = listOf(Performer(1, "Rubén Blades Bellido de Luna", "")),
+                comments = listOf(Comment(1, "Un clásico de la salsa.", 4)),
             ),
             Album(
                 id = 101,

@@ -1,5 +1,10 @@
 package co.edu.uniandes.vinilos.ui.albums
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,11 +26,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,8 +40,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import co.edu.uniandes.vinilos.BuildConfig
 import co.edu.uniandes.vinilos.R
 import co.edu.uniandes.vinilos.domain.model.Album
 import co.edu.uniandes.vinilos.domain.model.Performer
@@ -55,7 +64,27 @@ fun AlbumListScreen(
     onAlbumClick: (Int) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    RequestLocalNetworkPermission(onGranted = viewModel::loadAlbums)
     AlbumListContent(state = state, onRetry = viewModel::loadAlbums, onAlbumClick = onAlbumClick)
+}
+
+// Android 17 (API 37) exige ACCESS_LOCAL_NETWORK para llegar a IPs locales como 10.0.2.2.
+// Solo se declara en debug (src/debug/AndroidManifest.xml) y normalmente ya viene concedido por
+// la instalación con -g; este pedido cubre un APK de debug instalado a mano.
+// Si el usuario lo concede, se reintenta la carga que falló mientras el diálogo estaba abierto.
+@Composable
+private fun RequestLocalNetworkPermission(onGranted: () -> Unit) {
+    if (!BuildConfig.DEBUG || Build.VERSION.SDK_INT < 37) return
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) onGranted()
+    }
+    LaunchedEffect(Unit) {
+        val permission = Manifest.permission.ACCESS_LOCAL_NETWORK
+        if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+            launcher.launch(permission)
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
