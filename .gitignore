@@ -1,12 +1,10 @@
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+# Android Studio: solo se comparten el estilo de código y las inspecciones
+/.idea/*
+!/.idea/codeStyles/
+!/.idea/inspectionProfiles/
 .DS_Store
 /build
 /captures
