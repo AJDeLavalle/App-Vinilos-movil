@@ -1,2 +1,13 @@
-# Proyecto Android en Vinilos/; .idea de la raiz se crea al abrir la carpeta equivocada
-/.idea/
+*.iml
+.gradle
+/local.properties
+# Android Studio: solo se comparten el estilo de código y las inspecciones
+/.idea/*
+!/.idea/codeStyles/
+!/.idea/inspectionProfiles/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties

@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "co.edu.uniandes.vinilos"
-        minSdk = 26
+        minSdk = 22
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
