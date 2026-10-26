@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Vinilos</string>
+
+    <!-- Navegación inferior (maqueta P01–P08) -->
+    <string name="nav_albums">Álbumes</string>
+    <string name="nav_artists">Artistas</string>
+    <string name="nav_collectors">Coleccionistas</string>
+    <string name="coming_soon">Esta sección estará disponible en un próximo sprint.</string>
+
+    <!-- HU01: catálogo de álbumes -->
+    <string name="albums_title">Álbumes</string>
+    <string name="albums_empty">Aún no hay álbumes registrados.</string>
+    <string name="albums_loading">Cargando álbumes…</string>
+    <string name="album_cover_description">Portada de %1$s</string>
+    <string name="album_unknown_artist">Artista no registrado</string>
+    <string name="album_view_details">Ver detalles ›</string>
+
+    <!-- HU02: detalle de álbum -->
+    <string name="album_detail_title">Detalle del álbum</string>
+    <string name="album_detail_loading">Cargando álbum…</string>
+    <string name="album_detail_not_found">El álbum que buscas no existe.</string>
+    <string name="album_genre">Género: %1$s</string>
+    <string name="album_record_label">Sello discográfico: %1$s</string>
+    <string name="album_tracks">Tracks</string>
+    <string name="album_track_item">%1$d. %2$s</string>
+    <string name="album_no_tracks">Este álbum no tiene tracks registrados.</string>
+    <string name="album_comments">Comentarios</string>
+    <string name="album_no_comments">Este álbum aún no tiene comentarios.</string>
+    <string name="album_comment_rating">Calificación: %1$d de 5</string>
+    <string name="navigate_back">Volver</string>
+
+    <!-- Errores comunes -->
+    <string name="error_network">No pudimos conectarnos con el servidor. Revisa tu conexión.</string>
+    <string name="error_unknown">Ocurrió un error inesperado.</string>
+    <string name="retry">Reintentar</string>
+</resources>

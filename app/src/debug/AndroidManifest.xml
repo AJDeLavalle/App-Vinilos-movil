@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Solo en debug: Android 17 (API 37) exige este permiso para llegar a IPs locales,
+         como el BackVynils local en 10.0.2.2. Producción usa un servidor público y no lo necesita. -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
+
+</manifest>
