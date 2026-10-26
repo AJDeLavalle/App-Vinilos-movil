@@ -36,7 +36,7 @@ Totales en `f89f3af`: unitarias e integración **15/15**, UI instrumentadas **11
 | ID | HU / Caso | Severidad | Resultado esperado / observado | Issue | Estado |
 |---|---|---|---|---|---|
 | [DEF-01](#def-01) | HU02 / CP-05, CP-10, CP-11 | Bloqueante | Ver el detalle / la app se cierra | [#52](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/52) | Corregido en PR [#51](https://github.com/AJDeLavalle/App-Vinilos-movil/pull/51), re-probado |
-| [DEF-02](#def-02) | HU01, HU02 / CP-01, CP-09 | Alta | Ver el catálogo / "No pudimos conectarnos con el servidor" | [#53](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/53) | Abierto, con solución temporal |
+| [DEF-02](#def-02) | HU01, HU02 / CP-01, CP-09 | Alta | Ver el catálogo / "No pudimos conectarnos con el servidor" | [#53](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/53) | Corregido en PR [#51](https://github.com/AJDeLavalle/App-Vinilos-movil/pull/51), re-probado |
 
 ### DEF-01
 
@@ -72,13 +72,16 @@ Totales en `f89f3af`: unitarias e integración **15/15**, UI instrumentadas **11
   ```
   okhttp.OkHttpClient: <-- HTTP FAILED: java.net.SocketTimeoutException: failed to connect to /10.0.2.2 (port 3000) from /10.0.2.16 (port 59596) after 10000ms
   ```
-- **Análisis:** desde `adb shell` la misma dirección responde `HTTP/1.1 200 OK`. El tráfico de la app sale por la interfaz Wi-Fi virtual del emulador (`10.0.2.16`), que no alcanza a `10.0.2.2`. No es un error del código; depende del entorno del emulador.
-- **Solución temporal (verificada, `200 OK` en 92 ms):**
-  ```bash
-  adb reverse tcp:3000 tcp:3000
-  ./gradlew installDebug -Pvinilos.apiUrl=http://localhost:3000/
-  ```
-- **Pendiente:** decidir con el equipo si la URL por defecto pasa a `localhost` con `adb reverse` o si se deja la solución temporal como paso obligatorio del README.
+- **Causa:** con `targetSdk = 37`, Android 17 exige el permiso de ejecución `ACCESS_LOCAL_NETWORK` para que una app se conecte a IPs privadas o locales como `10.0.2.2`. Sin él, el sistema bloquea la conexión y OkHttp termina en timeout.
+  - Desde `adb shell` la misma dirección responde `HTTP/1.1 200 OK`, incluso forzando la interfaz Wi-Fi (`nc -s 10.0.2.16 10.0.2.2 3000`): la red del emulador sí alcanza el host.
+  - Ejecutando con el usuario de la app (`run-as co.edu.uniandes.vinilos`), la app llega a internet (`8.8.8.8:53`) pero no a `10.0.2.2:3000`: el bloqueo es del permiso, no de la red.
+  - `adb reverse` con `localhost` funcionaba porque `localhost` no cuenta como red local.
+- **Corrección:** PR [#51](https://github.com/AJDeLavalle/App-Vinilos-movil/pull/51), commit `89f457d` en `develop`.
+  - El permiso se declara solo en el build de debug (`app/src/debug/AndroidManifest.xml`). Producción usa un servidor público y no lo necesita ni lo pide.
+  - `installOptions -g` en `app/build.gradle.kts` lo concede al instalar con `./gradlew installDebug` y en las pruebas instrumentadas.
+  - Si el APK de debug se instala de otra forma (por ejemplo, con **Run ▶** de Android Studio), la app muestra el diálogo de permiso una vez y recarga el catálogo al aceptarlo.
+  - El APK de release no incluye el permiso, así que no puede usarse contra un backend local en Android 17. Es intencional: release apuntará a la URL de producción. Para probar contra BackVynils local se usa el build de debug.
+- **Re-prueba:** emulador Android 17 (API 37) con BackVynils en Docker. Instalación limpia con `installDebug`: permiso concedido sin diálogo y `GET /albums` → `200 OK`. Con **Run ▶**: diálogo una vez, se acepta y `GET /albums` → `200 OK`. `testDebugUnitTest` 15/15 y `connectedDebugAndroidTest` 11/11.
 
 ## Observaciones (no son defectos)
 
@@ -88,4 +91,4 @@ Totales en `f89f3af`: unitarias e integración **15/15**, UI instrumentadas **11
 
 ## Regla de cierre
 
-No quedan defectos bloqueantes abiertos en HU01/HU02 una vez fusionado el PR [#51](https://github.com/AJDeLavalle/App-Vinilos-movil/pull/51). DEF-02 (alta) queda abierto con solución temporal documentada; el Product Owner debe aceptarlo o priorizar su corrección.
+No quedan defectos abiertos en HU01/HU02: DEF-01 y DEF-02 están corregidos en el PR [#51](https://github.com/AJDeLavalle/App-Vinilos-movil/pull/51), ya fusionado en `develop`.
