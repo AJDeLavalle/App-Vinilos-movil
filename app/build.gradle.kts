@@ -3,9 +3,13 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
-// URL del backend BackVynils. Por defecto apunta al host desde el emulador (10.0.2.2).
-// Se puede sobrescribir con -Pvinilos.apiUrl=... o en gradle.properties.
-val apiUrl = (findProperty("vinilos.apiUrl") as String?) ?: "http://10.0.2.2:3000/"
+// URL del backend BackVynils según el tipo de build (deben terminar en "/"):
+// - debug: BackVynils local; 10.0.2.2 es el localhost del computador visto desde el emulador.
+// - release: BackVynils desplegado en Firebase (Cloud Functions), accesible desde dispositivos físicos.
+// Se pueden sobrescribir con -Pvinilos.apiUrl=... (debug) y -Pvinilos.apiUrl.release=... o en gradle.properties.
+val debugApiUrl = (findProperty("vinilos.apiUrl") as String?) ?: "http://10.0.2.2:3000/"
+val releaseApiUrl = (findProperty("vinilos.apiUrl.release") as String?)
+    ?: "https://us-central1-vinilos-backend-app.cloudfunctions.net/api/"
 
 android {
     namespace = "co.edu.uniandes.vinilos"
@@ -21,14 +25,21 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "API_BASE_URL", "\"$apiUrl\"")
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "API_BASE_URL", "\"$debugApiUrl\"")
+        }
         release {
+            buildConfigField("String", "API_BASE_URL", "\"$releaseApiUrl\"")
+            // Firmado con la llave de debug para que el APK se pueda instalar directamente
+            // en dispositivos (proyecto académico, no se publica en Play Store).
+            signingConfig = signingConfigs.getByName("debug")
+            // Sin R8: al optimizar solo androidx/kotlin, OkHttp quedaba apuntando a clases de Kotlin
+            // renombradas y la app se cerraba al abrir (IllegalAccessError en OkHttpClient).
             optimization {
-                enable = true
-                packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
+                enable = false
             }
         }
     }
@@ -40,8 +51,8 @@ android {
         compose = true
         buildConfig = true
     }
-    // -g concede los permisos de ejecución al instalar (installDebug y pruebas instrumentadas),
-    // así el permiso de red local de debug no muestra el diálogo en desarrollo.
+    // -g concede los permisos de ejecución con installDebug, así el permiso de red local de debug
+    // no muestra el diálogo en desarrollo. Las pruebas instrumentadas lo conceden por su cuenta.
     installation {
         installOptions += "-g"
     }

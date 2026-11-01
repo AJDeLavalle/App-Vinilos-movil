@@ -46,19 +46,30 @@ Aplicación móvil Android de Vinilos, desarrollada en Kotlin con Jetpack Compos
 2. Abre la carpeta raíz `App-Vinilos-movil/` en Android Studio (`File > Open`).
 3. Espera a que Gradle sincronice las dependencias. Si Android Studio lo solicita, instala el SDK faltante desde el SDK Manager.
 
+## Instalar el APK sin compilar
+
+Descarga el APK desde la [última release](https://github.com/AJDeLavalle/App-Vinilos-movil/releases/latest) y ábrelo en el teléfono (Android 5.1 o superior; hay que permitir la instalación de apps de origen desconocido), o instálalo con `adb install <archivo>.apk`. Usa el backend desplegado, así que no requiere levantar BackVynils.
+
 ## Configuración del backend (BackVynils)
 
-La app consume [BackVynils](https://github.com/TheSoftwareDesignLab/BackVynils) (`GET /albums` y `GET /albums/{id}`).
+La app consume [BackVynils](https://github.com/TheSoftwareDesignLab/BackVynils) (`GET /albums` y `GET /albums/{id}`). La URL depende del tipo de build:
+
+| Build | URL por defecto | Uso |
+|---|---|---|
+| `debug` | `http://10.0.2.2:3000/` | Desarrollo con BackVynils local; `10.0.2.2` es el `localhost` del computador visto desde el **emulador** |
+| `release` | `https://us-central1-vinilos-backend-app.cloudfunctions.net/api/` | APK de entrega: BackVynils desplegado en Firebase, funciona en dispositivos físicos |
+
+Para desarrollar con el backend local:
 
 1. Levanta el backend en tu máquina (puerto 3000), por ejemplo con `docker compose up` desde el repositorio de BackVynils.
-2. Por defecto la app apunta a `http://10.0.2.2:3000/`, que desde el **emulador** equivale al `localhost` del computador.
-3. Para usar otra URL (dispositivo físico, servidor desplegado), compila con la propiedad `vinilos.apiUrl`:
+2. Ejecuta la app en `debug` (Run ▶ en Android Studio o `./gradlew installDebug`).
+3. Para usar otra URL, compila con la propiedad `vinilos.apiUrl` (debug) o `vinilos.apiUrl.release` (release):
 
    ```bash
    ./gradlew assembleDebug -Pvinilos.apiUrl=http://192.168.0.10:3000/
    ```
 
-   También se puede fijar en `gradle.properties` con `vinilos.apiUrl=...`. La URL debe terminar en `/`.
+   También se pueden fijar en `gradle.properties`. La URL debe terminar en `/`.
 
 > Si el emulador muestra "No pudimos conectarnos con el servidor" con el backend encendido, el firewall de Windows puede estar bloqueando el puerto 3000. Alternativa sin tocar el firewall: `adb reverse tcp:3000 tcp:3000` y compilar con `-Pvinilos.apiUrl=http://localhost:3000/`.
 
@@ -74,8 +85,11 @@ La app consume [BackVynils](https://github.com/TheSoftwareDesignLab/BackVynils) 
 Desde la raíz del repositorio:
 
 ```bash
-# Compilar el APK de depuración
+# Compilar el APK de depuración (backend local)
 ./gradlew assembleDebug        # Windows: gradlew.bat assembleDebug
+
+# Compilar el APK de entrega (backend en Firebase), firmado e instalable
+./gradlew assembleRelease
 
 # Instalar en el emulador o dispositivo conectado
 ./gradlew installDebug
@@ -87,7 +101,7 @@ Desde la raíz del repositorio:
 ./gradlew connectedAndroidTest
 ```
 
-El APK generado queda en `app/build/outputs/apk/debug/`.
+Los APK quedan en `app/build/outputs/apk/debug/app-debug.apk` y `app/build/outputs/apk/release/app-release.apk`. El APK `release` se firma con la llave de debug para poder instalarlo directamente con `adb install` o desde el teléfono.
 
 Reportes de pruebas: `app/build/reports/tests/testDebugUnitTest/index.html` (unitarias) y `app/build/reports/androidTests/connected/debug/index.html` (instrumentadas).
 
