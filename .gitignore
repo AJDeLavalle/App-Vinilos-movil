@@ -1,0 +1,13 @@
+*.iml
+.gradle
+/local.properties
+# Android Studio: solo se comparten el estilo de código y las inspecciones
+/.idea/*
+!/.idea/codeStyles/
+!/.idea/inspectionProfiles/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
