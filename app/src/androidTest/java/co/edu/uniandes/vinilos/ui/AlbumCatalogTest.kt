@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import co.edu.uniandes.vinilos.testutil.FakeAlbumRepository
+import co.edu.uniandes.vinilos.testutil.grantLocalNetworkPermission
 import co.edu.uniandes.vinilos.ui.albums.AlbumListTags
 import co.edu.uniandes.vinilos.ui.common.StateTags
 import co.edu.uniandes.vinilos.ui.navigation.TopLevelDestination
@@ -27,6 +28,7 @@ class AlbumCatalogTest {
     val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     private fun launch(repository: FakeAlbumRepository) {
+        grantLocalNetworkPermission()
         composeRule.setContent { VinilosTheme { VinilosApp(repository = repository) } }
     }
 
