@@ -21,7 +21,8 @@ Aplicación móvil Android de Vinilos, desarrollada en Kotlin con Jetpack Compos
 | Kotlin Coroutines Test | 1.10.2 |
 | minSdk | 22 (Android 5.1) |
 | targetSdk | 37 |
-| Java | 11 |
+| Java (nivel de compilación) | 11 |
+| JDK del daemon de Gradle | 25 |
 | applicationId | `co.edu.uniandes.vinilos` |
 
 > **minSdk 22:** las versiones más recientes de Compose, Activity, Lifecycle y Core exigen API 23 o superior. Por eso esas librerías están fijadas en las últimas versiones compatibles con API 21/22; no las actualices sin revisar su `minSdk`.
@@ -29,7 +30,7 @@ Aplicación móvil Android de Vinilos, desarrollada en Kotlin con Jetpack Compos
 ## Requisitos previos
 
 - [Android Studio](https://developer.android.com/studio) en una versión compatible con AGP 9.4.1 (la más reciente estable).
-- JDK 11 o superior (incluido con Android Studio).
+- JDK 25 para el daemon de Gradle (incluido con Android Studio; ver `gradle/gradle-daemon-jvm.properties`). Gradle lo detecta aunque `JAVA_HOME` apunte a otra versión. El código se compila con nivel Java 11.
 - Android SDK con la plataforma API 37 instalada.
 - Un emulador Android (API 22 o superior) o un dispositivo físico con la depuración USB activada.
 - Git.
@@ -146,9 +147,12 @@ Capturas en el emulador: [catálogo](docs/evidencias/sprint-1/HU01-catalogo.png)
 ```
 App-Vinilos-movil/
 ├── README.md
-├── docs/evidencias/  # Capturas de las entregas
+├── docs/
+│   ├── evidencias/   # Capturas de las entregas
+│   └── pruebas/      # Reportes de defectos por sprint
 ├── app/
 │   └── src/
+│       ├── debug/           # Manifest solo de debug (permiso de red local)
 │       ├── main/java/co/edu/uniandes/vinilos/
 │       │   ├── data/        # remote (Retrofit, DTO, Service Adapter) y repository
 │       │   ├── domain/      # modelo e interfaz AlbumRepository
