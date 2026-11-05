@@ -9,8 +9,10 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import co.edu.uniandes.vinilos.testutil.FakeAlbumRepository
 import co.edu.uniandes.vinilos.testutil.FakeArtistRepository
+import co.edu.uniandes.vinilos.testutil.FakeCollectorRepository
 import co.edu.uniandes.vinilos.testutil.grantLocalNetworkPermission
 import co.edu.uniandes.vinilos.ui.albums.AlbumListTags
+import co.edu.uniandes.vinilos.ui.collectors.CollectorListTags
 import co.edu.uniandes.vinilos.ui.common.StateTags
 import co.edu.uniandes.vinilos.ui.navigation.TopLevelDestination
 import co.edu.uniandes.vinilos.ui.navigation.VinilosApp
@@ -31,7 +33,13 @@ class AlbumCatalogTest {
     private fun launch(repository: FakeAlbumRepository) {
         grantLocalNetworkPermission()
         composeRule.setContent {
-            VinilosTheme { VinilosApp(repository = repository, artistRepository = FakeArtistRepository()) }
+            VinilosTheme {
+                VinilosApp(
+                    repository = repository,
+                    artistRepository = FakeArtistRepository(),
+                    collectorRepository = FakeCollectorRepository(),
+                )
+            }
         }
     }
 
@@ -51,7 +59,7 @@ class AlbumCatalogTest {
         launch(FakeAlbumRepository())
 
         composeRule.onNodeWithTag(TopLevelDestination.COLLECTORS.testTag).performClick()
-        composeRule.onNodeWithText("Esta sección estará disponible en un próximo sprint.").assertIsDisplayed()
+        composeRule.onNodeWithTag(CollectorListTags.LIST).assertIsDisplayed()
 
         composeRule.onNodeWithTag(TopLevelDestination.ALBUMS.testTag).performClick()
         composeRule.onNodeWithTag(AlbumListTags.LIST).assertIsDisplayed()
