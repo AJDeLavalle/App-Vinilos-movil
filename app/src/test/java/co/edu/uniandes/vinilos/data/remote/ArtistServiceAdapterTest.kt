@@ -77,6 +77,19 @@ class ArtistServiceAdapterTest {
     }
 
     @Test
+    fun listado_uneMusicosYBandas_ordenadosPorNombre() = runTest {
+        server.enqueue(MockResponse().setBody("""[{"id":100,"name":"Rubén Blades","birthDate":"1948-07-16T00:00:00.000Z"}]"""))
+        server.enqueue(MockResponse().setBody("""[{"id":101,"name":"Queen","creationDate":"1970-01-01T00:00:00.000Z"}]"""))
+
+        val artists = adapter.getArtists()
+
+        assertEquals("/musicians", server.takeRequest().path)
+        assertEquals("/bands", server.takeRequest().path)
+        assertEquals(listOf("Queen", "Rubén Blades"), artists.map { it.name })
+        assertEquals(listOf(ArtistType.BAND, ArtistType.MUSICIAN), artists.map { it.type })
+    }
+
+    @Test
     fun interpreteDelAlbum_esBandaSoloSiTraeCreationDate() {
         val band = PerformerDto(101, "Queen", "", creationDate = "1970-01-01T00:00:00.000Z").toDomain()
         val musician = PerformerDto(100, "Rubén Blades", "", creationDate = null).toDomain()

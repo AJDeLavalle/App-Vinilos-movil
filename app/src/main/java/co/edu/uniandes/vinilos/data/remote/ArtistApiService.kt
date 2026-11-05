@@ -7,6 +7,12 @@ import retrofit2.http.Path
 
 /** Endpoints de BackVynils (src/musician, src/band y src/prize). */
 interface ArtistApiService {
+    @GET("musicians")
+    suspend fun getMusicians(): List<ArtistDto>
+
+    @GET("bands")
+    suspend fun getBands(): List<ArtistDto>
+
     @GET("musicians/{musicianId}")
     suspend fun getMusician(@Path("musicianId") musicianId: Int): ArtistDto
 
