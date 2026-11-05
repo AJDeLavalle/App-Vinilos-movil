@@ -114,11 +114,11 @@ UI (Compose)  →  ViewModel (StateFlow)  →  AlbumRepository  →  AlbumServic
 
 | Capa | Clases | Responsabilidad |
 |---|---|---|
-| UI | `AlbumListScreen`, `AlbumDetailScreen` (info, tracks y comentarios), `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
-| ViewModel | `AlbumListViewModel`, `AlbumDetailViewModel` | Estados `Loading`, `Success`, `Empty`, `Error` y reintento; sobreviven a la rotación |
-| Repository | `AlbumRepository` (interfaz), `AlbumRepositoryImpl` | Punto único de acceso a los datos; se reemplaza por un fake en las pruebas |
-| Service Adapter | `AlbumServiceAdapter`, `AlbumApiService`, DTO | Traduce JSON y códigos HTTP (404 → `AlbumNotFoundException`) al modelo de dominio |
-| Dominio | `Album`, `Track`, `Performer`, `Comment` | Modelo independiente de la UI y de la red |
+| UI | `AlbumListScreen`, `AlbumDetailScreen` (info, tracks y comentarios), `ArtistDetailScreen` (info, álbumes y premios), `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
+| ViewModel | `AlbumListViewModel`, `AlbumDetailViewModel`, `ArtistDetailViewModel` | Estados `Loading`, `Success`, `Empty`, `Error` y reintento; sobreviven a la rotación |
+| Repository | `AlbumRepository`, `ArtistRepository` (interfaces) y sus `Impl` | Punto único de acceso a los datos; se reemplaza por un fake en las pruebas |
+| Service Adapter | `AlbumServiceAdapter`, `ArtistServiceAdapter`, `AlbumApiService`, `ArtistApiService`, DTO | Traduce JSON y códigos HTTP (404 → `AlbumNotFoundException` / `ArtistNotFoundException`) al modelo de dominio. `ArtistServiceAdapter` elige `/musicians` o `/bands` y cruza `/prizes`, porque el artista solo trae el id y la fecha de cada premio |
+| Dominio | `Album`, `Track`, `Performer`, `Comment`, `Artist`, `ArtistPrize` | Modelo independiente de la UI y de la red |
 
 Las dependencias se crean en `di/AppContainer.kt` (inyección manual) y se exponen desde `VinilosApplication`.
 
@@ -141,6 +141,20 @@ Las pruebas de UI usan un `FakeAlbumRepository` con datos fijos, así que no dep
 Resultados de ejecución y defectos encontrados: [reporte de defectos del Sprint 1](docs/pruebas/sprint-1/defectos.md).
 
 Capturas en el emulador: [catálogo](docs/evidencias/sprint-1/HU01-catalogo.png) y [detalle](docs/evidencias/sprint-1/HU02-detalle.png).
+
+## Pruebas del Sprint 2
+
+| Caso | HU | Prueba | Tipo |
+|---|---|---|---|
+| CP-12 | HU04 | `ArtistDetailTest.cp12_desdeElAlbum_muestraDatosAlbumesYPremiosDelArtista` | E2E UI |
+| CP-13 | HU04 | `ArtistDetailTest.cp13_bandaSinAlbumesNiPremios_muestraMensajesVacios` | UI instrumentada |
+| CP-14 | HU04 | `ArtistDetailTest.cp14_artistaInexistente_informaYPermiteVolverAlAlbum`, `ArtistServiceAdapterTest.artista404_lanzaArtistNotFound` | UI instrumentada / integración |
+| CP-15 | HU04 | `ArtistDetailTest.cp15_errorDeRed_muestraReintentar_yRecupera` | UI instrumentada |
+| CP-16 | HU04 | `ArtistDetailTest.cp16_seleccionarAlbumDelArtista_abreElAlbum_yAtrasRegresa` (Espresso `pressBack`) | E2E UI |
+
+El detalle de artista se abre desde el detalle de un álbum con "Ver artista". La pestaña Artistas sigue pendiente del listado (T14).
+
+Capturas con el backend desplegado: [músico](docs/evidencias/sprint-2/HU04-detalle-musico.png) y [banda](docs/evidencias/sprint-2/HU04-detalle-banda.png). Las dos muestran la imagen por defecto porque las URL de esos artistas en el backend ya no responden.
 
 ## Estructura del repositorio
 
