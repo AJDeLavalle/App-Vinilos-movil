@@ -93,6 +93,20 @@
     <string name="create_album_error_invalid">Revisa los datos del álbum.</string>
     <string name="create_album_error_artist_link">El álbum se creó, pero no pudimos asociar el artista.</string>
 
+    <!-- HU08: asociar tracks -->
+    <string name="associate_track_title">Asociar track</string>
+    <string name="associate_track_add">+ Asociar track</string>
+    <string name="associate_track_album">Álbum seleccionado: %1$s</string>
+    <string name="associate_track_name">Nombre del track</string>
+    <string name="associate_track_duration">Duración</string>
+    <string name="associate_track_duration_hint">mm:ss</string>
+    <string name="associate_track_existing">Tracks existentes</string>
+    <string name="associate_track_error_name_required">Ingresa el nombre del track.</string>
+    <string name="associate_track_error_name_too_long">El nombre admite hasta %1$d caracteres.</string>
+    <string name="associate_track_error_duration_required">Ingresa la duración.</string>
+    <string name="associate_track_error_duration_invalid">Ingresa una duración válida (mm:ss).</string>
+    <string name="associate_track_error_invalid">Revisa los datos del track.</string>
+
     <!-- Errores comunes -->
     <string name="error_network">No pudimos conectarnos con el servidor. Revisa tu conexión.</string>
     <string name="error_unknown">Ocurrió un error inesperado.</string>

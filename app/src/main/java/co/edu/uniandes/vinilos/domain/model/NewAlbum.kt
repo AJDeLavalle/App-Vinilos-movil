@@ -16,3 +16,12 @@ data class NewAlbum(
 
 /** El backend respondió 400: rechazó los datos del álbum. */
 class InvalidAlbumException : Exception("El backend rechazó los datos del álbum")
+
+data class NewTrack(
+    val name: String,
+    /** Duración en formato m:ss, por ejemplo 5:05. */
+    val duration: String,
+)
+
+/** El backend respondió 400: rechazó los datos del track. */
+class InvalidTrackException : Exception("El backend rechazó los datos del track")

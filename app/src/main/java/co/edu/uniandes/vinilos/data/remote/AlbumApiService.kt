@@ -2,6 +2,8 @@ package co.edu.uniandes.vinilos.data.remote
 
 import co.edu.uniandes.vinilos.data.remote.dto.AlbumDto
 import co.edu.uniandes.vinilos.data.remote.dto.NewAlbumDto
+import co.edu.uniandes.vinilos.data.remote.dto.NewTrackDto
+import co.edu.uniandes.vinilos.data.remote.dto.TrackDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -23,4 +25,7 @@ interface AlbumApiService {
 
     @POST("albums/{albumId}/bands/{bandId}")
     suspend fun addBandToAlbum(@Path("albumId") albumId: Int, @Path("bandId") bandId: Int)
+
+    @POST("albums/{albumId}/tracks")
+    suspend fun addTrack(@Path("albumId") albumId: Int, @Body track: NewTrackDto): TrackDto
 }

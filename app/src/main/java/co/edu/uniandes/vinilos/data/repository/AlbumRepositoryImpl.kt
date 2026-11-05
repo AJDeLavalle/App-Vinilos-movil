@@ -4,6 +4,8 @@ import co.edu.uniandes.vinilos.data.remote.AlbumServiceAdapter
 import co.edu.uniandes.vinilos.domain.model.Album
 import co.edu.uniandes.vinilos.domain.model.ArtistType
 import co.edu.uniandes.vinilos.domain.model.NewAlbum
+import co.edu.uniandes.vinilos.domain.model.NewTrack
+import co.edu.uniandes.vinilos.domain.model.Track
 import co.edu.uniandes.vinilos.domain.repository.AlbumRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -30,4 +32,8 @@ class AlbumRepositoryImpl(
         withContext(ioDispatcher) {
             serviceAdapter.addArtistToAlbum(albumId, artistId, type)
         }
+
+    override suspend fun addTrack(albumId: Int, track: NewTrack): Track = withContext(ioDispatcher) {
+        serviceAdapter.addTrack(albumId, track)
+    }
 }

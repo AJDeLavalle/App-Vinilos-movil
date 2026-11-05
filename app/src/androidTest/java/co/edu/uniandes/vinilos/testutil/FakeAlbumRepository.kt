@@ -5,6 +5,7 @@ import co.edu.uniandes.vinilos.domain.model.AlbumNotFoundException
 import co.edu.uniandes.vinilos.domain.model.ArtistType
 import co.edu.uniandes.vinilos.domain.model.Comment
 import co.edu.uniandes.vinilos.domain.model.NewAlbum
+import co.edu.uniandes.vinilos.domain.model.NewTrack
 import co.edu.uniandes.vinilos.domain.model.Performer
 import co.edu.uniandes.vinilos.domain.model.Track
 import co.edu.uniandes.vinilos.domain.repository.AlbumRepository
@@ -21,7 +22,12 @@ class FakeAlbumRepository(
     var createError: Exception? = null,
     var linkError: Exception? = null,
     var createGate: CompletableDeferred<Unit>? = null,
+    var trackError: Exception? = null,
+    var trackGate: CompletableDeferred<Unit>? = null,
 ) : AlbumRepository {
+
+    var addTrackCalls = 0
+        private set
 
     var createCalls = 0
         private set
@@ -59,6 +65,15 @@ class FakeAlbumRepository(
     override suspend fun addArtistToAlbum(albumId: Int, artistId: Int, type: ArtistType) {
         linkCalls += Triple(albumId, artistId, type)
         linkError?.let { throw it }
+    }
+
+    override suspend fun addTrack(albumId: Int, track: NewTrack): Track {
+        addTrackCalls += 1
+        trackGate?.await()
+        trackError?.let { throw it }
+        val created = Track(900 + addTrackCalls, track.name, track.duration)
+        albums = albums.map { if (it.id == albumId) it.copy(tracks = it.tracks + created) else it }
+        return created
     }
 
     companion object {
