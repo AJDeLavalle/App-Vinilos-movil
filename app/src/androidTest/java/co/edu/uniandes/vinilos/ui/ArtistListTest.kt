@@ -11,6 +11,7 @@ import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import co.edu.uniandes.vinilos.testutil.FakeAlbumRepository
 import co.edu.uniandes.vinilos.testutil.FakeArtistRepository
+import co.edu.uniandes.vinilos.testutil.FakeCollectorRepository
 import co.edu.uniandes.vinilos.testutil.grantLocalNetworkPermission
 import co.edu.uniandes.vinilos.ui.artists.ArtistDetailTags
 import co.edu.uniandes.vinilos.ui.artists.ArtistListTags
@@ -33,7 +34,13 @@ class ArtistListTest {
     private fun openArtistsTab(repository: FakeArtistRepository = FakeArtistRepository()) {
         grantLocalNetworkPermission()
         composeRule.setContent {
-            VinilosTheme { VinilosApp(repository = FakeAlbumRepository(), artistRepository = repository) }
+            VinilosTheme {
+                VinilosApp(
+                    repository = FakeAlbumRepository(),
+                    artistRepository = repository,
+                    collectorRepository = FakeCollectorRepository(),
+                )
+            }
         }
         composeRule.onNodeWithTag(TopLevelDestination.ARTISTS.testTag).performClick()
     }

@@ -5,7 +5,23 @@
     <string name="nav_albums">Álbumes</string>
     <string name="nav_artists">Artistas</string>
     <string name="nav_collectors">Coleccionistas</string>
-    <string name="coming_soon">Esta sección estará disponible en un próximo sprint.</string>
+
+    <!-- HU05 y HU06: coleccionistas -->
+    <string name="collectors_loading">Cargando coleccionistas…</string>
+    <string name="collectors_empty">Aún no hay coleccionistas registrados.</string>
+    <plurals name="collector_album_count">
+        <item quantity="one">%1$d álbum</item>
+        <item quantity="other">%1$d álbumes</item>
+    </plurals>
+    <string name="collector_detail_title">Detalle del coleccionista</string>
+    <string name="collector_detail_loading">Cargando coleccionista…</string>
+    <string name="collector_detail_not_found">El coleccionista que buscas no existe.</string>
+    <string name="collector_telephone">Teléfono: %1$s</string>
+    <string name="collector_email">Correo: %1$s</string>
+    <string name="collector_favorites">Gustos</string>
+    <string name="collector_no_favorites">Este coleccionista no tiene artistas favoritos.</string>
+    <string name="collector_collection">Mi colección</string>
+    <string name="collector_no_albums">Este coleccionista no tiene álbumes en su colección.</string>
 
     <!-- HU01: catálogo de álbumes -->
     <string name="albums_title">Álbumes</string>

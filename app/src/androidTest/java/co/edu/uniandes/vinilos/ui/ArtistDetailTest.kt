@@ -15,6 +15,7 @@ import co.edu.uniandes.vinilos.domain.model.ArtistType
 import co.edu.uniandes.vinilos.domain.model.Performer
 import co.edu.uniandes.vinilos.testutil.FakeAlbumRepository
 import co.edu.uniandes.vinilos.testutil.FakeArtistRepository
+import co.edu.uniandes.vinilos.testutil.FakeCollectorRepository
 import co.edu.uniandes.vinilos.testutil.grantLocalNetworkPermission
 import co.edu.uniandes.vinilos.ui.albums.AlbumListTags
 import co.edu.uniandes.vinilos.ui.artists.ArtistDetailTags
@@ -40,7 +41,13 @@ class ArtistDetailTest {
     ) {
         grantLocalNetworkPermission()
         composeRule.setContent {
-            VinilosTheme { VinilosApp(repository = albumRepository, artistRepository = artistRepository) }
+            VinilosTheme {
+                VinilosApp(
+                    repository = albumRepository,
+                    artistRepository = artistRepository,
+                    collectorRepository = FakeCollectorRepository(),
+                )
+            }
         }
     }
 
