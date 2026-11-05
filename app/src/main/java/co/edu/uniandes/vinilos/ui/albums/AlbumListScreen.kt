@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -55,6 +57,7 @@ import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 
 object AlbumListTags {
     const val LIST = "album_list"
+    const val CREATE = "album_create"
     fun item(albumId: Int) = "album_item_$albumId"
 }
 
@@ -62,10 +65,16 @@ object AlbumListTags {
 fun AlbumListScreen(
     viewModel: AlbumListViewModel,
     onAlbumClick: (Int) -> Unit,
+    onCreateAlbum: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     RequestLocalNetworkPermission(onGranted = viewModel::loadAlbums)
-    AlbumListContent(state = state, onRetry = viewModel::loadAlbums, onAlbumClick = onAlbumClick)
+    AlbumListContent(
+        state = state,
+        onRetry = viewModel::loadAlbums,
+        onAlbumClick = onAlbumClick,
+        onCreateAlbum = onCreateAlbum,
+    )
 }
 
 // Android 17 (API 37) exige ACCESS_LOCAL_NETWORK para llegar a IPs locales como 10.0.2.2.
@@ -93,10 +102,19 @@ fun AlbumListContent(
     state: AlbumListUiState,
     onRetry: () -> Unit,
     onAlbumClick: (Int) -> Unit,
+    onCreateAlbum: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(title = { Text(stringResource(R.string.albums_title), fontWeight = FontWeight.Bold) })
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onCreateAlbum, modifier = Modifier.testTag(AlbumListTags.CREATE)) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_add),
+                    contentDescription = stringResource(R.string.create_album_title),
+                )
+            }
         },
     ) { innerPadding ->
         val modifier = Modifier.padding(innerPadding)
@@ -119,7 +137,8 @@ fun errorMessage(type: ErrorType): String = when (type) {
 private fun AlbumList(albums: List<Album>, onAlbumClick: (Int) -> Unit, modifier: Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize().testTag(AlbumListTags.LIST),
-        contentPadding = PaddingValues(16.dp),
+        // El margen inferior evita que el botón de crear tape la última tarjeta.
+        contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 88.dp),
     ) {
         items(albums, key = { it.id }) { album ->
             AlbumItem(album = album, onClick = { onAlbumClick(album.id) })
@@ -193,6 +212,7 @@ private fun AlbumListPreview() {
             ),
             onRetry = {},
             onAlbumClick = {},
+            onCreateAlbum = {},
         )
     }
 }
