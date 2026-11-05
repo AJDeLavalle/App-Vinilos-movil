@@ -6,6 +6,7 @@ import co.edu.uniandes.vinilos.data.remote.dto.PerformerDto
 import co.edu.uniandes.vinilos.data.remote.dto.TrackDto
 import co.edu.uniandes.vinilos.domain.model.Album
 import co.edu.uniandes.vinilos.domain.model.AlbumNotFoundException
+import co.edu.uniandes.vinilos.domain.model.ArtistType
 import co.edu.uniandes.vinilos.domain.model.Comment
 import co.edu.uniandes.vinilos.domain.model.Performer
 import co.edu.uniandes.vinilos.domain.model.Track
@@ -51,7 +52,14 @@ internal fun TrackDto.toDomain(): Track? =
     id?.let { Track(id = it, name = name.orEmpty(), duration = duration.orEmpty()) }
 
 internal fun PerformerDto.toDomain(): Performer? =
-    id?.let { Performer(id = it, name = name.orEmpty(), image = image.orEmpty()) }
+    id?.let {
+        Performer(
+            id = it,
+            name = name.orEmpty(),
+            image = image.orEmpty(),
+            type = if (creationDate != null) ArtistType.BAND else ArtistType.MUSICIAN,
+        )
+    }
 
 internal fun CommentDto.toDomain(): Comment? =
     id?.let { Comment(id = it, description = description.orEmpty(), rating = (rating ?: 0).coerceIn(0, 5)) }
