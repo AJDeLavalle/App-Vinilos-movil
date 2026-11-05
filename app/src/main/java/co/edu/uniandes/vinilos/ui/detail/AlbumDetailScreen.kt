@@ -1,6 +1,7 @@
 package co.edu.uniandes.vinilos.ui.detail
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,9 +44,12 @@ import co.edu.uniandes.vinilos.domain.model.Performer
 import co.edu.uniandes.vinilos.domain.model.Track
 import co.edu.uniandes.vinilos.ui.albums.AlbumCover
 import co.edu.uniandes.vinilos.ui.albums.errorMessage
+import co.edu.uniandes.vinilos.ui.common.EmptySectionText
 import co.edu.uniandes.vinilos.ui.common.ErrorType
 import co.edu.uniandes.vinilos.ui.common.ErrorView
+import co.edu.uniandes.vinilos.ui.common.InfoLine
 import co.edu.uniandes.vinilos.ui.common.LoadingView
+import co.edu.uniandes.vinilos.ui.common.SectionTitle
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 
 object AlbumDetailTags {
@@ -54,15 +58,22 @@ object AlbumDetailTags {
     const val BACK = "back_button"
     const val COMMENTS = "album_detail_comments"
     fun comment(id: Int) = "album_comment_$id"
+    fun artist(id: Int) = "album_artist_$id"
 }
 
 @Composable
 fun AlbumDetailScreen(
     viewModel: AlbumDetailViewModel,
     onBack: () -> Unit,
+    onArtistClick: (Performer) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    AlbumDetailContent(state = state, onRetry = viewModel::loadAlbum, onBack = onBack)
+    AlbumDetailContent(
+        state = state,
+        onRetry = viewModel::loadAlbum,
+        onBack = onBack,
+        onArtistClick = onArtistClick,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,6 +82,7 @@ fun AlbumDetailContent(
     state: AlbumDetailUiState,
     onRetry: () -> Unit,
     onBack: () -> Unit,
+    onArtistClick: (Performer) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -99,14 +111,14 @@ fun AlbumDetailContent(
                     ErrorView(errorMessage(state.type), onRetry, modifier)
                 }
             }
-            is AlbumDetailUiState.Success -> AlbumDetail(state.album, modifier)
+            is AlbumDetailUiState.Success -> AlbumDetail(state.album, onArtistClick, modifier)
         }
     }
 }
 
 /** Maqueta P02: portada centrada, título, "Artista • Año", género, sello, tracks y comentarios. */
 @Composable
-private fun AlbumDetail(album: Album, modifier: Modifier) {
+private fun AlbumDetail(album: Album, onArtistClick: (Performer) -> Unit, modifier: Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize().testTag(AlbumDetailTags.CONTENT),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
@@ -128,6 +140,9 @@ private fun AlbumDetail(album: Album, modifier: Modifier) {
             InfoLine(album.subtitle(" • ").ifBlank { stringResource(R.string.album_unknown_artist) })
             if (album.genre.isNotBlank()) InfoLine(stringResource(R.string.album_genre, album.genre))
             if (album.recordLabel.isNotBlank()) InfoLine(stringResource(R.string.album_record_label, album.recordLabel))
+        }
+        items(album.performers, key = { "performer_${it.id}" }) { performer ->
+            ArtistLink(performer, onClick = { onArtistClick(performer) })
         }
         if (album.description.isNotBlank()) {
             item {
@@ -161,28 +176,19 @@ private fun AlbumDetail(album: Album, modifier: Modifier) {
     }
 }
 
+/** Enlace al detalle del artista; un álbum puede tener varios intérpretes. */
 @Composable
-private fun SectionTitle(text: String, modifier: Modifier = Modifier) {
+private fun ArtistLink(performer: Performer, onClick: () -> Unit) {
     Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
-        modifier = modifier,
+        text = stringResource(R.string.album_view_artist, performer.name),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp)
+            .testTag(AlbumDetailTags.artist(performer.id)),
     )
-}
-
-@Composable
-private fun EmptySectionText(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-}
-
-@Composable
-private fun InfoLine(text: String) {
-    Text(text, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(vertical = 2.dp))
 }
 
 @Composable
@@ -247,6 +253,7 @@ private fun AlbumDetailPreview() {
             ),
             onRetry = {},
             onBack = {},
+            onArtistClick = {},
         )
     }
 }

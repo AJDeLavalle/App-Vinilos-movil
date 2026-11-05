@@ -43,12 +43,17 @@ fun EmptyView(message: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ErrorView(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+fun ErrorView(
+    message: String,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+    actionLabel: String = stringResource(R.string.retry),
+) {
     CenteredColumn(modifier.testTag(StateTags.ERROR)) {
         Text(message, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
         Spacer(Modifier.height(16.dp))
         Button(onClick = onRetry, modifier = Modifier.testTag(StateTags.RETRY)) {
-            Text(stringResource(R.string.retry))
+            Text(actionLabel)
         }
     }
 }

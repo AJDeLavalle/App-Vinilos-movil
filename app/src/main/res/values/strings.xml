@@ -27,7 +27,20 @@
     <string name="album_comments">Comentarios</string>
     <string name="album_no_comments">Este álbum aún no tiene comentarios.</string>
     <string name="album_comment_rating">Calificación: %1$d de 5</string>
+    <string name="album_view_artist">Ver artista: %1$s ›</string>
     <string name="navigate_back">Volver</string>
+
+    <!-- HU04: detalle de artista -->
+    <string name="artist_detail_title">Detalle de artista</string>
+    <string name="artist_detail_loading">Cargando artista…</string>
+    <string name="artist_detail_not_found">El artista que buscas no existe.</string>
+    <string name="artist_image_description">Imagen de %1$s</string>
+    <string name="artist_musician_born">Músico • Nacido en %1$s</string>
+    <string name="artist_band_formed">Banda • Formada en %1$s</string>
+    <string name="artist_albums">Álbumes</string>
+    <string name="artist_no_albums">Este artista no tiene álbumes registrados.</string>
+    <string name="artist_prizes">Premios y reconocimientos</string>
+    <string name="artist_no_prizes">Este artista no tiene premios registrados.</string>
 
     <!-- Errores comunes -->
     <string name="error_network">No pudimos conectarnos con el servidor. Revisa tu conexión.</string>
