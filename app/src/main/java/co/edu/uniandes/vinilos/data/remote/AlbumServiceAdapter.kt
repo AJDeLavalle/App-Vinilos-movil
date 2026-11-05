@@ -3,6 +3,7 @@ package co.edu.uniandes.vinilos.data.remote
 import co.edu.uniandes.vinilos.data.remote.dto.AlbumDto
 import co.edu.uniandes.vinilos.data.remote.dto.CommentDto
 import co.edu.uniandes.vinilos.data.remote.dto.NewAlbumDto
+import co.edu.uniandes.vinilos.data.remote.dto.NewTrackDto
 import co.edu.uniandes.vinilos.data.remote.dto.PerformerDto
 import co.edu.uniandes.vinilos.data.remote.dto.TrackDto
 import co.edu.uniandes.vinilos.domain.model.Album
@@ -10,7 +11,9 @@ import co.edu.uniandes.vinilos.domain.model.AlbumNotFoundException
 import co.edu.uniandes.vinilos.domain.model.ArtistType
 import co.edu.uniandes.vinilos.domain.model.Comment
 import co.edu.uniandes.vinilos.domain.model.InvalidAlbumException
+import co.edu.uniandes.vinilos.domain.model.InvalidTrackException
 import co.edu.uniandes.vinilos.domain.model.NewAlbum
+import co.edu.uniandes.vinilos.domain.model.NewTrack
 import co.edu.uniandes.vinilos.domain.model.Performer
 import co.edu.uniandes.vinilos.domain.model.Track
 import retrofit2.HttpException
@@ -47,6 +50,19 @@ class AlbumServiceAdapter(private val api: AlbumApiService) {
             ArtistType.MUSICIAN -> api.addMusicianToAlbum(albumId, artistId)
             ArtistType.BAND -> api.addBandToAlbum(albumId, artistId)
         }
+    }
+
+    suspend fun addTrack(albumId: Int, track: NewTrack): Track {
+        val dto = try {
+            api.addTrack(albumId, NewTrackDto(name = track.name, duration = track.duration))
+        } catch (e: HttpException) {
+            when (e.code()) {
+                400 -> throw InvalidTrackException()
+                404 -> throw AlbumNotFoundException(albumId)
+                else -> throw e
+            }
+        }
+        return checkNotNull(dto.toDomain()) { "El backend no devolvió el id del track creado" }
     }
 }
 
