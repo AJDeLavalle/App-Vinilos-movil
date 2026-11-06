@@ -42,4 +42,5 @@ data class Performer(
     val id: Int,
     val name: String,
     val image: String,
+    val type: ArtistType = ArtistType.MUSICIAN,
 )

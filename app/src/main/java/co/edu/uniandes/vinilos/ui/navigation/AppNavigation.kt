@@ -26,9 +26,13 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import co.edu.uniandes.vinilos.R
+import co.edu.uniandes.vinilos.domain.model.ArtistType
 import co.edu.uniandes.vinilos.domain.repository.AlbumRepository
+import co.edu.uniandes.vinilos.domain.repository.ArtistRepository
 import co.edu.uniandes.vinilos.ui.albums.AlbumListScreen
 import co.edu.uniandes.vinilos.ui.albums.AlbumListViewModel
+import co.edu.uniandes.vinilos.ui.artists.ArtistDetailScreen
+import co.edu.uniandes.vinilos.ui.artists.ArtistDetailViewModel
 import co.edu.uniandes.vinilos.ui.common.ComingSoonScreen
 import co.edu.uniandes.vinilos.ui.detail.AlbumDetailScreen
 import co.edu.uniandes.vinilos.ui.detail.AlbumDetailViewModel
@@ -38,9 +42,12 @@ object Routes {
     const val ALBUMS = "albums"
     const val ALBUM_DETAIL = "albums/{${AlbumDetailViewModel.ALBUM_ID_ARG}}"
     const val ARTISTS = "artists"
+    const val ARTIST_DETAIL =
+        "artists/{${ArtistDetailViewModel.ARTIST_TYPE_ARG}}/{${ArtistDetailViewModel.ARTIST_ID_ARG}}"
     const val COLLECTORS = "collectors"
 
     fun albumDetail(albumId: Int) = "albums/$albumId"
+    fun artistDetail(artistId: Int, type: ArtistType) = "artists/${type.name}/$artistId"
 }
 
 /** Pestañas de la barra inferior de la maqueta. */
@@ -56,9 +63,9 @@ enum class TopLevelDestination(
     val testTag: String get() = "nav_$route"
 }
 
-/** Raíz de la app. Recibe el repositorio para poder inyectar un fake en las pruebas de UI. */
+/** Raíz de la app. Recibe los repositorios para poder inyectar fakes en las pruebas de UI. */
 @Composable
-fun VinilosApp(repository: AlbumRepository) {
+fun VinilosApp(repository: AlbumRepository, artistRepository: ArtistRepository) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
@@ -104,6 +111,23 @@ fun VinilosApp(repository: AlbumRepository) {
                     AlbumDetailScreen(
                         viewModel = viewModel(factory = AlbumDetailViewModel.factory(repository)),
                         onBack = { navController.popBackStack() },
+                        onArtistClick = { performer ->
+                            navController.navigate(Routes.artistDetail(performer.id, performer.type))
+                        },
+                    )
+                }
+                // Por ahora solo se llega desde un álbum; con el listado (T14) pasa a su pestaña.
+                composable(
+                    route = Routes.ARTIST_DETAIL,
+                    arguments = listOf(
+                        navArgument(ArtistDetailViewModel.ARTIST_TYPE_ARG) { type = NavType.StringType },
+                        navArgument(ArtistDetailViewModel.ARTIST_ID_ARG) { type = NavType.IntType },
+                    ),
+                ) {
+                    ArtistDetailScreen(
+                        viewModel = viewModel(factory = ArtistDetailViewModel.factory(artistRepository)),
+                        onBack = { navController.popBackStack() },
+                        onAlbumClick = { albumId -> navController.navigate(Routes.albumDetail(albumId)) },
                     )
                 }
             }

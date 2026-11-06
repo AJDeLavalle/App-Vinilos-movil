@@ -32,4 +32,6 @@ data class PerformerDto(
     val id: Int?,
     val name: String?,
     val image: String?,
+    /** Solo las bandas lo traen; los músicos traen birthDate. */
+    val creationDate: String?,
 )

@@ -11,10 +11,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val repository = (application as VinilosApplication).container.albumRepository
+        val container = (application as VinilosApplication).container
         setContent {
             VinilosTheme {
-                VinilosApp(repository = repository)
+                VinilosApp(repository = container.albumRepository, artistRepository = container.artistRepository)
             }
         }
     }
