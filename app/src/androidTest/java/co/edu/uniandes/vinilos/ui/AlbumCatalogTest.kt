@@ -47,10 +47,10 @@ class AlbumCatalogTest {
     }
 
     @Test
-    fun barraInferior_pestanaArtistas_yRegresoAAlbumes() {
+    fun barraInferior_pestanaColeccionistas_yRegresoAAlbumes() {
         launch(FakeAlbumRepository())
 
-        composeRule.onNodeWithTag(TopLevelDestination.ARTISTS.testTag).performClick()
+        composeRule.onNodeWithTag(TopLevelDestination.COLLECTORS.testTag).performClick()
         composeRule.onNodeWithText("Esta sección estará disponible en un próximo sprint.").assertIsDisplayed()
 
         composeRule.onNodeWithTag(TopLevelDestination.ALBUMS.testTag).performClick()
