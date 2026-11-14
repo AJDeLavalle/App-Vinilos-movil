@@ -182,7 +182,7 @@ private fun artistSummary(artist: Artist): String = when (artist.type) {
 }
 
 @Composable
-private fun ArtistImage(artist: Artist, modifier: Modifier = Modifier) {
+fun ArtistImage(artist: Artist, modifier: Modifier = Modifier) {
     val placeholder = painterResource(R.drawable.ic_artist_placeholder)
     AsyncImage(
         model = artist.image.ifBlank { null },

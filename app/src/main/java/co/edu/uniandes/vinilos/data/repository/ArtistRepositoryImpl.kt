@@ -13,6 +13,10 @@ class ArtistRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ArtistRepository {
 
+    override suspend fun getArtists(): List<Artist> = withContext(ioDispatcher) {
+        serviceAdapter.getArtists()
+    }
+
     override suspend fun getArtist(artistId: Int, type: ArtistType): Artist = withContext(ioDispatcher) {
         serviceAdapter.getArtist(artistId, type)
     }

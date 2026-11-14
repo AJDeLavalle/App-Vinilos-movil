@@ -114,11 +114,11 @@ UI (Compose)  →  ViewModel (StateFlow)  →  AlbumRepository  →  AlbumServic
 
 | Capa | Clases | Responsabilidad |
 |---|---|---|
-| UI | `AlbumListScreen`, `AlbumDetailScreen` (info, tracks y comentarios), `ArtistDetailScreen` (info, álbumes y premios), `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
-| ViewModel | `AlbumListViewModel`, `AlbumDetailViewModel`, `ArtistDetailViewModel` | Estados `Loading`, `Success`, `Empty`, `Error` y reintento; sobreviven a la rotación |
-| Repository | `AlbumRepository`, `ArtistRepository` (interfaces) y sus `Impl` | Punto único de acceso a los datos; se reemplaza por un fake en las pruebas |
-| Service Adapter | `AlbumServiceAdapter`, `ArtistServiceAdapter`, `AlbumApiService`, `ArtistApiService`, DTO | Traduce JSON y códigos HTTP (404 → `AlbumNotFoundException` / `ArtistNotFoundException`) al modelo de dominio. `ArtistServiceAdapter` elige `/musicians` o `/bands` y cruza `/prizes`, porque el artista solo trae el id y la fecha de cada premio |
-| Dominio | `Album`, `Track`, `Performer`, `Comment`, `Artist`, `ArtistPrize` | Modelo independiente de la UI y de la red |
+| UI | `AlbumListScreen`, `AlbumDetailScreen` (info, tracks y comentarios), `ArtistListScreen`, `ArtistDetailScreen` (info, álbumes y premios), `CollectorListScreen`, `CollectorDetailScreen` (contacto, gustos y colección), `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
+| ViewModel | `AlbumListViewModel`, `AlbumDetailViewModel`, `ArtistListViewModel`, `ArtistDetailViewModel`, `CollectorListViewModel`, `CollectorDetailViewModel` | Estados `Loading`, `Success`, `Empty`, `Error` y reintento; sobreviven a la rotación |
+| Repository | `AlbumRepository`, `ArtistRepository`, `CollectorRepository` (interfaces) y sus `Impl` | Punto único de acceso a los datos; se reemplaza por un fake en las pruebas |
+| Service Adapter | `AlbumServiceAdapter`, `ArtistServiceAdapter`, `CollectorServiceAdapter`, sus `ApiService` y DTO | Traduce JSON y códigos HTTP (404 → `AlbumNotFoundException` / `ArtistNotFoundException` / `CollectorNotFoundException`) al modelo de dominio. `ArtistServiceAdapter` elige `/musicians` o `/bands` y cruza `/prizes`, porque el artista solo trae el id y la fecha de cada premio. `CollectorServiceAdapter` completa la colección con `/collectors/{id}/albums` |
+| Dominio | `Album`, `Track`, `Performer`, `Comment`, `Artist`, `ArtistPrize`, `Collector` | Modelo independiente de la UI y de la red |
 
 Las dependencias se crean en `di/AppContainer.kt` (inyección manual) y se exponen desde `VinilosApplication`.
 
@@ -151,10 +151,30 @@ Capturas en el emulador: [catálogo](docs/evidencias/sprint-1/HU01-catalogo.png)
 | CP-14 | HU04 | `ArtistDetailTest.cp14_artistaInexistente_informaYPermiteVolverAlAlbum`, `ArtistServiceAdapterTest.artista404_lanzaArtistNotFound` | UI instrumentada / integración |
 | CP-15 | HU04 | `ArtistDetailTest.cp15_errorDeRed_muestraReintentar_yRecupera` | UI instrumentada |
 | CP-16 | HU04 | `ArtistDetailTest.cp16_seleccionarAlbumDelArtista_abreElAlbum_yAtrasRegresa` (Espresso `pressBack`) | E2E UI |
+| CP-17 | HU03 | `ArtistListTest.cp17_conArtistas_muestraMusicosYBandas`, `ArtistServiceAdapterTest.listado_uneMusicosYBandas_ordenadosPorNombre` | UI instrumentada / integración |
+| CP-18 | HU03 | `ArtistListTest.cp18_sinArtistas_muestraEstadoVacio` | UI instrumentada |
+| CP-19 | HU03 | `ArtistListTest.cp19_apiInaccesible_muestraError_yReintentarCargaLaLista` | UI instrumentada |
+| CP-20 | HU03 | `ArtistListTest.cp20_seleccionarBanda_abreSuDetalle_yAtrasRegresaAlListado` (Espresso `pressBack`) | E2E UI |
 
-El detalle de artista se abre desde el detalle de un álbum con "Ver artista". La pestaña Artistas sigue pendiente del listado (T14).
+El detalle de artista se abre desde la pestaña Artistas o desde el detalle de un álbum con "Ver artista".
 
-Capturas con el backend desplegado: [músico](docs/evidencias/sprint-2/HU04-detalle-musico.png) y [banda](docs/evidencias/sprint-2/HU04-detalle-banda.png). Las dos muestran la imagen por defecto porque las URL de esos artistas en el backend ya no responden.
+> Si las pruebas con `pressBack` fallan con `RootViewWithoutFocusException`, reinicia el emulador con *Cold Boot Now*: pasó en sesiones restauradas desde un snapshot y no en un arranque en frío.
+
+Capturas con el backend desplegado: [listado](docs/evidencias/sprint-2/HU03-listado-artistas.png), [músico](docs/evidencias/sprint-2/HU04-detalle-musico.png) y [banda](docs/evidencias/sprint-2/HU04-detalle-banda.png). Las tres muestran la imagen por defecto porque las URL de esos artistas en el backend ya no responden.
+
+## Pruebas del Sprint 3
+
+| Caso | HU | Prueba | Tipo |
+|---|---|---|---|
+| CP-30 | HU05 | `CollectorTest.cp30_conColeccionistas_muestraNombreYCantidadDeAlbumes`, `CollectorServiceAdapterTest.listado_mapeaColeccionistas_yCuentaSusAlbumes` | UI instrumentada / integración |
+| CP-31 | HU05 | `CollectorTest.cp31_sinColeccionistas_muestraEstadoVacio` | UI instrumentada |
+| CP-32 | HU05 | `CollectorTest.cp32_apiInaccesible_muestraError_yReintentarCargaLaLista` | UI instrumentada |
+| CP-33 | HU06 | `CollectorTest.cp33_seleccionarColeccionista_muestraContactoGustosYColeccion_yAtrasRegresa` (Espresso `pressBack`) | E2E UI |
+| CP-34 | HU06 | `CollectorTest.cp34_sinGustosNiColeccion_muestraMensajesVacios` | UI instrumentada |
+| CP-35 | HU06 | `CollectorTest.cp35_coleccionistaInexistente_informaYPermiteVolver`, `CollectorServiceAdapterTest.detalle404_lanzaCollectorNotFound` | UI instrumentada / integración |
+| CP-36 | HU06 | `CollectorTest.cp36_desdeElDetalle_abreArtistaFavorito_yAlbumDeLaColeccion` | E2E UI |
+
+Capturas con el backend desplegado: [listado](docs/evidencias/sprint-3/HU05-listado-coleccionistas.png) y [detalle](docs/evidencias/sprint-3/HU06-detalle-coleccionista.png).
 
 ## Estructura del repositorio
 

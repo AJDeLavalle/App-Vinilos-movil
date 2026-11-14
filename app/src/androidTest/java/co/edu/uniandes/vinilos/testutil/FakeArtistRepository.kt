@@ -13,6 +13,11 @@ class FakeArtistRepository(
     var error: Exception? = null,
 ) : ArtistRepository {
 
+    override suspend fun getArtists(): List<Artist> {
+        error?.let { throw it }
+        return artists
+    }
+
     override suspend fun getArtist(artistId: Int, type: ArtistType): Artist {
         error?.let { throw it }
         return artists.firstOrNull { it.id == artistId && it.type == type }

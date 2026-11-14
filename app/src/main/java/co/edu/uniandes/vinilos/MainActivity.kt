@@ -14,7 +14,11 @@ class MainActivity : ComponentActivity() {
         val container = (application as VinilosApplication).container
         setContent {
             VinilosTheme {
-                VinilosApp(repository = container.albumRepository, artistRepository = container.artistRepository)
+                VinilosApp(
+                    repository = container.albumRepository,
+                    artistRepository = container.artistRepository,
+                    collectorRepository = container.collectorRepository,
+                )
             }
         }
     }

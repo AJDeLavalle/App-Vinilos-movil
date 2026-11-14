@@ -15,6 +15,12 @@ import retrofit2.HttpException
  */
 class ArtistServiceAdapter(private val api: ArtistApiService) {
 
+    suspend fun getArtists(): List<Artist> {
+        val musicians = api.getMusicians().mapNotNull { it.toDomain(ArtistType.MUSICIAN, emptyList()) }
+        val bands = api.getBands().mapNotNull { it.toDomain(ArtistType.BAND, emptyList()) }
+        return (musicians + bands).sortedBy { it.name.lowercase() }
+    }
+
     suspend fun getArtist(artistId: Int, type: ArtistType): Artist {
         val dto = try {
             when (type) {

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Imagen de la maqueta P05/P06: cuadro gris con dos personas. El backend no guarda imagen del coleccionista. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFC8C8C8"
+        android:pathData="M0,0h24v24h-24z" />
+    <path
+        android:fillColor="#FF5F5F5F"
+        android:pathData="M14.5,11.5c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM9.5,11.5c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM9.5,12.8c-1.55,0 -4.5,0.75 -4.5,2.3V16.5h9v-1.4c0,-1.55 -2.95,-2.3 -4.5,-2.3zM14.5,12.8c-0.2,0 -0.4,0.01 -0.63,0.03 0.75,0.55 1.13,1.25 1.13,2.27V16.5h4v-1.4c0,-1.55 -2.95,-2.3 -4.5,-2.3z" />
+</vector>

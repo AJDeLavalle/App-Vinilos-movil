@@ -29,11 +29,17 @@ import co.edu.uniandes.vinilos.R
 import co.edu.uniandes.vinilos.domain.model.ArtistType
 import co.edu.uniandes.vinilos.domain.repository.AlbumRepository
 import co.edu.uniandes.vinilos.domain.repository.ArtistRepository
+import co.edu.uniandes.vinilos.domain.repository.CollectorRepository
 import co.edu.uniandes.vinilos.ui.albums.AlbumListScreen
 import co.edu.uniandes.vinilos.ui.albums.AlbumListViewModel
 import co.edu.uniandes.vinilos.ui.artists.ArtistDetailScreen
 import co.edu.uniandes.vinilos.ui.artists.ArtistDetailViewModel
-import co.edu.uniandes.vinilos.ui.common.ComingSoonScreen
+import co.edu.uniandes.vinilos.ui.artists.ArtistListScreen
+import co.edu.uniandes.vinilos.ui.artists.ArtistListViewModel
+import co.edu.uniandes.vinilos.ui.collectors.CollectorDetailScreen
+import co.edu.uniandes.vinilos.ui.collectors.CollectorDetailViewModel
+import co.edu.uniandes.vinilos.ui.collectors.CollectorListScreen
+import co.edu.uniandes.vinilos.ui.collectors.CollectorListViewModel
 import co.edu.uniandes.vinilos.ui.detail.AlbumDetailScreen
 import co.edu.uniandes.vinilos.ui.detail.AlbumDetailViewModel
 
@@ -41,13 +47,17 @@ object Routes {
     const val ALBUMS_TAB = "albums_tab"
     const val ALBUMS = "albums"
     const val ALBUM_DETAIL = "albums/{${AlbumDetailViewModel.ALBUM_ID_ARG}}"
+    const val ARTISTS_TAB = "artists_tab"
     const val ARTISTS = "artists"
     const val ARTIST_DETAIL =
         "artists/{${ArtistDetailViewModel.ARTIST_TYPE_ARG}}/{${ArtistDetailViewModel.ARTIST_ID_ARG}}"
+    const val COLLECTORS_TAB = "collectors_tab"
     const val COLLECTORS = "collectors"
+    const val COLLECTOR_DETAIL = "collectors/{${CollectorDetailViewModel.COLLECTOR_ID_ARG}}"
 
     fun albumDetail(albumId: Int) = "albums/$albumId"
     fun artistDetail(artistId: Int, type: ArtistType) = "artists/${type.name}/$artistId"
+    fun collectorDetail(collectorId: Int) = "collectors/$collectorId"
 }
 
 /** Pestañas de la barra inferior de la maqueta. */
@@ -57,15 +67,19 @@ enum class TopLevelDestination(
     @DrawableRes val icon: Int,
 ) {
     ALBUMS(Routes.ALBUMS_TAB, R.string.nav_albums, R.drawable.ic_nav_album),
-    ARTISTS(Routes.ARTISTS, R.string.nav_artists, R.drawable.ic_nav_artist),
-    COLLECTORS(Routes.COLLECTORS, R.string.nav_collectors, R.drawable.ic_nav_collectors);
+    ARTISTS(Routes.ARTISTS_TAB, R.string.nav_artists, R.drawable.ic_nav_artist),
+    COLLECTORS(Routes.COLLECTORS_TAB, R.string.nav_collectors, R.drawable.ic_nav_collectors);
 
     val testTag: String get() = "nav_$route"
 }
 
 /** Raíz de la app. Recibe los repositorios para poder inyectar fakes en las pruebas de UI. */
 @Composable
-fun VinilosApp(repository: AlbumRepository, artistRepository: ArtistRepository) {
+fun VinilosApp(
+    repository: AlbumRepository,
+    artistRepository: ArtistRepository,
+    collectorRepository: CollectorRepository,
+) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
@@ -116,7 +130,17 @@ fun VinilosApp(repository: AlbumRepository, artistRepository: ArtistRepository) 
                         },
                     )
                 }
-                // Por ahora solo se llega desde un álbum; con el listado (T14) pasa a su pestaña.
+            }
+            // Igual que en álbumes, la barra marca "Artistas" en el listado y en el detalle.
+            navigation(startDestination = Routes.ARTISTS, route = Routes.ARTISTS_TAB) {
+                composable(Routes.ARTISTS) {
+                    ArtistListScreen(
+                        viewModel = viewModel(factory = ArtistListViewModel.factory(artistRepository)),
+                        onArtistClick = { artist ->
+                            navController.navigate(Routes.artistDetail(artist.id, artist.type))
+                        },
+                    )
+                }
                 composable(
                     route = Routes.ARTIST_DETAIL,
                     arguments = listOf(
@@ -131,8 +155,31 @@ fun VinilosApp(repository: AlbumRepository, artistRepository: ArtistRepository) 
                     )
                 }
             }
-            composable(Routes.ARTISTS) { ComingSoonScreen(stringResource(R.string.nav_artists)) }
-            composable(Routes.COLLECTORS) { ComingSoonScreen(stringResource(R.string.nav_collectors)) }
+            navigation(startDestination = Routes.COLLECTORS, route = Routes.COLLECTORS_TAB) {
+                composable(Routes.COLLECTORS) {
+                    CollectorListScreen(
+                        viewModel = viewModel(factory = CollectorListViewModel.factory(collectorRepository)),
+                        onCollectorClick = { collectorId ->
+                            navController.navigate(Routes.collectorDetail(collectorId))
+                        },
+                    )
+                }
+                composable(
+                    route = Routes.COLLECTOR_DETAIL,
+                    arguments = listOf(
+                        navArgument(CollectorDetailViewModel.COLLECTOR_ID_ARG) { type = NavType.IntType },
+                    ),
+                ) {
+                    CollectorDetailScreen(
+                        viewModel = viewModel(factory = CollectorDetailViewModel.factory(collectorRepository)),
+                        onBack = { navController.popBackStack() },
+                        onArtistClick = { performer ->
+                            navController.navigate(Routes.artistDetail(performer.id, performer.type))
+                        },
+                        onAlbumClick = { albumId -> navController.navigate(Routes.albumDetail(albumId)) },
+                    )
+                }
+            }
         }
     }
 }
