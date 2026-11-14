@@ -37,6 +37,17 @@ class CreateAlbumViewModelTest {
     }
 
     @Test
+    fun guardarDosVeces_despuesDeGuardado_noDuplicaElAlbum() {
+        val viewModel = viewModel()
+        viewModel.fill()
+
+        viewModel.save()
+        viewModel.save()
+
+        assertEquals(1, albums.createCalls)
+    }
+
+    @Test
     fun alAbrir_cargaLosArtistas() {
         assertEquals(
             ArtistOptions.Loaded(FakeArtistRepository.sampleArtists),

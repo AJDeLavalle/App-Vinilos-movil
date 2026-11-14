@@ -62,7 +62,9 @@ class AlbumServiceAdapter(private val api: AlbumApiService) {
                 else -> throw e
             }
         }
-        return checkNotNull(dto.toDomain()) { "El backend no devolvió el id del track creado" }
+        // Si el backend respondió 200 el track ya existe: un error aquí invitaría a reintentar y
+        // duplicarlo. Sin id se devuelve con id 0; nadie navega a un track por su id.
+        return dto.toDomain() ?: Track(id = 0, name = track.name, duration = track.duration)
     }
 }
 

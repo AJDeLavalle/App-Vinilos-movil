@@ -28,14 +28,14 @@ class AssociateTrackTest {
 
     @Test
     fun duracion_aceptaFormatosValidos() {
-        listOf("5:05", "05:05", "0:01", "12:59", "100:00").forEach { duration ->
+        listOf("5:05", "05:05", "0:01", "12:59", "99:59").forEach { duration ->
             assertNull(duration, TrackForm(duration = duration).validate(TrackField.DURATION))
         }
     }
 
     @Test
     fun duracion_rechazaFormatosInvalidos() {
-        listOf("abc", "5", "5:5", "5:60", ":30", "5:05:01", "-1:00", "0:00", "00:00").forEach { duration ->
+        listOf("abc", "5", "5:5", "5:60", ":30", "5:05:01", "-1:00", "0:00", "00:00", "100:00", "999:59").forEach { duration ->
             assertEquals(
                 duration,
                 TrackFieldError.DURATION_INVALID,
@@ -83,6 +83,18 @@ class AssociateTrackTest {
         assertEquals(0, repository.addTrackCalls)
         assertEquals(TrackField.NAME, viewModel.uiState.value.focusRequest)
         assertEquals(2, viewModel.uiState.value.errors.size)
+    }
+
+    @Test
+    fun guardarDosVeces_despuesDeGuardado_noDuplicaElTrack() {
+        val viewModel = viewModel()
+        viewModel.onNameChange("Nuevo")
+        viewModel.onDurationChange("3:45")
+
+        viewModel.save()
+        viewModel.save()
+
+        assertEquals(1, repository.addTrackCalls)
     }
 
     @Test

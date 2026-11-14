@@ -104,7 +104,9 @@ class CreateAlbumViewModel(
 
     fun save() {
         val state = _uiState.value
-        if (state.submission == Submission.Sending) return
+        // Saved también bloquea: la pantalla sigue visible durante la animación de salida y un
+        // segundo toque crearía el álbum dos veces.
+        if (state.submission == Submission.Sending || state.submission == Submission.Saved) return
         val errors = state.form.validateAll(today())
         if (errors.isNotEmpty()) {
             _uiState.update { it.copy(errors = errors, focusRequest = errors.keys.minOrNull()) }

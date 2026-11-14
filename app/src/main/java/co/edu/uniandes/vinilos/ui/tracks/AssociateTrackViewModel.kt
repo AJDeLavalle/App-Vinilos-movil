@@ -100,7 +100,9 @@ class AssociateTrackViewModel(
 
     fun save() {
         val state = _uiState.value
-        if (state.submission == TrackSubmission.Sending) return
+        // Saved también bloquea: la pantalla sigue visible durante la animación de salida y un
+        // segundo toque crearía el track dos veces.
+        if (state.submission == TrackSubmission.Sending || state.submission == TrackSubmission.Saved) return
         val errors = state.form.validateAll()
         if (errors.isNotEmpty()) {
             _uiState.update { it.copy(errors = errors, focusRequest = errors.keys.minOrNull()) }

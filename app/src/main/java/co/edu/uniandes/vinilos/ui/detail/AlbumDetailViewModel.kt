@@ -51,6 +51,23 @@ class AlbumDetailViewModel(
         }
     }
 
+    /**
+     * Vuelve a consultar el álbum sin pasar por Loading, para que la lista siga en pantalla y
+     * conserve su posición (por ejemplo, al volver de asociar un track). Si falla, se queda con
+     * lo que ya mostraba.
+     */
+    fun refresh() {
+        if (_uiState.value !is AlbumDetailUiState.Success) return loadAlbum()
+        viewModelScope.launch {
+            try {
+                _uiState.value = AlbumDetailUiState.Success(repository.getAlbum(albumId))
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+            }
+        }
+    }
+
     companion object {
         const val ALBUM_ID_ARG = "albumId"
 
