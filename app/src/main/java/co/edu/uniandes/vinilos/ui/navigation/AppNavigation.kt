@@ -135,7 +135,7 @@ fun VinilosApp(
                         .collectAsStateWithLifecycle()
                     LaunchedEffect(albumCreated) {
                         if (albumCreated) {
-                            listViewModel.loadAlbums()
+                            listViewModel.refresh()
                             entry.savedStateHandle[ALBUM_CREATED_KEY] = false
                         }
                     }
@@ -166,7 +166,7 @@ fun VinilosApp(
                         .collectAsStateWithLifecycle()
                     LaunchedEffect(trackAdded) {
                         if (trackAdded) {
-                            detailViewModel.loadAlbum()
+                            detailViewModel.refresh()
                             entry.savedStateHandle[TRACK_ADDED_KEY] = false
                         }
                     }

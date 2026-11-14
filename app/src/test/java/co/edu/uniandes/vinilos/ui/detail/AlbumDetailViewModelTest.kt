@@ -47,4 +47,26 @@ class AlbumDetailViewModelTest {
 
         assertEquals(101, (viewModel.uiState.value as AlbumDetailUiState.Success).album.id)
     }
+
+    @Test
+    fun refresh_traeLosDatosNuevos() {
+        val repository = FakeAlbumRepository()
+        val viewModel = viewModel(100, repository)
+        repository.albums = repository.albums.map { if (it.id == 100) it.copy(name = "Renombrado") else it }
+
+        viewModel.refresh()
+
+        assertEquals("Renombrado", (viewModel.uiState.value as AlbumDetailUiState.Success).album.name)
+    }
+
+    @Test
+    fun refresh_conFalloDeRed_conservaElAlbumEnPantalla() {
+        val repository = FakeAlbumRepository()
+        val viewModel = viewModel(100, repository)
+        repository.error = IOException("sin red")
+
+        viewModel.refresh()
+
+        assertEquals(100, (viewModel.uiState.value as AlbumDetailUiState.Success).album.id)
+    }
 }

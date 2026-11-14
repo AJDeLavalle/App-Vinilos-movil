@@ -37,7 +37,7 @@ data class TrackForm(
     fun toNewTrack() = NewTrack(name = name.trim(), duration = duration.trim())
 
     private companion object {
-        /** El backend acepta cualquier texto; sus datos usan m:ss, como 5:05. */
-        val DURATION = Regex("""\d{1,3}:[0-5]\d""")
+        /** m:ss o mm:ss, como dice el diseño; el backend acepta cualquier texto y sus datos usan 5:05. */
+        val DURATION = Regex("""\d{1,2}:[0-5]\d""")
     }
 }

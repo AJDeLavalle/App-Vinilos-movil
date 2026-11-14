@@ -45,6 +45,20 @@ class AlbumListViewModel(private val repository: AlbumRepository) : ViewModel() 
         }
     }
 
+    /** Como [loadAlbums], pero sin pasar por Loading: la lista sigue en pantalla mientras llega. */
+    fun refresh() {
+        if (_uiState.value !is AlbumListUiState.Success) return loadAlbums()
+        viewModelScope.launch {
+            try {
+                val albums = repository.getAlbums()
+                _uiState.value = if (albums.isEmpty()) AlbumListUiState.Empty else AlbumListUiState.Success(albums)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+            }
+        }
+    }
+
     companion object {
         fun factory(repository: AlbumRepository): ViewModelProvider.Factory = viewModelFactory {
             initializer { AlbumListViewModel(repository) }
