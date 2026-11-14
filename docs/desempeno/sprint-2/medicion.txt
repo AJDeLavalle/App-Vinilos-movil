@@ -1,0 +1,49 @@
+== Entorno
+fecha: 2026-11-04 21:51
+dispositivo: sdk_gphone64_x86_64, Android 17, API 37
+apk: app-release.apk, 7.72 MB
+
+== Primer arranque tras instalar (ms)
+3013
+
+== Arranque en frío (ms)
+mediana=818.5 min=697 max=1112 n=10
+
+== Arranque en caliente (ms)
+mediana=96 min=73 max=131 n=10
+
+== Memoria por pantalla (PSS)
+catálogo: 61.5 MB
+detalle de álbum: 60.2 MB
+artistas: 62.3 MB
+detalle de artista: 60.5 MB
+coleccionistas: 63.5 MB
+detalle de coleccionista: 61.4 MB
+
+== Fuga de memoria: 5 vueltas por todas las pantallas (PSS)
+vuelta 1: 64.8 MB
+vuelta 2: 65.2 MB
+vuelta 3: 63.3 MB
+vuelta 4: 63.8 MB
+vuelta 5: 64.1 MB
+
+== Fluidez: una vuelta por todas las pantallas
+Total frames rendered: 244
+Janky frames: 57 (23.36%)
+Janky frames (legacy): 181 (74.18%)
+50th percentile: 27ms
+90th percentile: 48ms
+95th percentile: 53ms
+99th percentile: 85ms
+
+== CPU en reposo (%, 5 muestras)
+mediana=0.0 min=0.0 max=28.0 n=5
+
+== API desde este computador (ms, tamaño en bytes)
+/albums: mediana=612 min=543 max=687 n=5 bytes=4712
+/albums/100: mediana=640 min=563 max=660 n=5 bytes=1162
+/musicians: mediana=563 min=519 max=722 n=5 bytes=1668
+/bands: mediana=586 min=536 max=630 n=5 bytes=1816
+/prizes: mediana=551 min=536 max=598 n=5 bytes=731
+/collectors: mediana=590 min=553 max=684 n=5 bytes=1530
+/collectors/100/albums: mediana=605 min=590 max=653 n=5 bytes=684
