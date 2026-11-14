@@ -10,11 +10,13 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -40,6 +42,8 @@ import co.edu.uniandes.vinilos.ui.collectors.CollectorDetailScreen
 import co.edu.uniandes.vinilos.ui.collectors.CollectorDetailViewModel
 import co.edu.uniandes.vinilos.ui.collectors.CollectorListScreen
 import co.edu.uniandes.vinilos.ui.collectors.CollectorListViewModel
+import co.edu.uniandes.vinilos.ui.create.CreateAlbumScreen
+import co.edu.uniandes.vinilos.ui.create.CreateAlbumViewModel
 import co.edu.uniandes.vinilos.ui.detail.AlbumDetailScreen
 import co.edu.uniandes.vinilos.ui.detail.AlbumDetailViewModel
 
@@ -47,6 +51,7 @@ object Routes {
     const val ALBUMS_TAB = "albums_tab"
     const val ALBUMS = "albums"
     const val ALBUM_DETAIL = "albums/{${AlbumDetailViewModel.ALBUM_ID_ARG}}"
+    const val CREATE_ALBUM = "create_album"
     const val ARTISTS_TAB = "artists_tab"
     const val ARTISTS = "artists"
     const val ARTIST_DETAIL =
@@ -59,6 +64,9 @@ object Routes {
     fun artistDetail(artistId: Int, type: ArtistType) = "artists/${type.name}/$artistId"
     fun collectorDetail(collectorId: Int) = "collectors/$collectorId"
 }
+
+/** Aviso del formulario al catálogo para que recargue al volver con un álbum nuevo. */
+private const val ALBUM_CREATED_KEY = "album_created"
 
 /** Pestañas de la barra inferior de la maqueta. */
 enum class TopLevelDestination(
@@ -112,10 +120,32 @@ fun VinilosApp(
         ) {
             // El catálogo y el detalle comparten pestaña: la barra marca "Álbumes" en ambos.
             navigation(startDestination = Routes.ALBUMS, route = Routes.ALBUMS_TAB) {
-                composable(Routes.ALBUMS) {
+                composable(Routes.ALBUMS) { entry ->
+                    val listViewModel: AlbumListViewModel =
+                        viewModel(factory = AlbumListViewModel.factory(repository))
+                    val albumCreated by entry.savedStateHandle
+                        .getStateFlow(ALBUM_CREATED_KEY, false)
+                        .collectAsStateWithLifecycle()
+                    LaunchedEffect(albumCreated) {
+                        if (albumCreated) {
+                            listViewModel.loadAlbums()
+                            entry.savedStateHandle[ALBUM_CREATED_KEY] = false
+                        }
+                    }
                     AlbumListScreen(
-                        viewModel = viewModel(factory = AlbumListViewModel.factory(repository)),
+                        viewModel = listViewModel,
                         onAlbumClick = { albumId -> navController.navigate(Routes.albumDetail(albumId)) },
+                        onCreateAlbum = { navController.navigate(Routes.CREATE_ALBUM) },
+                    )
+                }
+                composable(Routes.CREATE_ALBUM) {
+                    CreateAlbumScreen(
+                        viewModel = viewModel(factory = CreateAlbumViewModel.factory(repository, artistRepository)),
+                        onBack = { navController.popBackStack() },
+                        onSaved = {
+                            navController.previousBackStackEntry?.savedStateHandle?.set(ALBUM_CREATED_KEY, true)
+                            navController.popBackStack()
+                        },
                     )
                 }
                 composable(

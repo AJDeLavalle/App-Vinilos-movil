@@ -64,6 +64,35 @@
     <string name="artist_prizes">Premios y reconocimientos</string>
     <string name="artist_no_prizes">Este artista no tiene premios registrados.</string>
 
+    <!-- HU07: crear álbum -->
+    <string name="create_album_title">Crear álbum</string>
+    <string name="create_album_section">Información del álbum</string>
+    <string name="create_album_name">Nombre</string>
+    <string name="create_album_artist">Artista</string>
+    <string name="create_album_genre">Género</string>
+    <string name="create_album_record_label">Sello discográfico</string>
+    <string name="create_album_release_date">Fecha de lanzamiento</string>
+    <string name="create_album_release_date_hint">DD/MM/AAAA</string>
+    <string name="create_album_cover">URL de la portada</string>
+    <string name="create_album_description">Descripción</string>
+    <string name="create_album_save">Guardar álbum</string>
+    <string name="create_album_retry_link">Reintentar asociación</string>
+    <string name="create_album_back_to_catalog">Volver al catálogo</string>
+    <string name="create_album_artists_error">No pudimos cargar los artistas.</string>
+    <string name="create_album_error_name_required">Ingresa el nombre del álbum.</string>
+    <string name="create_album_error_name_too_long">El nombre admite hasta %1$d caracteres.</string>
+    <string name="create_album_error_artist_required">Selecciona un artista.</string>
+    <string name="create_album_error_genre_required">Selecciona un género.</string>
+    <string name="create_album_error_record_label_required">Selecciona un sello discográfico.</string>
+    <string name="create_album_error_date_invalid">Ingresa una fecha válida (DD/MM/AAAA).</string>
+    <string name="create_album_error_date_future">La fecha no puede ser futura.</string>
+    <string name="create_album_error_cover_required">Ingresa la URL de la portada.</string>
+    <string name="create_album_error_cover_invalid">Ingresa una URL válida.</string>
+    <string name="create_album_error_description_required">Ingresa una descripción.</string>
+    <string name="create_album_error_description_too_long">La descripción admite hasta %1$d caracteres.</string>
+    <string name="create_album_error_invalid">Revisa los datos del álbum.</string>
+    <string name="create_album_error_artist_link">El álbum se creó, pero no pudimos asociar el artista.</string>
+
     <!-- Errores comunes -->
     <string name="error_network">No pudimos conectarnos con el servidor. Revisa tu conexión.</string>
     <string name="error_unknown">Ocurrió un error inesperado.</string>

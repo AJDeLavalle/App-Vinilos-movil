@@ -1,6 +1,8 @@
 package co.edu.uniandes.vinilos.domain.repository
 
 import co.edu.uniandes.vinilos.domain.model.Album
+import co.edu.uniandes.vinilos.domain.model.ArtistType
+import co.edu.uniandes.vinilos.domain.model.NewAlbum
 
 /**
  * Punto único de acceso a los álbumes para la capa de UI.
@@ -11,4 +13,8 @@ import co.edu.uniandes.vinilos.domain.model.Album
 interface AlbumRepository {
     suspend fun getAlbums(): List<Album>
     suspend fun getAlbum(albumId: Int): Album
+
+    /** Lanza [co.edu.uniandes.vinilos.domain.model.InvalidAlbumException] si el backend rechaza los datos. */
+    suspend fun createAlbum(album: NewAlbum): Album
+    suspend fun addArtistToAlbum(albumId: Int, artistId: Int, type: ArtistType)
 }

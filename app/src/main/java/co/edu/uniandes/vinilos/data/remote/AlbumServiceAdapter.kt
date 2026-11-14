@@ -2,12 +2,15 @@ package co.edu.uniandes.vinilos.data.remote
 
 import co.edu.uniandes.vinilos.data.remote.dto.AlbumDto
 import co.edu.uniandes.vinilos.data.remote.dto.CommentDto
+import co.edu.uniandes.vinilos.data.remote.dto.NewAlbumDto
 import co.edu.uniandes.vinilos.data.remote.dto.PerformerDto
 import co.edu.uniandes.vinilos.data.remote.dto.TrackDto
 import co.edu.uniandes.vinilos.domain.model.Album
 import co.edu.uniandes.vinilos.domain.model.AlbumNotFoundException
 import co.edu.uniandes.vinilos.domain.model.ArtistType
 import co.edu.uniandes.vinilos.domain.model.Comment
+import co.edu.uniandes.vinilos.domain.model.InvalidAlbumException
+import co.edu.uniandes.vinilos.domain.model.NewAlbum
 import co.edu.uniandes.vinilos.domain.model.Performer
 import co.edu.uniandes.vinilos.domain.model.Track
 import retrofit2.HttpException
@@ -29,7 +32,32 @@ class AlbumServiceAdapter(private val api: AlbumApiService) {
         }
         return dto.toDomain() ?: throw AlbumNotFoundException(albumId)
     }
+
+    suspend fun createAlbum(album: NewAlbum): Album {
+        val dto = try {
+            api.createAlbum(album.toDto())
+        } catch (e: HttpException) {
+            if (e.code() == 400) throw InvalidAlbumException() else throw e
+        }
+        return checkNotNull(dto.toDomain()) { "El backend no devolvió el id del álbum creado" }
+    }
+
+    suspend fun addArtistToAlbum(albumId: Int, artistId: Int, type: ArtistType) {
+        when (type) {
+            ArtistType.MUSICIAN -> api.addMusicianToAlbum(albumId, artistId)
+            ArtistType.BAND -> api.addBandToAlbum(albumId, artistId)
+        }
+    }
 }
+
+internal fun NewAlbum.toDto() = NewAlbumDto(
+    name = name,
+    cover = cover,
+    releaseDate = releaseDate,
+    description = description,
+    genre = genre,
+    recordLabel = recordLabel,
+)
 
 /** Descarta registros sin id, que no se pueden navegar ni identificar. */
 internal fun AlbumDto.toDomain(): Album? {

@@ -114,8 +114,8 @@ UI (Compose)  →  ViewModel (StateFlow)  →  AlbumRepository  →  AlbumServic
 
 | Capa | Clases | Responsabilidad |
 |---|---|---|
-| UI | `AlbumListScreen`, `AlbumDetailScreen` (info, tracks y comentarios), `ArtistListScreen`, `ArtistDetailScreen` (info, álbumes y premios), `CollectorListScreen`, `CollectorDetailScreen` (contacto, gustos y colección), `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
-| ViewModel | `AlbumListViewModel`, `AlbumDetailViewModel`, `ArtistListViewModel`, `ArtistDetailViewModel`, `CollectorListViewModel`, `CollectorDetailViewModel` | Estados `Loading`, `Success`, `Empty`, `Error` y reintento; sobreviven a la rotación |
+| UI | `AlbumListScreen`, `AlbumDetailScreen` (info, tracks y comentarios), `ArtistListScreen`, `ArtistDetailScreen` (info, álbumes y premios), `CollectorListScreen`, `CollectorDetailScreen` (contacto, gustos y colección), `CreateAlbumScreen`, `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
+| ViewModel | `AlbumListViewModel`, `AlbumDetailViewModel`, `ArtistListViewModel`, `ArtistDetailViewModel`, `CollectorListViewModel`, `CollectorDetailViewModel`, `CreateAlbumViewModel` | Estados `Loading`, `Success`, `Empty`, `Error` y reintento; sobreviven a la rotación |
 | Repository | `AlbumRepository`, `ArtistRepository`, `CollectorRepository` (interfaces) y sus `Impl` | Punto único de acceso a los datos; se reemplaza por un fake en las pruebas |
 | Service Adapter | `AlbumServiceAdapter`, `ArtistServiceAdapter`, `CollectorServiceAdapter`, sus `ApiService` y DTO | Traduce JSON y códigos HTTP (404 → `AlbumNotFoundException` / `ArtistNotFoundException` / `CollectorNotFoundException`) al modelo de dominio. `ArtistServiceAdapter` elige `/musicians` o `/bands` y cruza `/prizes`, porque el artista solo trae el id y la fecha de cada premio. `CollectorServiceAdapter` completa la colección con `/collectors/{id}/albums` |
 | Dominio | `Album`, `Track`, `Performer`, `Comment`, `Artist`, `ArtistPrize`, `Collector` | Modelo independiente de la UI y de la red |
@@ -161,6 +161,25 @@ El detalle de artista se abre desde la pestaña Artistas o desde el detalle de u
 > Si las pruebas con `pressBack` fallan con `RootViewWithoutFocusException`, reinicia el emulador con *Cold Boot Now*: pasó en sesiones restauradas desde un snapshot y no en un arranque en frío.
 
 Capturas con el backend desplegado: [listado](docs/evidencias/sprint-2/HU03-listado-artistas.png), [músico](docs/evidencias/sprint-2/HU04-detalle-musico.png) y [banda](docs/evidencias/sprint-2/HU04-detalle-banda.png). Las tres muestran la imagen por defecto porque las URL de esos artistas en el backend ya no responden.
+
+### Crear álbum (HU07)
+
+El botón "+" del catálogo abre el formulario. Al guardar, la app hace `POST /albums` y luego asocia el artista con `POST /albums/{id}/musicians/{id}` o `/bands/{id}`. Si la asociación falla, reintentar no vuelve a crear el álbum. Las reglas del formulario están en [`crear-album.md`](docs/diseno/sprint-2/crear-album.md).
+
+| Caso | Prueba | Tipo |
+|---|---|---|
+| CP-21 | `CreateAlbumTest.cp21_guardarVacio_muestraUnErrorPorCampo_yNoEnvia` | UI instrumentada |
+| CP-22 | `CreateAlbumTest.cp22_fechaInexistente_muestraError` | UI instrumentada |
+| CP-23 | `CreateAlbumTest.cp23_fechaFutura_muestraError` | UI instrumentada |
+| CP-24 | `CreateAlbumTest.cp24_urlSinHttp_muestraError_yAlCorregirDesaparece` | UI instrumentada |
+| CP-25 | `CreateAlbumTest.cp25_musico_creaElAlbum_loAsocia_yApareceEnElCatalogo` | E2E UI |
+| CP-26 | `CreateAlbumTest.cp26_banda_asociaConElRecursoDeBandas`, `AlbumCreationAdapterTest.asociar_usaElRecursoSegunElTipoDeArtista` | E2E UI / integración |
+| CP-27 | `CreateAlbumTest.cp27_falloDeRed_muestraError_yConservaLosDatos` | UI instrumentada |
+| CP-28 | `CreateAlbumTest.cp28_falloAlAsociar_reintentarNoDuplicaElAlbum` | UI instrumentada |
+| CP-29 | `CreateAlbumTest.cp29_mientrasEnvia_elBotonSeDeshabilita_ySoloHayUnaSolicitud` | UI instrumentada |
+| CP-37 | `CreateAlbumTest.cp37_sinArtistas_guardarNoCierraLaApp_yReintentarLosCarga` | UI instrumentada |
+
+Las pruebas usan repositorios falsos para no crear álbumes en el backend compartido de Firebase. Capturas con el backend local: [validaciones](docs/evidencias/sprint-2/HU07-validaciones.png) y [álbum creado](docs/evidencias/sprint-2/HU07-album-creado.png).
 
 ## Pruebas del Sprint 3
 
