@@ -26,6 +26,12 @@ data class NewAlbumDto(
     val recordLabel: String,
 )
 
+/** Cuerpo de `POST /albums/{id}/tracks`. */
+data class NewTrackDto(
+    val name: String,
+    val duration: String,
+)
+
 data class TrackDto(
     val id: Int?,
     val name: String?,

@@ -114,8 +114,8 @@ UI (Compose)  →  ViewModel (StateFlow)  →  AlbumRepository  →  AlbumServic
 
 | Capa | Clases | Responsabilidad |
 |---|---|---|
-| UI | `AlbumListScreen`, `AlbumDetailScreen` (info, tracks y comentarios), `ArtistListScreen`, `ArtistDetailScreen` (info, álbumes y premios), `CollectorListScreen`, `CollectorDetailScreen` (contacto, gustos y colección), `CreateAlbumScreen`, `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
-| ViewModel | `AlbumListViewModel`, `AlbumDetailViewModel`, `ArtistListViewModel`, `ArtistDetailViewModel`, `CollectorListViewModel`, `CollectorDetailViewModel`, `CreateAlbumViewModel` | Estados `Loading`, `Success`, `Empty`, `Error` y reintento; sobreviven a la rotación |
+| UI | `AlbumListScreen`, `AlbumDetailScreen` (info, tracks y comentarios), `ArtistListScreen`, `ArtistDetailScreen` (info, álbumes y premios), `CollectorListScreen`, `CollectorDetailScreen` (contacto, gustos y colección), `CreateAlbumScreen`, `AssociateTrackScreen`, `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
+| ViewModel | `AlbumListViewModel`, `AlbumDetailViewModel`, `ArtistListViewModel`, `ArtistDetailViewModel`, `CollectorListViewModel`, `CollectorDetailViewModel`, `CreateAlbumViewModel`, `AssociateTrackViewModel` | Estados `Loading`, `Success`, `Empty`, `Error` y reintento; sobreviven a la rotación |
 | Repository | `AlbumRepository`, `ArtistRepository`, `CollectorRepository` (interfaces) y sus `Impl` | Punto único de acceso a los datos; se reemplaza por un fake en las pruebas |
 | Service Adapter | `AlbumServiceAdapter`, `ArtistServiceAdapter`, `CollectorServiceAdapter`, sus `ApiService` y DTO | Traduce JSON y códigos HTTP (404 → `AlbumNotFoundException` / `ArtistNotFoundException` / `CollectorNotFoundException`) al modelo de dominio. `ArtistServiceAdapter` elige `/musicians` o `/bands` y cruza `/prizes`, porque el artista solo trae el id y la fecha de cada premio. `CollectorServiceAdapter` completa la colección con `/collectors/{id}/albums` |
 | Dominio | `Album`, `Track`, `Performer`, `Comment`, `Artist`, `ArtistPrize`, `Collector` | Modelo independiente de la UI y de la red |
@@ -158,7 +158,7 @@ Capturas en el emulador: [catálogo](docs/evidencias/sprint-1/HU01-catalogo.png)
 
 El detalle de artista se abre desde la pestaña Artistas o desde el detalle de un álbum con "Ver artista".
 
-> Si las pruebas con `pressBack` fallan con `RootViewWithoutFocusException`, reinicia el emulador con *Cold Boot Now*: pasó en sesiones restauradas desde un snapshot y no en un arranque en frío.
+> Si las pruebas con `pressBack` fallan con `RootViewWithoutFocusException`, o la app se queda en blanco con el aviso "no responde", reinicia el emulador con *Cold Boot Now*. En una de estas sesiones la traza del ANR mostró el hilo de dibujo trabado en la GPU emulada, sin código de la app.
 
 Capturas con el backend desplegado: [listado](docs/evidencias/sprint-2/HU03-listado-artistas.png), [músico](docs/evidencias/sprint-2/HU04-detalle-musico.png) y [banda](docs/evidencias/sprint-2/HU04-detalle-banda.png). Las tres muestran la imagen por defecto porque las URL de esos artistas en el backend ya no responden.
 
@@ -194,6 +194,21 @@ Las pruebas usan repositorios falsos para no crear álbumes en el backend compar
 | CP-36 | HU06 | `CollectorTest.cp36_desdeElDetalle_abreArtistaFavorito_yAlbumDeLaColeccion` | E2E UI |
 
 Capturas con el backend desplegado: [listado](docs/evidencias/sprint-3/HU05-listado-coleccionistas.png) y [detalle](docs/evidencias/sprint-3/HU06-detalle-coleccionista.png).
+
+### Asociar tracks (HU08)
+
+El botón "+ Asociar track" del detalle del álbum abre el formulario. Al guardar, la app hace `POST /albums/{id}/tracks` y regresa al detalle, que se recarga con el track nuevo. Las reglas están en [`asociar-track.md`](docs/diseno/sprint-3/asociar-track.md).
+
+| Caso | Prueba | Tipo |
+|---|---|---|
+| CP-38 | `AssociateTrackUiTest.cp38_desdeElDetalle_muestraElAlbumYSusTracksExistentes` | UI instrumentada |
+| CP-39 | `AssociateTrackUiTest.cp39_guardarVacio_muestraErrores_yNoEnvia` | UI instrumentada |
+| CP-40 | `AssociateTrackUiTest.cp40_duracionInvalida_muestraError` | UI instrumentada |
+| CP-41 | `AssociateTrackUiTest.cp41_datosValidos_regresaAlDetalle_yMuestraElTrackNuevo` | E2E UI |
+| CP-42 | `AssociateTrackUiTest.cp42_falloDeRed_muestraError_yConservaLosDatos` | UI instrumentada |
+| CP-43 | `AssociateTrackUiTest.cp43_mientrasEnvia_elBotonSeDeshabilita_ySoloHayUnaSolicitud` | UI instrumentada |
+
+Capturas con el backend local: [formulario](docs/evidencias/sprint-3/HU08-formulario.png) y [track asociado](docs/evidencias/sprint-3/HU08-track-asociado.png).
 
 ## Estructura del repositorio
 

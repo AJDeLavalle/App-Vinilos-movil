@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,6 +58,7 @@ object AlbumDetailTags {
     const val TITLE = "album_detail_title"
     const val BACK = "back_button"
     const val COMMENTS = "album_detail_comments"
+    const val ADD_TRACK = "album_detail_add_track"
     fun comment(id: Int) = "album_comment_$id"
     fun artist(id: Int) = "album_artist_$id"
 }
@@ -66,6 +68,7 @@ fun AlbumDetailScreen(
     viewModel: AlbumDetailViewModel,
     onBack: () -> Unit,
     onArtistClick: (Performer) -> Unit,
+    onAddTrack: (Int) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     AlbumDetailContent(
@@ -73,6 +76,7 @@ fun AlbumDetailScreen(
         onRetry = viewModel::loadAlbum,
         onBack = onBack,
         onArtistClick = onArtistClick,
+        onAddTrack = onAddTrack,
     )
 }
 
@@ -83,6 +87,7 @@ fun AlbumDetailContent(
     onRetry: () -> Unit,
     onBack: () -> Unit,
     onArtistClick: (Performer) -> Unit,
+    onAddTrack: (Int) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -111,14 +116,19 @@ fun AlbumDetailContent(
                     ErrorView(errorMessage(state.type), onRetry, modifier)
                 }
             }
-            is AlbumDetailUiState.Success -> AlbumDetail(state.album, onArtistClick, modifier)
+            is AlbumDetailUiState.Success -> AlbumDetail(state.album, onArtistClick, onAddTrack, modifier)
         }
     }
 }
 
 /** Maqueta P02: portada centrada, título, "Artista • Año", género, sello, tracks y comentarios. */
 @Composable
-private fun AlbumDetail(album: Album, onArtistClick: (Performer) -> Unit, modifier: Modifier) {
+private fun AlbumDetail(
+    album: Album,
+    onArtistClick: (Performer) -> Unit,
+    onAddTrack: (Int) -> Unit,
+    modifier: Modifier,
+) {
     LazyColumn(
         modifier = modifier.fillMaxSize().testTag(AlbumDetailTags.CONTENT),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
@@ -162,6 +172,14 @@ private fun AlbumDetail(album: Album, onArtistClick: (Performer) -> Unit, modifi
         } else {
             itemsIndexed(album.tracks, key = { _, track -> "track_${track.id}" }) { index, track ->
                 TrackRow(position = index + 1, track = track)
+            }
+        }
+        item {
+            Button(
+                onClick = { onAddTrack(album.id) },
+                modifier = Modifier.fillMaxWidth().testTag(AlbumDetailTags.ADD_TRACK),
+            ) {
+                Text(stringResource(R.string.associate_track_add))
             }
         }
         item {
@@ -254,6 +272,7 @@ private fun AlbumDetailPreview() {
             onRetry = {},
             onBack = {},
             onArtistClick = {},
+            onAddTrack = {},
         )
     }
 }
