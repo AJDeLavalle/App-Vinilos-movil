@@ -16,6 +16,22 @@ data class AlbumDto(
     val comments: List<CommentDto>?,
 )
 
+/** Cuerpo de `POST /albums`. El esquema de Joi rechaza campos adicionales, así que son estos seis. */
+data class NewAlbumDto(
+    val name: String,
+    val cover: String,
+    val releaseDate: String,
+    val description: String,
+    val genre: String,
+    val recordLabel: String,
+)
+
+/** Cuerpo de `POST /albums/{id}/tracks`. */
+data class NewTrackDto(
+    val name: String,
+    val duration: String,
+)
+
 data class TrackDto(
     val id: Int?,
     val name: String?,
@@ -32,4 +48,6 @@ data class PerformerDto(
     val id: Int?,
     val name: String?,
     val image: String?,
+    /** Solo las bandas lo traen; los músicos traen birthDate. */
+    val creationDate: String?,
 )

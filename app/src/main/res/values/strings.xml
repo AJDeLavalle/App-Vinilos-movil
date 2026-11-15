@@ -5,7 +5,23 @@
     <string name="nav_albums">Álbumes</string>
     <string name="nav_artists">Artistas</string>
     <string name="nav_collectors">Coleccionistas</string>
-    <string name="coming_soon">Esta sección estará disponible en un próximo sprint.</string>
+
+    <!-- HU05 y HU06: coleccionistas -->
+    <string name="collectors_loading">Cargando coleccionistas…</string>
+    <string name="collectors_empty">Aún no hay coleccionistas registrados.</string>
+    <plurals name="collector_album_count">
+        <item quantity="one">%1$d álbum</item>
+        <item quantity="other">%1$d álbumes</item>
+    </plurals>
+    <string name="collector_detail_title">Detalle del coleccionista</string>
+    <string name="collector_detail_loading">Cargando coleccionista…</string>
+    <string name="collector_detail_not_found">El coleccionista que buscas no existe.</string>
+    <string name="collector_telephone">Teléfono: %1$s</string>
+    <string name="collector_email">Correo: %1$s</string>
+    <string name="collector_favorites">Gustos</string>
+    <string name="collector_no_favorites">Este coleccionista no tiene artistas favoritos.</string>
+    <string name="collector_collection">Mi colección</string>
+    <string name="collector_no_albums">Este coleccionista no tiene álbumes en su colección.</string>
 
     <!-- HU01: catálogo de álbumes -->
     <string name="albums_title">Álbumes</string>
@@ -27,10 +43,78 @@
     <string name="album_comments">Comentarios</string>
     <string name="album_no_comments">Este álbum aún no tiene comentarios.</string>
     <string name="album_comment_rating">Calificación: %1$d de 5</string>
+    <string name="album_view_artist">Ver artista: %1$s ›</string>
     <string name="navigate_back">Volver</string>
+
+    <!-- HU03: listado de artistas -->
+    <string name="artists_loading">Cargando artistas…</string>
+    <string name="artists_empty">Aún no hay artistas registrados.</string>
+    <string name="artist_type_musician">Músico</string>
+    <string name="artist_type_band">Banda</string>
+
+    <!-- HU04: detalle de artista -->
+    <string name="artist_detail_title">Detalle de artista</string>
+    <string name="artist_detail_loading">Cargando artista…</string>
+    <string name="artist_detail_not_found">El artista que buscas no existe.</string>
+    <string name="artist_image_description">Imagen de %1$s</string>
+    <string name="artist_musician_born">Músico • Nacido en %1$s</string>
+    <string name="artist_band_formed">Banda • Formada en %1$s</string>
+    <string name="artist_albums">Álbumes</string>
+    <string name="artist_no_albums">Este artista no tiene álbumes registrados.</string>
+    <string name="artist_prizes">Premios y reconocimientos</string>
+    <string name="artist_no_prizes">Este artista no tiene premios registrados.</string>
+
+    <!-- HU07: crear álbum -->
+    <string name="create_album_title">Crear álbum</string>
+    <string name="create_album_section">Información del álbum</string>
+    <string name="create_album_name">Nombre</string>
+    <string name="create_album_artist">Artista</string>
+    <string name="create_album_genre">Género</string>
+    <string name="create_album_record_label">Sello discográfico</string>
+    <string name="create_album_release_date">Fecha de lanzamiento</string>
+    <string name="create_album_release_date_hint">DD/MM/AAAA</string>
+    <string name="create_album_cover">URL de la portada</string>
+    <string name="create_album_description">Descripción</string>
+    <string name="create_album_save">Guardar álbum</string>
+    <string name="create_album_retry_link">Reintentar asociación</string>
+    <string name="create_album_back_to_catalog">Volver al catálogo</string>
+    <string name="create_album_artists_error">No pudimos cargar los artistas.</string>
+    <string name="create_album_error_name_required">Ingresa el nombre del álbum.</string>
+    <string name="create_album_error_artist_required">Selecciona un artista.</string>
+    <string name="create_album_error_genre_required">Selecciona un género.</string>
+    <string name="create_album_error_record_label_required">Selecciona un sello discográfico.</string>
+    <string name="create_album_error_date_invalid">Ingresa una fecha válida (DD/MM/AAAA).</string>
+    <string name="create_album_error_date_future">La fecha no puede ser futura.</string>
+    <string name="create_album_error_cover_required">Ingresa la URL de la portada.</string>
+    <string name="create_album_error_cover_invalid">Ingresa una URL válida.</string>
+    <string name="create_album_error_description_required">Ingresa una descripción.</string>
+    <string name="create_album_error_invalid">Revisa los datos del álbum.</string>
+    <string name="create_album_error_artist_link">El álbum se creó, pero no pudimos asociar el artista.</string>
+
+    <!-- HU08: asociar tracks -->
+    <string name="associate_track_title">Asociar track</string>
+    <string name="associate_track_add">+ Asociar track</string>
+    <string name="associate_track_album">Álbum seleccionado: %1$s</string>
+    <string name="associate_track_name">Nombre del track</string>
+    <string name="associate_track_duration">Duración</string>
+    <string name="associate_track_duration_hint">mm:ss</string>
+    <string name="associate_track_existing">Tracks existentes</string>
+    <string name="associate_track_error_name_required">Ingresa el nombre del track.</string>
+    <string name="associate_track_error_duration_required">Ingresa la duración.</string>
+    <string name="associate_track_error_duration_invalid">Ingresa una duración válida (mm:ss).</string>
+    <string name="associate_track_error_invalid">Revisa los datos del track.</string>
 
     <!-- Errores comunes -->
     <string name="error_network">No pudimos conectarnos con el servidor. Revisa tu conexión.</string>
     <string name="error_unknown">Ocurrió un error inesperado.</string>
     <string name="retry">Reintentar</string>
+    <!-- Compartidos por crear álbum y asociar track. -->
+    <plurals name="error_name_too_long">
+        <item quantity="one">El nombre admite hasta %1$d carácter.</item>
+        <item quantity="other">El nombre admite hasta %1$d caracteres.</item>
+    </plurals>
+    <plurals name="error_description_too_long">
+        <item quantity="one">La descripción admite hasta %1$d carácter.</item>
+        <item quantity="other">La descripción admite hasta %1$d caracteres.</item>
+    </plurals>
 </resources>

@@ -1,0 +1,185 @@
+package co.edu.uniandes.vinilos.data.remote
+
+import co.edu.uniandes.vinilos.data.remote.dto.PerformerDto
+import co.edu.uniandes.vinilos.data.remote.dto.PerformerPrizeDto
+import co.edu.uniandes.vinilos.data.remote.dto.PrizeDto
+import co.edu.uniandes.vinilos.di.createArtistApiService
+import co.edu.uniandes.vinilos.domain.model.ArtistNotFoundException
+import co.edu.uniandes.vinilos.domain.model.ArtistType
+import kotlinx.coroutines.test.runTest
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import co.edu.uniandes.vinilos.testutil.requestedPaths
+import co.edu.uniandes.vinilos.testutil.respondByPath
+import java.util.concurrent.TimeUnit
+import retrofit2.HttpException
+
+/** Pruebas de integración HTTP: respuestas con la forma real de BackVynils servidas por MockWebServer. */
+class ArtistServiceAdapterTest {
+
+    private lateinit var server: MockWebServer
+    private lateinit var adapter: ArtistServiceAdapter
+
+    @Before
+    fun setUp() {
+        server = MockWebServer()
+        server.start()
+        adapter = ArtistServiceAdapter(createArtistApiService(server.url("/").toString()))
+    }
+
+    @After
+    fun tearDown() {
+        server.shutdown()
+    }
+
+    @Test
+    fun musico_consultaMusicians_yCompletaElPremioDesdePrizes() = runTest {
+        server.enqueue(MockResponse().setBody(MUSICIAN_JSON))
+        server.enqueue(MockResponse().setBody(PRIZES_JSON))
+
+        val artist = adapter.getArtist(100, ArtistType.MUSICIAN)
+
+        assertEquals("/musicians/100", server.takeRequest().path)
+        assertEquals("/prizes", server.takeRequest().path)
+        assertEquals("Rubén Blades Bellido de Luna", artist.name)
+        assertEquals(ArtistType.MUSICIAN, artist.type)
+        assertEquals("1948", artist.year)
+        assertEquals("Buscando América", artist.albums.single().name)
+        val prize = artist.prizes.single()
+        assertEquals("Grammy Award", prize.name)
+        assertEquals("National Academy of Recording Arts & Sciences", prize.organization)
+        assertEquals("1978", prize.year)
+    }
+
+    @Test
+    fun banda_consultaBands_yNoPidePremiosSiNoTiene() = runTest {
+        server.enqueue(
+            MockResponse().setBody(
+                """{"id":101,"name":"Queen","image":"","description":"Banda","creationDate":"1970-01-01T00:00:00.000Z","albums":[],"performerPrizes":[]}"""
+            )
+        )
+
+        val artist = adapter.getArtist(101, ArtistType.BAND)
+
+        assertEquals("/bands/101", server.takeRequest().path)
+        assertEquals(1, server.requestCount)
+        assertEquals(ArtistType.BAND, artist.type)
+        assertEquals("1970", artist.year)
+        assertTrue(artist.prizes.isEmpty())
+    }
+
+    @Test
+    fun premiacionSinPremioAsociado_seDescarta() = runTest {
+        server.enqueue(MockResponse().setBody(MUSICIAN_JSON))
+        server.enqueue(MockResponse().setBody("[]"))
+
+        assertTrue(adapter.getArtist(100, ArtistType.MUSICIAN).prizes.isEmpty())
+    }
+
+    @Test
+    fun listado_uneMusicosYBandas_ordenadosPorNombre() = runTest {
+        server.respondByPath(
+            "/musicians" to MockResponse().setBody("""[{"id":100,"name":"Rubén Blades","birthDate":"1948-07-16T00:00:00.000Z"}]"""),
+            "/bands" to MockResponse().setBody("""[{"id":101,"name":"Queen","creationDate":"1970-01-01T00:00:00.000Z"}]"""),
+        )
+
+        val artists = adapter.getArtists()
+
+        assertEquals(setOf("/musicians", "/bands"), server.requestedPaths())
+        assertEquals(listOf("Queen", "Rubén Blades"), artists.map { it.name })
+        assertEquals(listOf(ArtistType.BAND, ArtistType.MUSICIAN), artists.map { it.type })
+    }
+
+    @Test
+    fun listado_ordenaSinDistinguirMayusculas() = runTest {
+        server.respondByPath(
+            "/musicians" to MockResponse().setBody("[{\"id\":1,\"name\":\"Rubén Blades\"},{\"id\":2,\"name\":\"queen\"}]"),
+            "/bands" to MockResponse().setBody("[{\"id\":3,\"name\":\"ABBA\"}]"),
+        )
+
+        val artists = adapter.getArtists()
+
+        assertEquals(listOf("ABBA", "queen", "Rubén Blades"), artists.map { it.name })
+    }
+
+    @Test
+    fun listado_pideMusicosYBandasEnParalelo() = runTest {
+        server.respondByPath(
+            "/musicians" to MockResponse().setBody("[]").setBodyDelay(600, TimeUnit.MILLISECONDS),
+            "/bands" to MockResponse().setBody("[]").setBodyDelay(600, TimeUnit.MILLISECONDS),
+        )
+
+        val start = System.nanoTime()
+        adapter.getArtists()
+        val elapsedMs = (System.nanoTime() - start) / 1_000_000
+
+        // En serie tardaría al menos 1.200 ms; en paralelo, poco más de 600.
+        assertTrue("tardó $elapsedMs ms", elapsedMs < 1_100)
+    }
+
+    @Test
+    fun indicePorPremiacion_ubicaCadaPremiacionEnSuPremio() {
+        val grammy = PrizeDto(1, "Grammy", "Academia", listOf(PerformerPrizeDto(10, null), PerformerPrizeDto(11, null)))
+        val nuestro = PrizeDto(2, "Lo Nuestro", "Univisión", listOf(PerformerPrizeDto(12, null), PerformerPrizeDto(null, null)))
+
+        val index = listOf(grammy, nuestro).indexByAward()
+
+        assertEquals(mapOf(10 to grammy, 11 to grammy, 12 to nuestro), index)
+        assertEquals("Lo Nuestro", PerformerPrizeDto(12, "1980").toDomain(index)?.name)
+        assertEquals(null, PerformerPrizeDto(99, "1980").toDomain(index))
+    }
+
+    @Test
+    fun interpreteDelAlbum_esBandaSoloSiTraeCreationDate() {
+        val band = PerformerDto(101, "Queen", "", creationDate = "1970-01-01T00:00:00.000Z").toDomain()
+        val musician = PerformerDto(100, "Rubén Blades", "", creationDate = null).toDomain()
+
+        assertEquals(ArtistType.BAND, band?.type)
+        assertEquals(ArtistType.MUSICIAN, musician?.type)
+    }
+
+    @Test(expected = ArtistNotFoundException::class)
+    fun artista404_lanzaArtistNotFound() = runTest {
+        server.enqueue(
+            MockResponse().setResponseCode(404)
+                .setBody("""{"statusCode":404,"message":"The musician with the given id was not found"}""")
+        )
+
+        adapter.getArtist(999, ArtistType.MUSICIAN)
+    }
+
+    @Test(expected = HttpException::class)
+    fun artista500_propagaHttpException() = runTest {
+        server.enqueue(MockResponse().setResponseCode(500))
+
+        adapter.getArtist(100, ArtistType.BAND)
+    }
+
+    companion object {
+        private val MUSICIAN_JSON = """
+            {
+              "id": 100,
+              "name": "Rubén Blades Bellido de Luna",
+              "image": "https://example.com/ruben.jpg",
+              "description": "Cantante panameño.",
+              "birthDate": "1948-07-16T00:00:00.000Z",
+              "albums": [
+                { "id": 100, "name": "Buscando América", "cover": "", "releaseDate": "1984-08-01T00:00:00.000Z", "description": "", "genre": "Salsa", "recordLabel": "Elektra" }
+              ],
+              "performerPrizes": [{ "id": 100, "premiationDate": "1978-12-10T00:00:00.000Z" }]
+            }
+        """.trimIndent()
+
+        private val PRIZES_JSON = """
+            [
+              { "id": 200, "organization": "Univisión", "name": "Premios lo Nuestro", "description": "", "performerPrizes": [{ "id": 101, "premiationDate": "1980-12-10T00:00:00.000Z" }] },
+              { "id": 201, "organization": "National Academy of Recording Arts & Sciences", "name": "Grammy Award", "description": "", "performerPrizes": [{ "id": 100, "premiationDate": "1978-12-10T00:00:00.000Z" }] }
+            ]
+        """.trimIndent()
+    }
+}

@@ -58,7 +58,7 @@ La app consume [BackVynils](https://github.com/TheSoftwareDesignLab/BackVynils) 
 | Build | URL por defecto | Uso |
 |---|---|---|
 | `debug` | `http://10.0.2.2:3000/` | Desarrollo con BackVynils local; `10.0.2.2` es el `localhost` del computador visto desde el **emulador** |
-| `release` | `https://us-central1-vinilos-backend-app.cloudfunctions.net/api/` | APK de entrega: BackVynils desplegado en Firebase, funciona en dispositivos físicos |
+| `release` | `https://vinilos-oozma-kappa-b117aeae2e73.herokuapp.com/` | APK de entrega: BackVynils desplegado en Heroku, funciona en dispositivos físicos |
 
 Para desarrollar con el backend local:
 
@@ -89,7 +89,7 @@ Desde la raíz del repositorio:
 # Compilar el APK de depuración (backend local)
 ./gradlew assembleDebug        # Windows: gradlew.bat assembleDebug
 
-# Compilar el APK de entrega (backend en Firebase), firmado e instalable
+# Compilar el APK de entrega (backend en Heroku), firmado e instalable
 ./gradlew assembleRelease
 
 # Instalar en el emulador o dispositivo conectado
@@ -114,11 +114,11 @@ UI (Compose)  →  ViewModel (StateFlow)  →  AlbumRepository  →  AlbumServic
 
 | Capa | Clases | Responsabilidad |
 |---|---|---|
-| UI | `AlbumListScreen`, `AlbumDetailScreen` (info, tracks y comentarios), `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
-| ViewModel | `AlbumListViewModel`, `AlbumDetailViewModel` | Estados `Loading`, `Success`, `Empty`, `Error` y reintento; sobreviven a la rotación |
-| Repository | `AlbumRepository` (interfaz), `AlbumRepositoryImpl` | Punto único de acceso a los datos; se reemplaza por un fake en las pruebas |
-| Service Adapter | `AlbumServiceAdapter`, `AlbumApiService`, DTO | Traduce JSON y códigos HTTP (404 → `AlbumNotFoundException`) al modelo de dominio |
-| Dominio | `Album`, `Track`, `Performer`, `Comment` | Modelo independiente de la UI y de la red |
+| UI | `AlbumListScreen`, `AlbumDetailScreen` (info, tracks y comentarios), `ArtistListScreen`, `ArtistDetailScreen` (info, álbumes y premios), `CollectorListScreen`, `CollectorDetailScreen` (contacto, gustos y colección), `CreateAlbumScreen`, `AssociateTrackScreen`, `VinilosApp` (NavHost + barra inferior) | Pintar el estado y emitir eventos; no hace llamadas HTTP |
+| ViewModel | `AlbumListViewModel`, `AlbumDetailViewModel`, `ArtistListViewModel`, `ArtistDetailViewModel`, `CollectorListViewModel`, `CollectorDetailViewModel`, `CreateAlbumViewModel`, `AssociateTrackViewModel` | Estados `Loading`, `Success`, `Empty`, `Error` y reintento; sobreviven a la rotación |
+| Repository | `AlbumRepository`, `ArtistRepository`, `CollectorRepository` (interfaces) y sus `Impl` | Punto único de acceso a los datos; se reemplaza por un fake en las pruebas |
+| Service Adapter | `AlbumServiceAdapter`, `ArtistServiceAdapter`, `CollectorServiceAdapter`, sus `ApiService` y DTO | Traduce JSON y códigos HTTP (404 → `AlbumNotFoundException` / `ArtistNotFoundException` / `CollectorNotFoundException`) al modelo de dominio. `ArtistServiceAdapter` elige `/musicians` o `/bands` y cruza `/prizes`, porque el artista solo trae el id y la fecha de cada premio. `CollectorServiceAdapter` completa la colección con `/collectors/{id}/albums` |
+| Dominio | `Album`, `Track`, `Performer`, `Comment`, `Artist`, `ArtistPrize`, `Collector` | Modelo independiente de la UI y de la red |
 
 Las dependencias se crean en `di/AppContainer.kt` (inyección manual) y se exponen desde `VinilosApplication`.
 
@@ -141,6 +141,96 @@ Las pruebas de UI usan un `FakeAlbumRepository` con datos fijos, así que no dep
 Resultados de ejecución y defectos encontrados: [reporte de defectos del Sprint 1](docs/pruebas/sprint-1/defectos.md).
 
 Capturas en el emulador: [catálogo](docs/evidencias/sprint-1/HU01-catalogo.png) y [detalle](docs/evidencias/sprint-1/HU02-detalle.png).
+
+## Pruebas del Sprint 2
+
+| Caso | HU | Prueba | Tipo |
+|---|---|---|---|
+| CP-12 | HU04 | `ArtistDetailTest.cp12_desdeElAlbum_muestraDatosAlbumesYPremiosDelArtista` | E2E UI |
+| CP-13 | HU04 | `ArtistDetailTest.cp13_bandaSinAlbumesNiPremios_muestraMensajesVacios` | UI instrumentada |
+| CP-14 | HU04 | `ArtistDetailTest.cp14_artistaInexistente_informaYPermiteVolverAlAlbum`, `ArtistServiceAdapterTest.artista404_lanzaArtistNotFound` | UI instrumentada / integración |
+| CP-15 | HU04 | `ArtistDetailTest.cp15_errorDeRed_muestraReintentar_yRecupera` | UI instrumentada |
+| CP-16 | HU04 | `ArtistDetailTest.cp16_seleccionarAlbumDelArtista_abreElAlbum_yAtrasRegresa` (Espresso `pressBack`) | E2E UI |
+| CP-17 | HU03 | `ArtistListTest.cp17_conArtistas_muestraMusicosYBandas`, `ArtistServiceAdapterTest.listado_uneMusicosYBandas_ordenadosPorNombre` | UI instrumentada / integración |
+| CP-18 | HU03 | `ArtistListTest.cp18_sinArtistas_muestraEstadoVacio` | UI instrumentada |
+| CP-19 | HU03 | `ArtistListTest.cp19_apiInaccesible_muestraError_yReintentarCargaLaLista` | UI instrumentada |
+| CP-20 | HU03 | `ArtistListTest.cp20_seleccionarBanda_abreSuDetalle_yAtrasRegresaAlListado` (Espresso `pressBack`) | E2E UI |
+
+El detalle de artista se abre desde la pestaña Artistas o desde el detalle de un álbum con "Ver artista".
+
+> Si las pruebas con `pressBack` fallan con `RootViewWithoutFocusException`, o la app se queda en blanco con el aviso "no responde", reinicia el emulador con *Cold Boot Now*. En una de estas sesiones la traza del ANR mostró el hilo de dibujo trabado en la GPU emulada, sin código de la app.
+
+Capturas con el backend desplegado: [listado](docs/evidencias/sprint-2/HU03-listado-artistas.png), [músico](docs/evidencias/sprint-2/HU04-detalle-musico.png) y [banda](docs/evidencias/sprint-2/HU04-detalle-banda.png). Las tres muestran la imagen por defecto porque las URL de esos artistas en el backend ya no responden.
+
+### Crear álbum (HU07)
+
+El botón "+" del catálogo abre el formulario. Al guardar, la app hace `POST /albums` y luego asocia el artista con `POST /albums/{id}/musicians/{id}` o `/bands/{id}`. Si la asociación falla, reintentar no vuelve a crear el álbum. Las reglas del formulario están en [`crear-album.md`](docs/diseno/sprint-2/crear-album.md).
+
+| Caso | Prueba | Tipo |
+|---|---|---|
+| CP-21 | `CreateAlbumTest.cp21_guardarVacio_muestraUnErrorPorCampo_yNoEnvia` | UI instrumentada |
+| CP-22 | `CreateAlbumTest.cp22_fechaInexistente_muestraError` | UI instrumentada |
+| CP-23 | `CreateAlbumTest.cp23_fechaFutura_muestraError` | UI instrumentada |
+| CP-24 | `CreateAlbumTest.cp24_urlSinHttp_muestraError_yAlCorregirDesaparece` | UI instrumentada |
+| CP-25 | `CreateAlbumTest.cp25_musico_creaElAlbum_loAsocia_yApareceEnElCatalogo` | E2E UI |
+| CP-26 | `CreateAlbumTest.cp26_banda_asociaConElRecursoDeBandas`, `AlbumCreationAdapterTest.asociar_usaElRecursoSegunElTipoDeArtista` | E2E UI / integración |
+| CP-27 | `CreateAlbumTest.cp27_falloDeRed_muestraError_yConservaLosDatos` | UI instrumentada |
+| CP-28 | `CreateAlbumTest.cp28_falloAlAsociar_reintentarNoDuplicaElAlbum` | UI instrumentada |
+| CP-29 | `CreateAlbumTest.cp29_mientrasEnvia_elBotonSeDeshabilita_ySoloHayUnaSolicitud` | UI instrumentada |
+| CP-37 | `CreateAlbumTest.cp37_sinArtistas_guardarNoCierraLaApp_yReintentarLosCarga` | UI instrumentada |
+
+Las pruebas usan repositorios falsos para no crear álbumes en el backend compartido de entrega. Capturas con el backend local: [validaciones](docs/evidencias/sprint-2/HU07-validaciones.png) y [álbum creado](docs/evidencias/sprint-2/HU07-album-creado.png).
+
+## Pruebas del Sprint 3
+
+| Caso | HU | Prueba | Tipo |
+|---|---|---|---|
+| CP-30 | HU05 | `CollectorTest.cp30_conColeccionistas_muestraNombreYCantidadDeAlbumes`, `CollectorServiceAdapterTest.listado_mapeaColeccionistas_yCuentaSusAlbumes` | UI instrumentada / integración |
+| CP-31 | HU05 | `CollectorTest.cp31_sinColeccionistas_muestraEstadoVacio` | UI instrumentada |
+| CP-32 | HU05 | `CollectorTest.cp32_apiInaccesible_muestraError_yReintentarCargaLaLista` | UI instrumentada |
+| CP-33 | HU06 | `CollectorTest.cp33_seleccionarColeccionista_muestraContactoGustosYColeccion_yAtrasRegresa` (Espresso `pressBack`) | E2E UI |
+| CP-34 | HU06 | `CollectorTest.cp34_sinGustosNiColeccion_muestraMensajesVacios` | UI instrumentada |
+| CP-35 | HU06 | `CollectorTest.cp35_coleccionistaInexistente_informaYPermiteVolver`, `CollectorServiceAdapterTest.detalle404_lanzaCollectorNotFound` | UI instrumentada / integración |
+| CP-36 | HU06 | `CollectorTest.cp36_desdeElDetalle_abreArtistaFavorito_yAlbumDeLaColeccion` | E2E UI |
+
+Capturas con el backend desplegado: [listado](docs/evidencias/sprint-3/HU05-listado-coleccionistas.png) y [detalle](docs/evidencias/sprint-3/HU06-detalle-coleccionista.png).
+
+### Asociar tracks (HU08)
+
+El botón "+ Asociar track" del detalle del álbum abre el formulario. Al guardar, la app hace `POST /albums/{id}/tracks` y regresa al detalle, que se recarga con el track nuevo. Las reglas están en [`asociar-track.md`](docs/diseno/sprint-3/asociar-track.md).
+
+| Caso | Prueba | Tipo |
+|---|---|---|
+| CP-38 | `AssociateTrackUiTest.cp38_desdeElDetalle_muestraElAlbumYSusTracksExistentes` | UI instrumentada |
+| CP-39 | `AssociateTrackUiTest.cp39_guardarVacio_muestraErrores_yNoEnvia` | UI instrumentada |
+| CP-40 | `AssociateTrackUiTest.cp40_duracionInvalida_muestraError` | UI instrumentada |
+| CP-41 | `AssociateTrackUiTest.cp41_datosValidos_regresaAlDetalle_yMuestraElTrackNuevo` | E2E UI |
+| CP-42 | `AssociateTrackUiTest.cp42_falloDeRed_muestraError_yConservaLosDatos` | UI instrumentada |
+| CP-43 | `AssociateTrackUiTest.cp43_mientrasEnvia_elBotonSeDeshabilita_ySoloHayUnaSolicitud` | UI instrumentada |
+
+Capturas con el backend local: [formulario](docs/evidencias/sprint-3/HU08-formulario.png) y [track asociado](docs/evidencias/sprint-3/HU08-track-asociado.png).
+
+## Desempeño (Sprint 2)
+
+Optimizaciones aplicadas: Lint sin advertencias, corrutinas en paralelo y StrictMode en debug, caché en memoria acotada, un solo cliente HTTP, Coil configurado y R8 en release. El detalle está en la wiki: [Micro‐optimizaciones — Sprint 2](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Micro‐optimizaciones-—-Sprint-2).
+
+El reporte con el antes y el después en tres emuladores (Android 5.1, 10 y 17) y las capturas del Android Studio Profiler está en [`docs/desempeno/sprint-2/reporte-perfilamiento.md`](docs/desempeno/sprint-2/reporte-perfilamiento.md).
+
+Para repetir la medición con el emulador o el dispositivo conectado:
+
+```bash
+# APK igual al release (R8, sin depuración) pero contra BackVynils local
+./gradlew assemblePerfil
+```
+
+```bash
+./docs/desempeno/perfilar-hu.sh app/build/outputs/apk/perfil/app-perfil.apk despues > despues.csv
+```
+
+```bash
+# Lint con todas las comprobaciones; el reporte queda en app/build/reports/
+./gradlew lintDebug
+```
 
 ## Estructura del repositorio
 

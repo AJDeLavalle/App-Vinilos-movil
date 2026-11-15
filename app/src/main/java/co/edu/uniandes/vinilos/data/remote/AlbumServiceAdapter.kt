@@ -2,11 +2,18 @@ package co.edu.uniandes.vinilos.data.remote
 
 import co.edu.uniandes.vinilos.data.remote.dto.AlbumDto
 import co.edu.uniandes.vinilos.data.remote.dto.CommentDto
+import co.edu.uniandes.vinilos.data.remote.dto.NewAlbumDto
+import co.edu.uniandes.vinilos.data.remote.dto.NewTrackDto
 import co.edu.uniandes.vinilos.data.remote.dto.PerformerDto
 import co.edu.uniandes.vinilos.data.remote.dto.TrackDto
 import co.edu.uniandes.vinilos.domain.model.Album
 import co.edu.uniandes.vinilos.domain.model.AlbumNotFoundException
+import co.edu.uniandes.vinilos.domain.model.ArtistType
 import co.edu.uniandes.vinilos.domain.model.Comment
+import co.edu.uniandes.vinilos.domain.model.InvalidAlbumException
+import co.edu.uniandes.vinilos.domain.model.InvalidTrackException
+import co.edu.uniandes.vinilos.domain.model.NewAlbum
+import co.edu.uniandes.vinilos.domain.model.NewTrack
 import co.edu.uniandes.vinilos.domain.model.Performer
 import co.edu.uniandes.vinilos.domain.model.Track
 import retrofit2.HttpException
@@ -28,7 +35,47 @@ class AlbumServiceAdapter(private val api: AlbumApiService) {
         }
         return dto.toDomain() ?: throw AlbumNotFoundException(albumId)
     }
+
+    suspend fun createAlbum(album: NewAlbum): Album {
+        val dto = try {
+            api.createAlbum(album.toDto())
+        } catch (e: HttpException) {
+            if (e.code() == 400) throw InvalidAlbumException() else throw e
+        }
+        return checkNotNull(dto.toDomain()) { "El backend no devolvió el id del álbum creado" }
+    }
+
+    suspend fun addArtistToAlbum(albumId: Int, artistId: Int, type: ArtistType) {
+        when (type) {
+            ArtistType.MUSICIAN -> api.addMusicianToAlbum(albumId, artistId)
+            ArtistType.BAND -> api.addBandToAlbum(albumId, artistId)
+        }
+    }
+
+    suspend fun addTrack(albumId: Int, track: NewTrack): Track {
+        val dto = try {
+            api.addTrack(albumId, NewTrackDto(name = track.name, duration = track.duration))
+        } catch (e: HttpException) {
+            when (e.code()) {
+                400 -> throw InvalidTrackException()
+                404 -> throw AlbumNotFoundException(albumId)
+                else -> throw e
+            }
+        }
+        // Si el backend respondió 200 el track ya existe: un error aquí invitaría a reintentar y
+        // duplicarlo. Sin id se devuelve con id 0; nadie navega a un track por su id.
+        return dto.toDomain() ?: Track(id = 0, name = track.name, duration = track.duration)
+    }
 }
+
+internal fun NewAlbum.toDto() = NewAlbumDto(
+    name = name,
+    cover = cover,
+    releaseDate = releaseDate,
+    description = description,
+    genre = genre,
+    recordLabel = recordLabel,
+)
 
 /** Descarta registros sin id, que no se pueden navegar ni identificar. */
 internal fun AlbumDto.toDomain(): Album? {
@@ -51,7 +98,14 @@ internal fun TrackDto.toDomain(): Track? =
     id?.let { Track(id = it, name = name.orEmpty(), duration = duration.orEmpty()) }
 
 internal fun PerformerDto.toDomain(): Performer? =
-    id?.let { Performer(id = it, name = name.orEmpty(), image = image.orEmpty()) }
+    id?.let {
+        Performer(
+            id = it,
+            name = name.orEmpty(),
+            image = image.orEmpty(),
+            type = if (creationDate != null) ArtistType.BAND else ArtistType.MUSICIAN,
+        )
+    }
 
 internal fun CommentDto.toDomain(): Comment? =
     id?.let { Comment(id = it, description = description.orEmpty(), rating = (rating ?: 0).coerceIn(0, 5)) }

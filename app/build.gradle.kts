@@ -5,11 +5,11 @@ plugins {
 
 // URL del backend BackVynils según el tipo de build (deben terminar en "/"):
 // - debug: BackVynils local; 10.0.2.2 es el localhost del computador visto desde el emulador.
-// - release: BackVynils desplegado en Firebase (Cloud Functions), accesible desde dispositivos físicos.
+// - release: BackVynils desplegado en Heroku (app vinilos-oozma-kappa), accesible desde dispositivos físicos.
 // Se pueden sobrescribir con -Pvinilos.apiUrl=... (debug) y -Pvinilos.apiUrl.release=... o en gradle.properties.
 val debugApiUrl = (findProperty("vinilos.apiUrl") as String?) ?: "http://10.0.2.2:3000/"
 val releaseApiUrl = (findProperty("vinilos.apiUrl.release") as String?)
-    ?: "https://us-central1-vinilos-backend-app.cloudfunctions.net/api/"
+    ?: "https://vinilos-oozma-kappa-b117aeae2e73.herokuapp.com/"
 
 android {
     namespace = "co.edu.uniandes.vinilos"
@@ -21,8 +21,8 @@ android {
         applicationId = "co.edu.uniandes.vinilos"
         minSdk = 22
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,16 +36,32 @@ android {
             // Firmado con la llave de debug para que el APK se pueda instalar directamente
             // en dispositivos (proyecto académico, no se publica en Play Store).
             signingConfig = signingConfigs.getByName("debug")
-            // Sin R8: al optimizar solo androidx/kotlin, OkHttp quedaba apuntando a clases de Kotlin
-            // renombradas y la app se cerraba al abrir (IllegalAccessError en OkHttpClient).
             optimization {
-                enable = false
+                enable = true
             }
+        }
+    }
+    // perfil: igual a release (R8, sin depuración) pero contra BackVynils local, para medir el
+    // desempeño sin la latencia variable de la nube. Ver docs/desempeno/perfilar-hu.sh.
+    buildTypes {
+        create("perfil") {
+            initWith(getByName("release"))
+            buildConfigField("String", "API_BASE_URL", "\"$debugApiUrl\"")
+            matchingFallbacks += "release"
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    // Lint con todas las comprobaciones activas; cualquier advertencia nueva aparece en el reporte.
+    // lint.xml documenta las que se ignoran y por qué.
+    lint {
+        checkAllWarnings = true
+        abortOnError = true
+        lintConfig = file("lint.xml")
+        htmlReport = true
+        xmlReport = true
     }
     buildFeatures {
         compose = true
