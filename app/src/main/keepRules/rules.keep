@@ -10,3 +10,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# Gson llena los DTO por reflexión: sin estas reglas R8 renombra o elimina sus campos y las
+# respuestas del backend llegan vacías.
+-keep class co.edu.uniandes.vinilos.data.remote.dto.** { *; }
