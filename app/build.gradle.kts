@@ -9,7 +9,7 @@ plugins {
 // Se pueden sobrescribir con -Pvinilos.apiUrl=... (debug) y -Pvinilos.apiUrl.release=... o en gradle.properties.
 val debugApiUrl = (findProperty("vinilos.apiUrl") as String?) ?: "http://10.0.2.2:3000/"
 val releaseApiUrl = (findProperty("vinilos.apiUrl.release") as String?)
-    ?: "https://vinilos-oozma-kappa-b117aeae2e73.herokuapp.com/"
+    ?: "https://us-central1-vinilos-backend-app.cloudfunctions.net/api/"
 
 android {
     namespace = "co.edu.uniandes.vinilos"
