@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Las actualizaciones de dependencias se evalúan aparte: las versiones mayores (Retrofit 3,
+         OkHttp 5) cambian la API y las recientes de AndroidX y Compose pueden subir el minSdk por
+         encima de 22, que es requisito del curso (Android 5.1). -->
+    <issue id="GradleDependency" severity="ignore" />
+    <issue id="NewerVersionAvailable" severity="ignore" />
+    <issue id="AndroidGradlePluginVersion" severity="ignore" />
+    <!-- "Álbumes" es a la vez el título de la pestaña, de la pantalla y de una sección del
+         artista: son textos distintos que hoy coinciden y pueden cambiar por separado. -->
+    <issue id="DuplicateStrings" severity="ignore" />
+</lint>

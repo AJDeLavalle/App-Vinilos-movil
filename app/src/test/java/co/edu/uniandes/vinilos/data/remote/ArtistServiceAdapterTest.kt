@@ -1,6 +1,8 @@
 package co.edu.uniandes.vinilos.data.remote
 
 import co.edu.uniandes.vinilos.data.remote.dto.PerformerDto
+import co.edu.uniandes.vinilos.data.remote.dto.PerformerPrizeDto
+import co.edu.uniandes.vinilos.data.remote.dto.PrizeDto
 import co.edu.uniandes.vinilos.di.createArtistApiService
 import co.edu.uniandes.vinilos.domain.model.ArtistNotFoundException
 import co.edu.uniandes.vinilos.domain.model.ArtistType
@@ -87,6 +89,28 @@ class ArtistServiceAdapterTest {
         assertEquals("/bands", server.takeRequest().path)
         assertEquals(listOf("Queen", "Rubén Blades"), artists.map { it.name })
         assertEquals(listOf(ArtistType.BAND, ArtistType.MUSICIAN), artists.map { it.type })
+    }
+
+    @Test
+    fun listado_ordenaSinDistinguirMayusculas() = runTest {
+        server.enqueue(MockResponse().setBody("[{\"id\":1,\"name\":\"Rubén Blades\"},{\"id\":2,\"name\":\"queen\"}]"))
+        server.enqueue(MockResponse().setBody("[{\"id\":3,\"name\":\"ABBA\"}]"))
+
+        val artists = adapter.getArtists()
+
+        assertEquals(listOf("ABBA", "queen", "Rubén Blades"), artists.map { it.name })
+    }
+
+    @Test
+    fun indicePorPremiacion_ubicaCadaPremiacionEnSuPremio() {
+        val grammy = PrizeDto(1, "Grammy", "Academia", listOf(PerformerPrizeDto(10, null), PerformerPrizeDto(11, null)))
+        val nuestro = PrizeDto(2, "Lo Nuestro", "Univisión", listOf(PerformerPrizeDto(12, null), PerformerPrizeDto(null, null)))
+
+        val index = listOf(grammy, nuestro).indexByAward()
+
+        assertEquals(mapOf(10 to grammy, 11 to grammy, 12 to nuestro), index)
+        assertEquals("Lo Nuestro", PerformerPrizeDto(12, "1980").toDomain(index)?.name)
+        assertEquals(null, PerformerPrizeDto(99, "1980").toDomain(index))
     }
 
     @Test

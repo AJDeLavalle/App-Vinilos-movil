@@ -151,7 +151,7 @@ private fun AlbumDetail(
             if (album.genre.isNotBlank()) InfoLine(stringResource(R.string.album_genre, album.genre))
             if (album.recordLabel.isNotBlank()) InfoLine(stringResource(R.string.album_record_label, album.recordLabel))
         }
-        items(album.performers, key = { "performer_${it.id}" }) { performer ->
+        items(album.performers, key = { "performer_${it.id}" }, contentType = { "performer" }) { performer ->
             ArtistLink(performer, onClick = { onArtistClick(performer) })
         }
         if (album.description.isNotBlank()) {
@@ -170,7 +170,7 @@ private fun AlbumDetail(
         if (album.tracks.isEmpty()) {
             item { EmptySectionText(stringResource(R.string.album_no_tracks)) }
         } else {
-            itemsIndexed(album.tracks, key = { _, track -> "track_${track.id}" }) { index, track ->
+            itemsIndexed(album.tracks, key = { _, track -> "track_${track.id}" }, contentType = { _, _ -> "track" }) { index, track ->
                 TrackRow(position = index + 1, track = track)
             }
         }
@@ -189,7 +189,7 @@ private fun AlbumDetail(
         if (album.comments.isEmpty()) {
             item { EmptySectionText(stringResource(R.string.album_no_comments)) }
         } else {
-            items(album.comments, key = { "comment_${it.id}" }) { comment -> CommentRow(comment) }
+            items(album.comments, key = { "comment_${it.id}" }, contentType = { "comment" }) { comment -> CommentRow(comment) }
         }
     }
 }

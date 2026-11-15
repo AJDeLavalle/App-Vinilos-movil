@@ -36,6 +36,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -256,7 +257,7 @@ private fun TrackTextField(
 private fun fieldErrorMessage(error: TrackFieldError): String = when (error) {
     TrackFieldError.NAME_REQUIRED -> stringResource(R.string.associate_track_error_name_required)
     TrackFieldError.NAME_TOO_LONG ->
-        stringResource(R.string.associate_track_error_name_too_long, TRACK_NAME_MAX_LENGTH)
+        pluralStringResource(R.plurals.error_name_too_long, TRACK_NAME_MAX_LENGTH, TRACK_NAME_MAX_LENGTH)
     TrackFieldError.DURATION_REQUIRED -> stringResource(R.string.associate_track_error_duration_required)
     TrackFieldError.DURATION_INVALID -> stringResource(R.string.associate_track_error_duration_invalid)
 }

@@ -21,8 +21,15 @@ data class Album(
         get() = performers.joinToString(", ") { it.name }
 
     /** Línea "Artista · Año" de la maqueta, omitiendo las partes vacías. */
-    fun subtitle(separator: String): String =
-        listOf(performerNames, releaseYear).filter { it.isNotBlank() }.joinToString(separator)
+    fun subtitle(separator: String): String {
+        val names = performerNames
+        val year = releaseYear
+        return when {
+            names.isBlank() -> year
+            year.isBlank() -> names
+            else -> names + separator + year
+        }
+    }
 }
 
 data class Track(
