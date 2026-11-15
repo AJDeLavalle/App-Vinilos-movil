@@ -30,6 +30,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -168,7 +169,8 @@ private fun AlbumItem(album: Album, onClick: () -> Unit) {
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = album.subtitle(" · ").ifBlank { stringResource(R.string.album_unknown_artist) },
+                    // remember: el subtítulo concatena intérpretes y año; no hace falta rehacerlo en cada recomposición.
+                    text = remember(album) { album.subtitle(" · ") }.ifBlank { stringResource(R.string.album_unknown_artist) },
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

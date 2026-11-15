@@ -153,7 +153,7 @@ private fun CollectorDetail(
         if (collector.favoritePerformers.isEmpty()) {
             item { EmptySectionText(stringResource(R.string.collector_no_favorites)) }
         } else {
-            items(collector.favoritePerformers, key = { "artist_${it.id}" }) { performer ->
+            items(collector.favoritePerformers, key = { "artist_${it.id}" }, contentType = { "performer" }) { performer ->
                 LinkRow(
                     text = performer.name,
                     tag = CollectorDetailTags.artist(performer.id),
@@ -168,7 +168,7 @@ private fun CollectorDetail(
         if (collector.albums.isEmpty()) {
             item { EmptySectionText(stringResource(R.string.collector_no_albums)) }
         } else {
-            items(collector.albums, key = { "album_${it.id}" }) { album ->
+            items(collector.albums, key = { "album_${it.id}" }, contentType = { "album" }) { album ->
                 LinkRow(
                     text = album.name,
                     tag = CollectorDetailTags.album(album.id),

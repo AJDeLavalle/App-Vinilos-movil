@@ -47,6 +47,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    // Lint con todas las comprobaciones activas; cualquier advertencia nueva aparece en el reporte.
+    // lint.xml documenta las que se ignoran y por qué.
+    lint {
+        checkAllWarnings = true
+        abortOnError = true
+        lintConfig = file("lint.xml")
+        htmlReport = true
+        xmlReport = true
+    }
     buildFeatures {
         compose = true
         buildConfig = true

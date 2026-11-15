@@ -159,7 +159,7 @@ private fun ArtistDetail(artist: Artist, onAlbumClick: (Int) -> Unit, modifier: 
         if (artist.albums.isEmpty()) {
             item { EmptySectionText(stringResource(R.string.artist_no_albums)) }
         } else {
-            items(artist.albums, key = { "album_${it.id}" }) { album ->
+            items(artist.albums, key = { "album_${it.id}" }, contentType = { "album" }) { album ->
                 AlbumRow(album, onClick = { onAlbumClick(album.id) })
             }
         }
@@ -170,7 +170,7 @@ private fun ArtistDetail(artist: Artist, onAlbumClick: (Int) -> Unit, modifier: 
         if (artist.prizes.isEmpty()) {
             item { EmptySectionText(stringResource(R.string.artist_no_prizes)) }
         } else {
-            items(artist.prizes, key = { "prize_${it.id}" }) { prize -> PrizeRow(prize) }
+            items(artist.prizes, key = { "prize_${it.id}" }, contentType = { "prize" }) { prize -> PrizeRow(prize) }
         }
     }
 }

@@ -18,7 +18,8 @@ class ArtistServiceAdapter(private val api: ArtistApiService) {
     suspend fun getArtists(): List<Artist> {
         val musicians = api.getMusicians().mapNotNull { it.toDomain(ArtistType.MUSICIAN, emptyList()) }
         val bands = api.getBands().mapNotNull { it.toDomain(ArtistType.BAND, emptyList()) }
-        return (musicians + bands).sortedBy { it.name.lowercase() }
+        // CASE_INSENSITIVE_ORDER compara sin crear una cadena en minúsculas en cada comparación.
+        return (musicians + bands).sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
     }
 
     suspend fun getArtist(artistId: Int, type: ArtistType): Artist {
@@ -46,15 +47,26 @@ internal fun ArtistDto.toDomain(type: ArtistType, prizes: List<PrizeDto>): Artis
         type = type,
         date = (birthDate ?: creationDate).orEmpty(),
         albums = albums.orEmpty().mapNotNull { it.toDomain() },
-        prizes = performerPrizes.orEmpty().mapNotNull { it.toDomain(prizes) },
+        prizes = performerPrizes.orEmpty().let { awards ->
+            if (awards.isEmpty()) emptyList() else prizes.indexByAward().let { index -> awards.mapNotNull { it.toDomain(index) } }
+        },
     )
 }
 
+/**
+ * Índice id de premiación → premio, construido una vez por artista. Evita recorrer todos los
+ * premios y sus premiaciones por cada premiación (O(n·m)).
+ */
+internal fun List<PrizeDto>.indexByAward(): Map<Int, PrizeDto> = buildMap {
+    for (prize in this@indexByAward) {
+        prize.performerPrizes.orEmpty().forEach { award -> award.id?.let { getOrPut(it) { prize } } }
+    }
+}
+
 /** Busca el premio que contiene esta premiación; sin él no hay nombre que mostrar. */
-internal fun PerformerPrizeDto.toDomain(prizes: List<PrizeDto>): ArtistPrize? {
+internal fun PerformerPrizeDto.toDomain(prizeByAward: Map<Int, PrizeDto>): ArtistPrize? {
     val awardId = id ?: return null
-    val prize = prizes.firstOrNull { prize -> prize.performerPrizes.orEmpty().any { it.id == awardId } }
-        ?: return null
+    val prize = prizeByAward[awardId] ?: return null
     return ArtistPrize(
         id = awardId,
         name = prize.name.orEmpty(),

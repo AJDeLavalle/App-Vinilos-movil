@@ -43,6 +43,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -374,7 +375,7 @@ private fun ErrorText(field: AlbumField, error: AlbumFieldError) {
 @Composable
 private fun fieldErrorMessage(error: AlbumFieldError): String = when (error) {
     AlbumFieldError.NAME_REQUIRED -> stringResource(R.string.create_album_error_name_required)
-    AlbumFieldError.NAME_TOO_LONG -> stringResource(R.string.create_album_error_name_too_long, ALBUM_NAME_MAX_LENGTH)
+    AlbumFieldError.NAME_TOO_LONG -> pluralStringResource(R.plurals.error_name_too_long, ALBUM_NAME_MAX_LENGTH, ALBUM_NAME_MAX_LENGTH)
     AlbumFieldError.ARTIST_REQUIRED -> stringResource(R.string.create_album_error_artist_required)
     AlbumFieldError.GENRE_REQUIRED -> stringResource(R.string.create_album_error_genre_required)
     AlbumFieldError.RECORD_LABEL_REQUIRED -> stringResource(R.string.create_album_error_record_label_required)
@@ -384,7 +385,11 @@ private fun fieldErrorMessage(error: AlbumFieldError): String = when (error) {
     AlbumFieldError.COVER_INVALID -> stringResource(R.string.create_album_error_cover_invalid)
     AlbumFieldError.DESCRIPTION_REQUIRED -> stringResource(R.string.create_album_error_description_required)
     AlbumFieldError.DESCRIPTION_TOO_LONG ->
-        stringResource(R.string.create_album_error_description_too_long, ALBUM_DESCRIPTION_MAX_LENGTH)
+        pluralStringResource(
+            R.plurals.error_description_too_long,
+            ALBUM_DESCRIPTION_MAX_LENGTH,
+            ALBUM_DESCRIPTION_MAX_LENGTH,
+        )
 }
 
 @Composable

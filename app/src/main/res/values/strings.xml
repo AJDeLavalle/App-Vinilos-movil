@@ -80,7 +80,6 @@
     <string name="create_album_back_to_catalog">Volver al catálogo</string>
     <string name="create_album_artists_error">No pudimos cargar los artistas.</string>
     <string name="create_album_error_name_required">Ingresa el nombre del álbum.</string>
-    <string name="create_album_error_name_too_long">El nombre admite hasta %1$d caracteres.</string>
     <string name="create_album_error_artist_required">Selecciona un artista.</string>
     <string name="create_album_error_genre_required">Selecciona un género.</string>
     <string name="create_album_error_record_label_required">Selecciona un sello discográfico.</string>
@@ -89,7 +88,6 @@
     <string name="create_album_error_cover_required">Ingresa la URL de la portada.</string>
     <string name="create_album_error_cover_invalid">Ingresa una URL válida.</string>
     <string name="create_album_error_description_required">Ingresa una descripción.</string>
-    <string name="create_album_error_description_too_long">La descripción admite hasta %1$d caracteres.</string>
     <string name="create_album_error_invalid">Revisa los datos del álbum.</string>
     <string name="create_album_error_artist_link">El álbum se creó, pero no pudimos asociar el artista.</string>
 
@@ -102,7 +100,6 @@
     <string name="associate_track_duration_hint">mm:ss</string>
     <string name="associate_track_existing">Tracks existentes</string>
     <string name="associate_track_error_name_required">Ingresa el nombre del track.</string>
-    <string name="associate_track_error_name_too_long">El nombre admite hasta %1$d caracteres.</string>
     <string name="associate_track_error_duration_required">Ingresa la duración.</string>
     <string name="associate_track_error_duration_invalid">Ingresa una duración válida (mm:ss).</string>
     <string name="associate_track_error_invalid">Revisa los datos del track.</string>
@@ -111,4 +108,13 @@
     <string name="error_network">No pudimos conectarnos con el servidor. Revisa tu conexión.</string>
     <string name="error_unknown">Ocurrió un error inesperado.</string>
     <string name="retry">Reintentar</string>
+    <!-- Compartidos por crear álbum y asociar track. -->
+    <plurals name="error_name_too_long">
+        <item quantity="one">El nombre admite hasta %1$d carácter.</item>
+        <item quantity="other">El nombre admite hasta %1$d caracteres.</item>
+    </plurals>
+    <plurals name="error_description_too_long">
+        <item quantity="one">La descripción admite hasta %1$d carácter.</item>
+        <item quantity="other">La descripción admite hasta %1$d caracteres.</item>
+    </plurals>
 </resources>
