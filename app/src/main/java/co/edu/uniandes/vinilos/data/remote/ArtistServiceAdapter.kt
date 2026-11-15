@@ -7,6 +7,8 @@ import co.edu.uniandes.vinilos.domain.model.Artist
 import co.edu.uniandes.vinilos.domain.model.ArtistNotFoundException
 import co.edu.uniandes.vinilos.domain.model.ArtistPrize
 import co.edu.uniandes.vinilos.domain.model.ArtistType
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import retrofit2.HttpException
 
 /**
@@ -15,11 +17,14 @@ import retrofit2.HttpException
  */
 class ArtistServiceAdapter(private val api: ArtistApiService) {
 
-    suspend fun getArtists(): List<Artist> {
-        val musicians = api.getMusicians().mapNotNull { it.toDomain(ArtistType.MUSICIAN, emptyList()) }
-        val bands = api.getBands().mapNotNull { it.toDomain(ArtistType.BAND, emptyList()) }
+    /** Músicos y bandas son recursos independientes: se piden en paralelo y se espera a ambos. */
+    suspend fun getArtists(): List<Artist> = coroutineScope {
+        val musiciansRequest = async { api.getMusicians() }
+        val bandsRequest = async { api.getBands() }
+        val musicians = musiciansRequest.await().mapNotNull { it.toDomain(ArtistType.MUSICIAN, emptyList()) }
+        val bands = bandsRequest.await().mapNotNull { it.toDomain(ArtistType.BAND, emptyList()) }
         // CASE_INSENSITIVE_ORDER compara sin crear una cadena en minúsculas en cada comparación.
-        return (musicians + bands).sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
+        (musicians + bands).sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.name })
     }
 
     suspend fun getArtist(artistId: Int, type: ArtistType): Artist {
