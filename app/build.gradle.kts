@@ -36,10 +36,8 @@ android {
             // Firmado con la llave de debug para que el APK se pueda instalar directamente
             // en dispositivos (proyecto académico, no se publica en Play Store).
             signingConfig = signingConfigs.getByName("debug")
-            // Sin R8: al optimizar solo androidx/kotlin, OkHttp quedaba apuntando a clases de Kotlin
-            // renombradas y la app se cerraba al abrir (IllegalAccessError en OkHttpClient).
             optimization {
-                enable = false
+                enable = true
             }
         }
     }
