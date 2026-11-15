@@ -8,7 +8,7 @@ set -u
 APK="${1:?Indica la ruta del APK release}"
 RUNS="${2:-10}"
 PKG="co.edu.uniandes.vinilos"
-API="https://us-central1-vinilos-backend-app.cloudfunctions.net/api"
+API="https://vinilos-oozma-kappa-b117aeae2e73.herokuapp.com"
 export MSYS_NO_PATHCONV=1
 
 ADB="$(command -v adb || echo "$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe")"
