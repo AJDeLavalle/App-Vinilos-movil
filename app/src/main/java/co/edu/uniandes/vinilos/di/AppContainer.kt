@@ -19,23 +19,43 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-/** Inyección de dependencias manual: crea una sola instancia de cada capa para toda la app. */
+/**
+ * Inyección de dependencias manual: crea una sola instancia de cada capa para toda la app.
+ *
+ * Los tres servicios comparten un solo Retrofit y por lo tanto un solo OkHttpClient: un pool de
+ * conexiones y un pool de hilos en lugar de tres, y la conexión con el backend se reutiliza
+ * entre pantallas. Todo se crea al primer uso.
+ */
 class AppContainer(baseUrl: String = BuildConfig.API_BASE_URL) {
 
-    private val apiService: AlbumApiService = createAlbumApiService(baseUrl)
-    private val artistApiService: ArtistApiService = createArtistApiService(baseUrl)
-    private val collectorApiService: CollectorApiService = createCollectorApiService(baseUrl)
+    private val retrofit: Retrofit by lazy { createRetrofit(baseUrl) }
 
-    val albumRepository: AlbumRepository by lazy {
-        AlbumRepositoryImpl(AlbumServiceAdapter(apiService))
+    private val albumRepositoryImpl by lazy {
+        AlbumRepositoryImpl(
+            AlbumServiceAdapter(retrofit.create(AlbumApiService::class.java)),
+            // Un álbum nuevo cambia los álbumes del artista y puede cambiar los de un coleccionista.
+            onAlbumsChanged = {
+                artistRepositoryImpl.clearCache()
+                collectorRepositoryImpl.clearCache()
+            },
+        )
+    }
+    private val artistRepositoryImpl by lazy {
+        ArtistRepositoryImpl(ArtistServiceAdapter(retrofit.create(ArtistApiService::class.java)))
+    }
+    private val collectorRepositoryImpl by lazy {
+        CollectorRepositoryImpl(CollectorServiceAdapter(retrofit.create(CollectorApiService::class.java)))
     }
 
-    val artistRepository: ArtistRepository by lazy {
-        ArtistRepositoryImpl(ArtistServiceAdapter(artistApiService))
-    }
+    val albumRepository: AlbumRepository get() = albumRepositoryImpl
+    val artistRepository: ArtistRepository get() = artistRepositoryImpl
+    val collectorRepository: CollectorRepository get() = collectorRepositoryImpl
 
-    val collectorRepository: CollectorRepository by lazy {
-        CollectorRepositoryImpl(CollectorServiceAdapter(collectorApiService))
+    /** Libera las cachés en memoria; la siguiente lectura vuelve a consultar el backend. */
+    fun clearCaches() {
+        albumRepositoryImpl.clearCache()
+        artistRepositoryImpl.clearCache()
+        collectorRepositoryImpl.clearCache()
     }
 }
 
@@ -48,7 +68,7 @@ fun createArtistApiService(baseUrl: String): ArtistApiService =
 fun createCollectorApiService(baseUrl: String): CollectorApiService =
     createRetrofit(baseUrl).create(CollectorApiService::class.java)
 
-private fun createRetrofit(baseUrl: String): Retrofit {
+internal fun createRetrofit(baseUrl: String): Retrofit {
     val client = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
