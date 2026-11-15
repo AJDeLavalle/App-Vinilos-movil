@@ -210,6 +210,28 @@ El botón "+ Asociar track" del detalle del álbum abre el formulario. Al guarda
 
 Capturas con el backend local: [formulario](docs/evidencias/sprint-3/HU08-formulario.png) y [track asociado](docs/evidencias/sprint-3/HU08-track-asociado.png).
 
+## Desempeño (Sprint 2)
+
+Optimizaciones aplicadas: Lint sin advertencias, corrutinas en paralelo y StrictMode en debug, caché en memoria acotada, un solo cliente HTTP, Coil configurado y R8 en release. El detalle está en la wiki: [Micro‐optimizaciones — Sprint 2](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Micro‐optimizaciones-—-Sprint-2).
+
+El reporte con el antes y el después en tres emuladores (Android 5.1, 10 y 17) y las capturas del Android Studio Profiler está en [`docs/desempeno/sprint-2/reporte-perfilamiento.md`](docs/desempeno/sprint-2/reporte-perfilamiento.md).
+
+Para repetir la medición con el emulador o el dispositivo conectado:
+
+```bash
+# APK igual al release (R8, sin depuración) pero contra BackVynils local
+./gradlew assemblePerfil
+```
+
+```bash
+./docs/desempeno/perfilar-hu.sh app/build/outputs/apk/perfil/app-perfil.apk despues > despues.csv
+```
+
+```bash
+# Lint con todas las comprobaciones; el reporte queda en app/build/reports/
+./gradlew lintDebug
+```
+
 ## Estructura del repositorio
 
 ```

@@ -41,6 +41,15 @@ android {
             }
         }
     }
+    // perfil: igual a release (R8, sin depuración) pero contra BackVynils local, para medir el
+    // desempeño sin la latencia variable de la nube. Ver docs/desempeno/perfilar-hu.sh.
+    buildTypes {
+        create("perfil") {
+            initWith(getByName("release"))
+            buildConfigField("String", "API_BASE_URL", "\"$debugApiUrl\"")
+            matchingFallbacks += "release"
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11

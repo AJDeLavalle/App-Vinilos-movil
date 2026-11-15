@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="43" failures="0" errors="0" skipped="0" time="0.000" timestamp="2026-11-14T22:53:21" hostname="localhost">
+  <testsuite name="co.edu.uniandes.vinilos.ExampleInstrumentedTest" tests="1" failures="0" errors="0" skipped="0" time="0.000" timestamp="2026-11-14T22:53:21" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5556" />
+    </properties>
+    <testcase name="useAppContext" classname="co.edu.uniandes.vinilos.ExampleInstrumentedTest" time="0.000" />
+  </testsuite>
+  <testsuite name="co.edu.uniandes.vinilos.ui.AlbumCatalogTest" tests="5" failures="0" errors="0" skipped="0" time="4.612" timestamp="2026-11-14T22:53:21" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5556" />
+    </properties>
+    <testcase name="cp04_respuestaDemorada_muestraIndicadorDeCarga" classname="co.edu.uniandes.vinilos.ui.AlbumCatalogTest" time="1.145" />
+    <testcase name="cp02_sinAlbumes_muestraEstadoVacio" classname="co.edu.uniandes.vinilos.ui.AlbumCatalogTest" time="0.443" />
+    <testcase name="barraInferior_pestanaColeccionistas_yRegresoAAlbumes" classname="co.edu.uniandes.vinilos.ui.AlbumCatalogTest" time="1.068" />
+    <testcase name="cp03_apiInaccesible_muestraError_yReintentarCargaLaLista" classname="co.edu.uniandes.vinilos.ui.AlbumCatalogTest" time="1.227" />
+    <testcase name="cp01_conAlbumes_muestraListaConNombreYArtista" classname="co.edu.uniandes.vinilos.ui.AlbumCatalogTest" time="0.729" />
+  </testsuite>
+  <testsuite name="co.edu.uniandes.vinilos.ui.AlbumDetailNavigationTest" tests="5" failures="0" errors="0" skipped="0" time="4.670" timestamp="2026-11-14T22:53:21" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5556" />
+    </properties>
+    <testcase name="detalleConErrorDeRed_muestraReintentar_yRecupera" classname="co.edu.uniandes.vinilos.ui.AlbumDetailNavigationTest" time="0.850" />
+    <testcase name="cp10_flujoCatalogoDetalleVolver_conBotonDeLaBarra" classname="co.edu.uniandes.vinilos.ui.AlbumDetailNavigationTest" time="1.007" />
+    <testcase name="cp06_botonAtrasDelSistema_regresaAlCatalogo" classname="co.edu.uniandes.vinilos.ui.AlbumDetailNavigationTest" time="0.938" />
+    <testcase name="cp05_seleccionarAlbum_muestraDetalleDelMismoAlbum" classname="co.edu.uniandes.vinilos.ui.AlbumDetailNavigationTest" time="0.726" />
+    <testcase name="cp11_detalleMuestraComentarios_oMensajeSiNoHay" classname="co.edu.uniandes.vinilos.ui.AlbumDetailNavigationTest" time="1.149" />
+  </testsuite>
+  <testsuite name="co.edu.uniandes.vinilos.ui.ArtistDetailTest" tests="5" failures="0" errors="0" skipped="0" time="4.494" timestamp="2026-11-14T22:53:21" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5556" />
+    </properties>
+    <testcase name="cp13_bandaSinAlbumesNiPremios_muestraMensajesVacios" classname="co.edu.uniandes.vinilos.ui.ArtistDetailTest" time="0.838" />
+    <testcase name="cp15_errorDeRed_muestraReintentar_yRecupera" classname="co.edu.uniandes.vinilos.ui.ArtistDetailTest" time="0.756" />
+    <testcase name="cp12_desdeElAlbum_muestraDatosAlbumesYPremiosDelArtista" classname="co.edu.uniandes.vinilos.ui.ArtistDetailTest" time="1.037" />
+    <testcase name="cp16_seleccionarAlbumDelArtista_abreElAlbum_yAtrasRegresa" classname="co.edu.uniandes.vinilos.ui.ArtistDetailTest" time="1.128" />
+    <testcase name="cp14_artistaInexistente_informaYPermiteVolverAlAlbum" classname="co.edu.uniandes.vinilos.ui.ArtistDetailTest" time="0.735" />
+  </testsuite>
+  <testsuite name="co.edu.uniandes.vinilos.ui.ArtistListTest" tests="4" failures="0" errors="0" skipped="0" time="3.353" timestamp="2026-11-14T22:53:21" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5556" />
+    </properties>
+    <testcase name="cp19_apiInaccesible_muestraError_yReintentarCargaLaLista" classname="co.edu.uniandes.vinilos.ui.ArtistListTest" time="0.903" />
+    <testcase name="cp17_conArtistas_muestraMusicosYBandas" classname="co.edu.uniandes.vinilos.ui.ArtistListTest" time="0.856" />
+    <testcase name="cp18_sinArtistas_muestraEstadoVacio" classname="co.edu.uniandes.vinilos.ui.ArtistListTest" time="0.724" />
+    <testcase name="cp20_seleccionarBanda_abreSuDetalle_yAtrasRegresaAlListado" classname="co.edu.uniandes.vinilos.ui.ArtistListTest" time="0.870" />
+  </testsuite>
+  <testsuite name="co.edu.uniandes.vinilos.ui.AssociateTrackUiTest" tests="6" failures="0" errors="0" skipped="0" time="9.413" timestamp="2026-11-14T22:53:21" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5556" />
+    </properties>
+    <testcase name="cp38_desdeElDetalle_muestraElAlbumYSusTracksExistentes" classname="co.edu.uniandes.vinilos.ui.AssociateTrackUiTest" time="1.042" />
+    <testcase name="cp39_guardarVacio_muestraErrores_yNoEnvia" classname="co.edu.uniandes.vinilos.ui.AssociateTrackUiTest" time="1.390" />
+    <testcase name="cp42_falloDeRed_muestraError_yConservaLosDatos" classname="co.edu.uniandes.vinilos.ui.AssociateTrackUiTest" time="2.030" />
+    <testcase name="cp40_duracionInvalida_muestraError" classname="co.edu.uniandes.vinilos.ui.AssociateTrackUiTest" time="1.575" />
+    <testcase name="cp43_mientrasEnvia_elBotonSeDeshabilita_ySoloHayUnaSolicitud" classname="co.edu.uniandes.vinilos.ui.AssociateTrackUiTest" time="1.811" />
+    <testcase name="cp41_datosValidos_regresaAlDetalle_yMuestraElTrackNuevo" classname="co.edu.uniandes.vinilos.ui.AssociateTrackUiTest" time="1.565" />
+  </testsuite>
+  <testsuite name="co.edu.uniandes.vinilos.ui.CollectorTest" tests="7" failures="0" errors="0" skipped="0" time="6.354" timestamp="2026-11-14T22:53:21" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5556" />
+    </properties>
+    <testcase name="cp36_desdeElDetalle_abreArtistaFavorito_yAlbumDeLaColeccion" classname="co.edu.uniandes.vinilos.ui.CollectorTest" time="1.023" />
+    <testcase name="cp33_seleccionarColeccionista_muestraContactoGustosYColeccion_yAtrasRegresa" classname="co.edu.uniandes.vinilos.ui.CollectorTest" time="1.189" />
+    <testcase name="cp30_conColeccionistas_muestraNombreYCantidadDeAlbumes" classname="co.edu.uniandes.vinilos.ui.CollectorTest" time="0.747" />
+    <testcase name="cp34_sinGustosNiColeccion_muestraMensajesVacios" classname="co.edu.uniandes.vinilos.ui.CollectorTest" time="0.859" />
+    <testcase name="cp32_apiInaccesible_muestraError_yReintentarCargaLaLista" classname="co.edu.uniandes.vinilos.ui.CollectorTest" time="1.019" />
+    <testcase name="cp35_coleccionistaInexistente_informaYPermiteVolver" classname="co.edu.uniandes.vinilos.ui.CollectorTest" time="0.887" />
+    <testcase name="cp31_sinColeccionistas_muestraEstadoVacio" classname="co.edu.uniandes.vinilos.ui.CollectorTest" time="0.630" />
+  </testsuite>
+  <testsuite name="co.edu.uniandes.vinilos.ui.CreateAlbumTest" tests="10" failures="0" errors="0" skipped="0" time="30.883" timestamp="2026-11-14T22:53:21" hostname="localhost">
+    <properties>
+      <property name="device" value="emulator-5556" />
+    </properties>
+    <testcase name="cp25_musico_creaElAlbum_loAsocia_yApareceEnElCatalogo" classname="co.edu.uniandes.vinilos.ui.CreateAlbumTest" time="4.209" />
+    <testcase name="cp37_sinArtistas_guardarNoCierraLaApp_yReintentarLosCarga" classname="co.edu.uniandes.vinilos.ui.CreateAlbumTest" time="1.288" />
+    <testcase name="cp23_fechaFutura_muestraError" classname="co.edu.uniandes.vinilos.ui.CreateAlbumTest" time="1.835" />
+    <testcase name="cp22_fechaInexistente_muestraError" classname="co.edu.uniandes.vinilos.ui.CreateAlbumTest" time="1.743" />
+    <testcase name="cp29_mientrasEnvia_elBotonSeDeshabilita_ySoloHayUnaSolicitud" classname="co.edu.uniandes.vinilos.ui.CreateAlbumTest" time="4.625" />
+    <testcase name="cp27_falloDeRed_muestraError_yConservaLosDatos" classname="co.edu.uniandes.vinilos.ui.CreateAlbumTest" time="4.267" />
+    <testcase name="cp26_banda_asociaConElRecursoDeBandas" classname="co.edu.uniandes.vinilos.ui.CreateAlbumTest" time="4.082" />
+    <testcase name="cp24_urlSinHttp_muestraError_yAlCorregirDesaparece" classname="co.edu.uniandes.vinilos.ui.CreateAlbumTest" time="2.643" />
+    <testcase name="cp28_falloAlAsociar_reintentarNoDuplicaElAlbum" classname="co.edu.uniandes.vinilos.ui.CreateAlbumTest" time="4.707" />
+    <testcase name="cp21_guardarVacio_muestraUnErrorPorCampo_yNoEnvia" classname="co.edu.uniandes.vinilos.ui.CreateAlbumTest" time="1.484" />
+  </testsuite>
+</testsuites>

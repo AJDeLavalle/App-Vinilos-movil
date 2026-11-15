@@ -1,0 +1,15 @@
+etiqueta,dispositivo,api,hu,pss_mb,java_heap_mb,native_heap_mb,graficos_mb,fotogramas,tirones_pct,p50_ms,p90_ms,cpu_ms,arranque_frio_ms,arranque_caliente_ms
+despues,Android SDK built for arm64,29,arranque,,,,,,,,,,204,59
+despues,Android SDK built for arm64,29,HU01,54.4,2.8,40.3,0.0,226,0.88,5,8,940,,
+despues,Android SDK built for arm64,29,HU02,47.4,3.4,42.4,0.0,202,0.00,5,8,1050,,
+despues,Android SDK built for arm64,29,HU03,48.0,3.1,43.2,0.0,45,0.00,5,8,330,,
+despues,Android SDK built for arm64,29,HU04,49.1,3.4,42.4,0.0,200,0.00,5,7,730,,
+despues,Android SDK built for arm64,29,HU05,48.8,3.0,43.2,0.0,45,0.00,5,8,230,,
+despues,Android SDK built for arm64,29,HU06,49.2,3.1,42.8,0.0,89,0.00,5,7,380,,
+despues,Android SDK built for arm64,29,HU07,49.0,3.7,41.9,0.0,232,19.40,6,19,1190,,
+despues,Android SDK built for arm64,29,HU08,48.1,4.1,32.9,0.0,330,2.73,5,9,1200,,
+despues,Android SDK built for arm64,29,vuelta-1,54.1,4.0,36.0,0.0,,,,,,,
+despues,Android SDK built for arm64,29,vuelta-2,56.9,3.9,38.5,0.0,,,,,,,
+despues,Android SDK built for arm64,29,vuelta-3,49.5,4.0,34.1,0.0,,,,,,,
+despues,Android SDK built for arm64,29,vuelta-4,57.7,4.1,39.0,0.0,,,,,,,
+despues,Android SDK built for arm64,29,vuelta-5,56.5,4.0,38.3,0.0,,,,,,,
