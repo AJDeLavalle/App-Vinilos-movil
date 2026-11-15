@@ -157,7 +157,7 @@ Se recorrió dos veces cada detalle: álbum, Queen, el listado de artistas y el 
 
 - **Caché:** `/albums/100`, `/bands/101` y `/prizes` se pidieron **una sola vez**. La segunda visita salió de la caché en memoria ([#78](https://github.com/AJDeLavalle/App-Vinilos-movil/pull/78)). El formulario de crear álbum reutilizó la lista de artistas.
 - **Paralelismo:** `musicians` y `bands` salen en el mismo instante de la línea de tiempo ([#76](https://github.com/AJDeLavalle/App-Vinilos-movil/pull/76)).
-- **Hallazgo:** las imágenes alojadas en Wikimedia responden **403** y se vuelven a pedir en cada visita. Se reportó como [DEF-08 (#83)](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/83).
+- **Hallazgo:** las imágenes alojadas en Wikimedia responden **403** y se vuelven a pedir en cada visita. Se reportó como [DEF-07 (#83)](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/83).
 
 ## 6. Hallazgos
 
@@ -169,7 +169,7 @@ Se recorrió dos veces cada detalle: álbum, Queen, el listado de artistas y el 
 | 3 | En API 29 desaparecen los tirones del detalle de álbum (22,5 % → 0 %) y del listado de artistas (88,9 % → 0 %) | Sección 4 | — |
 | 4 | El formulario de crear álbum sigue con tirones (≈ 19 % en API 29), al abrir el teclado | Sección 4 | Revisar en el Sprint 3 con System Trace |
 | 5 | En API 22 la CPU sube en algunas HU (hasta +31 %) aunque la memoria baja; en API 29 y 37 la CPU baja en todas | Sección 4 | Es una sola corrida. Hipótesis por confirmar: las peticiones en paralelo concentran trabajo en un procesador más lento |
-| 6 | Imágenes de Wikimedia con 403, que se piden en cada visita | Sección 5 | [DEF-08 (#83)](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/83) |
+| 6 | Imágenes de Wikimedia con 403, que se piden en cada visita | Sección 5 | [DEF-07 (#83)](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/83) |
 | 7 | El hilo principal no tiene bloqueos largos: la red corre en hilos de corrutinas, y StrictMode no registra violaciones | Sección 3 y [#76](https://github.com/AJDeLavalle/App-Vinilos-movil/pull/76) | — |
 
 ## 7. Límites

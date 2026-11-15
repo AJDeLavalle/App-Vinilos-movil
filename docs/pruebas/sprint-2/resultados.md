@@ -32,7 +32,6 @@ Las 8 HU se recorrieron a mano en API 37 contra BackVynils local, con video y ca
 | DEF-04 | [Al asociar un track el detalle vuelve arriba y el track nuevo no se ve](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/70) | Media | Corregido en #68 |
 | DEF-05 | [La duración del track acepta minutos de tres cifras](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/71) | Baja | Corregido en #68 |
 | DEF-06 | [Track creado sin id se muestra como error](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/72) | Baja | Corregido en #68 |
-| DEF-07 | [El backend de Firebase no responde y el APK release queda sin datos](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/80) | Crítica | Corregido en #81 (backend en Heroku) |
-| DEF-08 | [Imágenes de Wikimedia responden 403 y se piden en cada visita](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/83) | Baja | Abierto (datos del backend) |
+| DEF-07 | [Imágenes de Wikimedia responden 403 y se piden en cada visita](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/83) | Baja | Abierto (datos del backend) |
 
 Los defectos del Sprint 1 están en [`docs/pruebas/sprint-1/defectos.md`](../sprint-1/defectos.md).
