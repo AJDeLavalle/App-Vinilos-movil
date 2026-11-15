@@ -11,6 +11,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import co.edu.uniandes.vinilos.testutil.requestedPaths
+import co.edu.uniandes.vinilos.testutil.respondByPath
 import retrofit2.HttpException
 
 /** Pruebas de integración HTTP: respuestas con la forma real de BackVynils servidas por MockWebServer. */
@@ -46,13 +48,14 @@ class CollectorServiceAdapterTest {
 
     @Test
     fun detalle_completaLaColeccionConSusAlbumes() = runTest {
-        server.enqueue(MockResponse().setBody(COLLECTOR_JSON))
-        server.enqueue(MockResponse().setBody(COLLECTOR_ALBUMS_JSON))
+        server.respondByPath(
+            "/collectors/100" to MockResponse().setBody(COLLECTOR_JSON),
+            "/collectors/100/albums" to MockResponse().setBody(COLLECTOR_ALBUMS_JSON),
+        )
 
         val collector = adapter.getCollector(100)
 
-        assertEquals("/collectors/100", server.takeRequest().path)
-        assertEquals("/collectors/100/albums", server.takeRequest().path)
+        assertEquals(setOf("/collectors/100", "/collectors/100/albums"), server.requestedPaths())
         assertEquals("3502457896", collector.telephone)
         assertEquals("Buscando América", collector.albums.single().name)
         val favorite = collector.favoritePerformers.single()
@@ -61,20 +64,24 @@ class CollectorServiceAdapterTest {
     }
 
     @Test
-    fun detalle_sinAlbumes_noConsultaLaColeccion() = runTest {
-        server.enqueue(MockResponse().setBody("""{"id":101,"name":"Jaime","collectorAlbums":[]}"""))
+    fun detalle_sinAlbumes_muestraLaColeccionVacia_aunqueFalleLaConsultaDeAlbumes() = runTest {
+        // La colección se pide en paralelo; si el coleccionista no tiene álbumes se ignora,
+        // incluso si esa consulta falla.
+        server.respondByPath(
+            "/collectors/101" to MockResponse().setBody("""{"id":101,"name":"Jaime","collectorAlbums":[]}"""),
+            "/collectors/101/albums" to MockResponse().setResponseCode(500),
+        )
 
         val collector = adapter.getCollector(101)
 
-        assertEquals(1, server.requestCount)
         assertTrue(collector.albums.isEmpty())
     }
 
     @Test(expected = CollectorNotFoundException::class)
     fun detalle404_lanzaCollectorNotFound() = runTest {
-        server.enqueue(
-            MockResponse().setResponseCode(404)
-                .setBody("""{"statusCode":404,"message":"The collector with the given id was not found"}""")
+        server.respondByPath(
+            "/collectors/999" to MockResponse().setResponseCode(404)
+                .setBody("""{"statusCode":404,"message":"The collector with the given id was not found"}"""),
         )
 
         adapter.getCollector(999)
@@ -82,7 +89,10 @@ class CollectorServiceAdapterTest {
 
     @Test(expected = HttpException::class)
     fun detalle500_propagaHttpException() = runTest {
-        server.enqueue(MockResponse().setResponseCode(500))
+        server.respondByPath(
+            "/collectors/100" to MockResponse().setResponseCode(500),
+            "/collectors/100/albums" to MockResponse().setBody(COLLECTOR_ALBUMS_JSON),
+        )
 
         adapter.getCollector(100)
     }

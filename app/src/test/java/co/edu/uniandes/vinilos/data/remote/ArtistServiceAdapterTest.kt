@@ -14,6 +14,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import co.edu.uniandes.vinilos.testutil.requestedPaths
+import co.edu.uniandes.vinilos.testutil.respondByPath
+import java.util.concurrent.TimeUnit
 import retrofit2.HttpException
 
 /** Pruebas de integración HTTP: respuestas con la forma real de BackVynils servidas por MockWebServer. */
@@ -80,25 +83,43 @@ class ArtistServiceAdapterTest {
 
     @Test
     fun listado_uneMusicosYBandas_ordenadosPorNombre() = runTest {
-        server.enqueue(MockResponse().setBody("""[{"id":100,"name":"Rubén Blades","birthDate":"1948-07-16T00:00:00.000Z"}]"""))
-        server.enqueue(MockResponse().setBody("""[{"id":101,"name":"Queen","creationDate":"1970-01-01T00:00:00.000Z"}]"""))
+        server.respondByPath(
+            "/musicians" to MockResponse().setBody("""[{"id":100,"name":"Rubén Blades","birthDate":"1948-07-16T00:00:00.000Z"}]"""),
+            "/bands" to MockResponse().setBody("""[{"id":101,"name":"Queen","creationDate":"1970-01-01T00:00:00.000Z"}]"""),
+        )
 
         val artists = adapter.getArtists()
 
-        assertEquals("/musicians", server.takeRequest().path)
-        assertEquals("/bands", server.takeRequest().path)
+        assertEquals(setOf("/musicians", "/bands"), server.requestedPaths())
         assertEquals(listOf("Queen", "Rubén Blades"), artists.map { it.name })
         assertEquals(listOf(ArtistType.BAND, ArtistType.MUSICIAN), artists.map { it.type })
     }
 
     @Test
     fun listado_ordenaSinDistinguirMayusculas() = runTest {
-        server.enqueue(MockResponse().setBody("[{\"id\":1,\"name\":\"Rubén Blades\"},{\"id\":2,\"name\":\"queen\"}]"))
-        server.enqueue(MockResponse().setBody("[{\"id\":3,\"name\":\"ABBA\"}]"))
+        server.respondByPath(
+            "/musicians" to MockResponse().setBody("[{\"id\":1,\"name\":\"Rubén Blades\"},{\"id\":2,\"name\":\"queen\"}]"),
+            "/bands" to MockResponse().setBody("[{\"id\":3,\"name\":\"ABBA\"}]"),
+        )
 
         val artists = adapter.getArtists()
 
         assertEquals(listOf("ABBA", "queen", "Rubén Blades"), artists.map { it.name })
+    }
+
+    @Test
+    fun listado_pideMusicosYBandasEnParalelo() = runTest {
+        server.respondByPath(
+            "/musicians" to MockResponse().setBody("[]").setBodyDelay(600, TimeUnit.MILLISECONDS),
+            "/bands" to MockResponse().setBody("[]").setBodyDelay(600, TimeUnit.MILLISECONDS),
+        )
+
+        val start = System.nanoTime()
+        adapter.getArtists()
+        val elapsedMs = (System.nanoTime() - start) / 1_000_000
+
+        // En serie tardaría al menos 1.200 ms; en paralelo, poco más de 600.
+        assertTrue("tardó $elapsedMs ms", elapsedMs < 1_100)
     }
 
     @Test

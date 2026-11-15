@@ -4,6 +4,8 @@ import co.edu.uniandes.vinilos.data.remote.dto.CollectorAlbumDto
 import co.edu.uniandes.vinilos.data.remote.dto.CollectorDto
 import co.edu.uniandes.vinilos.domain.model.Collector
 import co.edu.uniandes.vinilos.domain.model.CollectorNotFoundException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import retrofit2.HttpException
 
 /**
@@ -15,14 +17,20 @@ class CollectorServiceAdapter(private val api: CollectorApiService) {
     suspend fun getCollectors(): List<Collector> =
         api.getCollectors().mapNotNull { it.toDomain(emptyList()) }
 
-    suspend fun getCollector(collectorId: Int): Collector {
+    /**
+     * El coleccionista y sus álbumes se piden en paralelo: casi todos tienen colección, así que
+     * esperar al primero para decidir si pedir el segundo solo suma una ida y vuelta.
+     */
+    suspend fun getCollector(collectorId: Int): Collector = coroutineScope {
+        val albumsRequest = async { runCatching { api.getCollectorAlbums(collectorId) } }
         val dto = try {
             api.getCollector(collectorId)
         } catch (e: HttpException) {
+            albumsRequest.cancel()
             if (e.code() == 404) throw CollectorNotFoundException(collectorId) else throw e
         }
-        val albums = if (dto.collectorAlbums.isNullOrEmpty()) emptyList() else api.getCollectorAlbums(collectorId)
-        return dto.toDomain(albums) ?: throw CollectorNotFoundException(collectorId)
+        val albums = if (dto.collectorAlbums.isNullOrEmpty()) emptyList() else albumsRequest.await().getOrThrow()
+        dto.toDomain(albums) ?: throw CollectorNotFoundException(collectorId)
     }
 }
 
