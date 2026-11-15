@@ -58,7 +58,7 @@ La app consume [BackVynils](https://github.com/TheSoftwareDesignLab/BackVynils) 
 | Build | URL por defecto | Uso |
 |---|---|---|
 | `debug` | `http://10.0.2.2:3000/` | Desarrollo con BackVynils local; `10.0.2.2` es el `localhost` del computador visto desde el **emulador** |
-| `release` | `https://us-central1-vinilos-backend-app.cloudfunctions.net/api/` | APK de entrega: BackVynils desplegado en Firebase, funciona en dispositivos físicos |
+| `release` | `https://vinilos-oozma-kappa-b117aeae2e73.herokuapp.com/` | APK de entrega: BackVynils desplegado en Heroku, funciona en dispositivos físicos |
 
 Para desarrollar con el backend local:
 
@@ -89,7 +89,7 @@ Desde la raíz del repositorio:
 # Compilar el APK de depuración (backend local)
 ./gradlew assembleDebug        # Windows: gradlew.bat assembleDebug
 
-# Compilar el APK de entrega (backend en Firebase), firmado e instalable
+# Compilar el APK de entrega (backend en Heroku), firmado e instalable
 ./gradlew assembleRelease
 
 # Instalar en el emulador o dispositivo conectado
@@ -179,7 +179,7 @@ El botón "+" del catálogo abre el formulario. Al guardar, la app hace `POST /a
 | CP-29 | `CreateAlbumTest.cp29_mientrasEnvia_elBotonSeDeshabilita_ySoloHayUnaSolicitud` | UI instrumentada |
 | CP-37 | `CreateAlbumTest.cp37_sinArtistas_guardarNoCierraLaApp_yReintentarLosCarga` | UI instrumentada |
 
-Las pruebas usan repositorios falsos para no crear álbumes en el backend compartido de Firebase. Capturas con el backend local: [validaciones](docs/evidencias/sprint-2/HU07-validaciones.png) y [álbum creado](docs/evidencias/sprint-2/HU07-album-creado.png).
+Las pruebas usan repositorios falsos para no crear álbumes en el backend compartido de entrega. Capturas con el backend local: [validaciones](docs/evidencias/sprint-2/HU07-validaciones.png) y [álbum creado](docs/evidencias/sprint-2/HU07-album-creado.png).
 
 ## Pruebas del Sprint 3
 

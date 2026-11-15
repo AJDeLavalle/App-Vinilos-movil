@@ -5,11 +5,11 @@ plugins {
 
 // URL del backend BackVynils según el tipo de build (deben terminar en "/"):
 // - debug: BackVynils local; 10.0.2.2 es el localhost del computador visto desde el emulador.
-// - release: BackVynils desplegado en Firebase (Cloud Functions), accesible desde dispositivos físicos.
+// - release: BackVynils desplegado en Heroku (app vinilos-oozma-kappa), accesible desde dispositivos físicos.
 // Se pueden sobrescribir con -Pvinilos.apiUrl=... (debug) y -Pvinilos.apiUrl.release=... o en gradle.properties.
 val debugApiUrl = (findProperty("vinilos.apiUrl") as String?) ?: "http://10.0.2.2:3000/"
 val releaseApiUrl = (findProperty("vinilos.apiUrl.release") as String?)
-    ?: "https://us-central1-vinilos-backend-app.cloudfunctions.net/api/"
+    ?: "https://vinilos-oozma-kappa-b117aeae2e73.herokuapp.com/"
 
 android {
     namespace = "co.edu.uniandes.vinilos"

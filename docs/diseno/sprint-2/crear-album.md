@@ -93,7 +93,7 @@ El tipo se conoce porque el selector se llena con `getArtists`, disponible en la
 | CP-28 | Falla la asociación | Reintentar no crea un álbum duplicado |
 | CP-29 | Doble toque en Guardar | Solo se envía una solicitud |
 
-Las pruebas no deben crear álbumes en el backend de Firebase, que es compartido: usar un repositorio falso o MockWebServer.
+Las pruebas no deben crear álbumes en el backend de entrega, que es compartido: usar un repositorio falso o MockWebServer.
 
 ## 7. Decisiones que el equipo debe confirmar
 
