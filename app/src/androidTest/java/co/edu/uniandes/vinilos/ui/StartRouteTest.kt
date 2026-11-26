@@ -63,6 +63,10 @@ class StartRouteTest {
         openApp(Routes.albumDetail(100))
 
         composeRule.onNodeWithTag(AlbumDetailTags.TITLE).assertTextEquals("Buscando América")
+        composeRule.runOnIdle {
+            assertTrue(Routes.ALBUM_DETAIL in visited)
+            assertTrue(Routes.albumDetail(100) !in visited)
+        }
         Espresso.pressBack()
         composeRule.onNodeWithTag(AlbumListTags.LIST).assertIsDisplayed()
     }

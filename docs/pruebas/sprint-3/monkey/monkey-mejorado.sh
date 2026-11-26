@@ -72,7 +72,7 @@ for s in $SEMILLAS; do
     echo "Semilla $s, $hu ($(nombre_hu "$hu")): ${ruta:-arranque normal}"
     tmp_logcat=$(mktemp)
     tmp_salida=$(mktemp)
-    TEMPORALES="$TEMPORALES $tmp_logcat $tmp_salida"
+    TEMPORALES+=("$tmp_logcat" "$tmp_salida" "$tmp_salida.rafaga")
     extra=""
     if [ -n "$ruta" ]; then extra="--es start_route $ruta"; fi
 
@@ -129,7 +129,8 @@ EOF
       echo "===== $hu ${ruta:-(sin start_route)} ====="
       cat "$tmp_logcat"
     } >> "$logcat_semilla"
-    rm -f "$tmp_logcat" "$tmp_salida"
+    rm -f "$tmp_logcat" "$tmp_salida" "$tmp_salida.rafaga"
+    TEMPORALES=()
 
     FILAS="$FILAS| $s | $hu | ${ruta:-(arranque normal)} | $abrio_txt | $inyectados | $resultado | ${detalle:--} | $(con_total "$visitadas") |
 "

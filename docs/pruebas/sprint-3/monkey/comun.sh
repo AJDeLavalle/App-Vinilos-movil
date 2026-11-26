@@ -16,7 +16,7 @@ SEMILLAS=${SEMILLAS:-"9401 9402 9403"}
 PCT="--pct-touch 55 --pct-motion 20 --pct-nav 10 --pct-majornav 10 --pct-syskeys 0 --pct-rotation 5"
 ADB="$(command -v adb || echo "$HOME/Library/Android/sdk/platform-tools/adb")"
 LOGCAT_PID=""
-TEMPORALES=""
+TEMPORALES=()
 
 adb_() { "$ADB" "$@" | tr -d '\r'; }
 
@@ -64,7 +64,7 @@ restaurar() {
   detener_logcat
   adb_ shell settings put system user_rotation 0 >/dev/null 2>&1
   adb_ shell svc power stayon false >/dev/null 2>&1
-  if [ -n "$TEMPORALES" ]; then rm -f $TEMPORALES; fi
+  if [ "${#TEMPORALES[@]}" -gt 0 ]; then rm -f "${TEMPORALES[@]}"; fi
 }
 
 # Estado limpio de la app antes de cada semilla.
@@ -115,15 +115,37 @@ analizar() {
     resultado=ABORTADO
   fi
   inyectados=$(grep -oE 'Events injected: [0-9]+' "$salida" | tail -1 | grep -oE '[0-9]+')
-  # La excepción del logcat es la línea que sigue a "Process: <paquete>".
-  detalle=$(
-    {
-      grep -m1 -E '^// Long Msg:|Reason:' "$salida"
-      awk -v p="Process: $PKG," 'f && /AndroidRuntime/ { sub(/.*AndroidRuntime: /, ""); print; exit }
-        index($0, p) { f = 1 }' "$logcat"
-      grep -m1 -E 'FATAL EXCEPTION|Caused by' "$logcat" | sed 's/.*AndroidRuntime: //'
-    } | head -1 | cut -c1-120 | sed 's/|/\\|/g'
-  )
+  detalle=""
+  if [ "$resultado" != OK ]; then
+    detalle=$(
+      {
+        grep -m1 -oE '(// Long Msg:|Reason:).*' "$salida"
+        if [ "$resultado" = CRASH ]; then
+          # La excepción sigue a "Process: <paquete>"; si no hay, fallback acotado al bloque de $PKG.
+          awk -v p="Process: $PKG," '
+            { gsub(/\r/, "") }
+            /AndroidRuntime:.*FATAL EXCEPTION/ {
+              last_fatal = $0; sub(/.*AndroidRuntime:[ \t]*/, "", last_fatal); in_pkg = 0; next
+            }
+            /AndroidRuntime:/ && index($0, p) { in_pkg = 1; saw_pkg = 1; next }
+            /AndroidRuntime:.*Process: / { in_pkg = 0; last_fatal = ""; next }
+            in_pkg && /AndroidRuntime:/ {
+              line = $0; sub(/.*AndroidRuntime:[ \t]*/, "", line)
+              if (line != "") { print line; found = 1; exit }
+            }
+            END { if (!found && saw_pkg && last_fatal != "") print last_fatal }
+          ' "$logcat"
+        elif [ "$resultado" = ANR ]; then
+          awk -v p="ANR in $PKG" '
+            { gsub(/\r/, "") }
+            index($0, p) { in_anr = 1; next }
+            in_anr && /ANR in / { in_anr = 0 }
+            in_anr && /Reason:/ { sub(/.*Reason:/, "Reason:"); print; exit }
+          ' "$logcat"
+        fi
+      } | tr -d '\r' | head -1 | cut -c1-120 | sed 's/|/\\|/g'
+    )
+  fi
   echo "$resultado|${inyectados:-0}|$detalle"
 }
 
@@ -180,8 +202,8 @@ encabezado_entorno() {
 # Monkey puede bajar el panel de notificaciones y activar el modo avión: se avisa y se revierte.
 revisar_red() {
   if [ "$(adb_ shell settings get global airplane_mode_on)" = "1" ]; then
-    adb_ shell cmd connectivity airplane-mode disable >/dev/null 2>&1 \
-      || adb_ shell settings put global airplane_mode_on 0 >/dev/null 2>&1
+    "$ADB" shell cmd connectivity airplane-mode disable >/dev/null 2>&1 \
+      || "$ADB" shell settings put global airplane_mode_on 0 >/dev/null 2>&1
     echo "AVISO: Monkey activó el modo avión"
   fi
 }
