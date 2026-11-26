@@ -7,6 +7,7 @@ import co.edu.uniandes.vinilos.data.remote.ArtistApiService
 import co.edu.uniandes.vinilos.data.remote.ArtistServiceAdapter
 import co.edu.uniandes.vinilos.data.remote.CollectorApiService
 import co.edu.uniandes.vinilos.data.remote.CollectorServiceAdapter
+import co.edu.uniandes.vinilos.data.remote.UserAgentInterceptor
 import co.edu.uniandes.vinilos.data.repository.AlbumRepositoryImpl
 import co.edu.uniandes.vinilos.data.repository.ArtistRepositoryImpl
 import co.edu.uniandes.vinilos.data.repository.CollectorRepositoryImpl
@@ -22,13 +23,16 @@ import java.util.concurrent.TimeUnit
 /**
  * Inyección de dependencias manual: crea una sola instancia de cada capa para toda la app.
  *
- * Los tres servicios comparten un solo Retrofit y por lo tanto un solo OkHttpClient: un pool de
+ * Los tres servicios y el cargador de imágenes (Coil) comparten un solo OkHttpClient: un pool de
  * conexiones y un pool de hilos en lugar de tres, y la conexión con el backend se reutiliza
  * entre pantallas. Todo se crea al primer uso.
  */
 class AppContainer(baseUrl: String = BuildConfig.API_BASE_URL) {
 
-    private val retrofit: Retrofit by lazy { createRetrofit(baseUrl) }
+    /** Cliente HTTP único de la app: lo usan Retrofit (API) y Coil (portadas e imágenes). */
+    val okHttpClient: OkHttpClient by lazy { createOkHttpClient() }
+
+    private val retrofit: Retrofit by lazy { createRetrofit(baseUrl, okHttpClient) }
 
     private val albumRepositoryImpl by lazy {
         AlbumRepositoryImpl(
@@ -68,19 +72,23 @@ fun createArtistApiService(baseUrl: String): ArtistApiService =
 fun createCollectorApiService(baseUrl: String): CollectorApiService =
     createRetrofit(baseUrl).create(CollectorApiService::class.java)
 
-internal fun createRetrofit(baseUrl: String): Retrofit {
-    val client = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(15, TimeUnit.SECONDS)
-        .apply {
-            if (BuildConfig.DEBUG) {
-                addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
-            }
+private const val CONNECT_TIMEOUT_SECONDS = 10L
+private const val READ_TIMEOUT_SECONDS = 15L
+
+internal fun createOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
+    .connectTimeout(CONNECT_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    .readTimeout(READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+    .addInterceptor(UserAgentInterceptor())
+    .apply {
+        if (BuildConfig.DEBUG) {
+            addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
         }
-        .build()
-    return Retrofit.Builder()
+    }
+    .build()
+
+internal fun createRetrofit(baseUrl: String, client: OkHttpClient = createOkHttpClient()): Retrofit =
+    Retrofit.Builder()
         .baseUrl(baseUrl)
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-}

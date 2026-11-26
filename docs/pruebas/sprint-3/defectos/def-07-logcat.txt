@@ -1,0 +1,20 @@
+11-26 15:33:34.634  4991  5022 I okhttp.OkHttpClient: --> GET http://10.0.2.2:3000/albums
+11-26 15:33:35.158  4991  5022 I okhttp.OkHttpClient: <-- 200 OK http://10.0.2.2:3000/albums (524ms, 6367-byte body)
+11-26 15:33:35.227  4991  5022 I okhttp.OkHttpClient: --> GET https://i.pinimg.com/564x/aa/5f/ed/aa5fed7fac61cc8f41d1e79db917a7cd.jpg
+11-26 15:33:35.246  4991  5036 I okhttp.OkHttpClient: --> GET https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png
+11-26 15:33:35.250  4991  5037 I okhttp.OkHttpClient: --> GET https://cdn.shopify.com/s/files/1/0275/3095/products/image_4931268b-7acf-4702-9c55-b2b3a03ed999_1024x1024.jpg
+11-26 15:33:35.259  4991  5035 I okhttp.OkHttpClient: --> GET https://www.udiscovermusic.com/wp-content/uploads/2019/11/a-day-at-the-races.jpg
+11-26 15:33:35.267  4991  5038 I okhttp.OkHttpClient: --> GET https://www.udiscovermusic.com/wp-content/uploads/2019/11/a-day-at-the-races.jpg
+11-26 15:33:35.297  4991  5048 I okhttp.OkHttpClient: --> GET https://www.udiscovermusic.com/wp-content/uploads/2019/11/a-day-at-the-races.jpg
+11-26 15:33:35.381  4991  5022 I okhttp.OkHttpClient: <-- 200 https://i.pinimg.com/564x/aa/5f/ed/aa5fed7fac61cc8f41d1e79db917a7cd.jpg (153ms, 46976-byte body)
+11-26 15:33:35.521  4991  5037 I okhttp.OkHttpClient: <-- 200 https://cdn.shopify.com/s/files/1/0275/3095/products/image_4931268b-7acf-4702-9c55-b2b3a03ed999_1024x1024.jpg (267ms, 180585-byte body)
+11-26 15:33:35.623  4991  5048 I okhttp.OkHttpClient: <-- 200 https://www.udiscovermusic.com/wp-content/uploads/2019/11/a-day-at-the-races.jpg (325ms, 121034-byte body)
+11-26 15:33:35.633  4991  5036 I okhttp.OkHttpClient: <-- 200 https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png (387ms, 61711-byte body)
+11-26 15:33:35.860  4991  5038 I okhttp.OkHttpClient: <-- 200 https://www.udiscovermusic.com/wp-content/uploads/2019/11/a-day-at-the-races.jpg (583ms, 121034-byte body)
+11-26 15:33:35.919  4991  5035 I okhttp.OkHttpClient: <-- 200 https://www.udiscovermusic.com/wp-content/uploads/2019/11/a-day-at-the-races.jpg (659ms, 121034-byte body)
+11-26 15:33:45.184  4991  5035 I okhttp.OkHttpClient: --> GET http://10.0.2.2:3000/albums/102
+11-26 15:33:45.716  4991  5035 I okhttp.OkHttpClient: <-- 200 OK http://10.0.2.2:3000/albums/102 (531ms, 1328-byte body)
+11-26 15:33:50.999  5164  5187 I okhttp.OkHttpClient: --> GET http://10.0.2.2:3000/albums
+11-26 15:33:51.524  5164  5187 I okhttp.OkHttpClient: <-- 200 OK http://10.0.2.2:3000/albums (524ms, 6367-byte body)
+11-26 15:33:58.209  5218  5241 I okhttp.OkHttpClient: --> GET http://10.0.2.2:3000/albums
+11-26 15:33:58.750  5218  5241 I okhttp.OkHttpClient: <-- 200 OK http://10.0.2.2:3000/albums (523ms, 6367-byte body)
