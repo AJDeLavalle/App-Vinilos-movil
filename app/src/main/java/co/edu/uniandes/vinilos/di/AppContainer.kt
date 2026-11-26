@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit
  * Inyección de dependencias manual: crea una sola instancia de cada capa para toda la app.
  *
  * Los tres servicios y el cargador de imágenes (Coil) comparten un solo OkHttpClient: un pool de
- * conexiones y un pool de hilos en lugar de tres, y la conexión con el backend se reutiliza
+ * conexiones y un pool de hilos en lugar de uno por cliente, y la conexión con el backend se reutiliza
  * entre pantallas. Todo se crea al primer uso.
  */
 class AppContainer(baseUrl: String = BuildConfig.API_BASE_URL) {

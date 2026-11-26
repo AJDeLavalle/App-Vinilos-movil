@@ -44,11 +44,15 @@ class UserAgentInterceptorTest {
     fun clienteCompartidoConCoil_pideImagenesConElUserAgentDeVinilos() {
         server.enqueue(MockResponse().setBody("png"))
         val client = AppContainer(server.url("/").toString()).okHttpClient
-        val request = Request.Builder().url(server.url("/Queen_A_Night_At_The_Opera.png")).build()
+        // Con un User-Agent previo en la petición debe quedar uno solo, el de la app (header, no addHeader).
+        val request = Request.Builder().url(server.url("/Queen_A_Night_At_The_Opera.png"))
+            .header("User-Agent", "okhttp/4.12.0").build()
 
         client.newCall(request).execute().use { assertEquals(200, it.code) }
 
-        assertVinilosUserAgent(server.takeRequest().getHeader("User-Agent"))
+        val recorded = server.takeRequest()
+        assertEquals(listOf(vinilosUserAgent()), recorded.headers.values("User-Agent"))
+        assertVinilosUserAgent(recorded.getHeader("User-Agent"))
     }
 
     @Test

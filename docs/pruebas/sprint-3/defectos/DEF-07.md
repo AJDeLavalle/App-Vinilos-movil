@@ -31,8 +31,8 @@
 
 - **Una sola descarga en 3 aperturas** ([logcat](def-07-logcat.txt)): instalación limpia, catálogo, detalle de "A Night
   at the Opera" y luego 2 veces `am force-stop` y volver a abrir. Hay una sola línea
-  `<-- 200 https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png`. El detalle la toma de la
-  caché en memoria y las aperturas 2 y 3, de la caché en disco: solo repiten la petición `GET /albums` al backend.
+  `<-- 200 https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png`. El detalle la sirve desde la
+  caché, sin petición de red, y las aperturas 2 y 3, desde la caché en disco: solo repiten la petición `GET /albums` al backend.
 - **Códigos HTTP por User-Agent** ([salida de curl](def-07-curl.txt)):
 
   | Imagen | `okhttp/4.12.0` | `Vinilos/2.0 (Android 17; co.edu.uniandes.vinilos)` |
@@ -49,8 +49,8 @@
 
 ## Fuera de alcance (datos del backend)
 
-- **Rubén Blades:** la miniatura `…/thumb/…/800px-Ruben_Blades_by_Gage_Skidmore.jpg` responde 400 con cualquier
-  User-Agent. El archivo original `…/commons/b/bb/Ruben_Blades_by_Gage_Skidmore.jpg` responde 200.
+- **Rubén Blades:** la miniatura `…/thumb/…/800px-Ruben_Blades_by_Gage_Skidmore.jpg` responde 400 incluso con el
+  User-Agent de la app (403 con `okhttp/4.12.0`). El archivo original `…/commons/b/bb/Ruben_Blades_by_Gage_Skidmore.jpg` responde 200.
 - **Queen (artista):** `pm1.narvii.com` no responde.
 - **Corrección sugerida:** cambiar esas dos URL en `sql/data.sql` de BackVynils. Mientras tanto la app muestra el ícono
   de reemplazo. Que las vuelva a pedir en cada visita es intencional: no se guardan errores en caché, para tomar el dato
