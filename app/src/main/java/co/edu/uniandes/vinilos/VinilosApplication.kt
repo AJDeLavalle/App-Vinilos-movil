@@ -14,12 +14,16 @@ class VinilosApplication : Application(), ImageLoaderFactory {
 
     /**
      * Cargador de imágenes de toda la app (Coil lo pide la primera vez que muestra una portada):
+     * - Usa el mismo OkHttpClient de la API, con el User-Agent de la app: Wikimedia responde 403 al
+     *   de OkHttp (DEF-07).
      * - Caché en memoria de hasta el 15 % de la memoria de la app (Coil usa 25 % por defecto).
      * - Caché en disco de 50 MB: las portadas no se vuelven a descargar al reabrir la app.
+     *   Solo se guardan las respuestas correctas: una imagen que falla se vuelve a pedir en la siguiente visita.
      * - RGB_565 cuando la imagen no tiene transparencia: 2 bytes por píxel en lugar de 4.
      * - Se ignoran las cabeceras de caché del servidor de cada portada, que a veces la prohíben.
      */
     override fun newImageLoader(): ImageLoader = ImageLoader.Builder(this)
+        .okHttpClient { container.okHttpClient }
         .memoryCache { MemoryCache.Builder(this).maxSizePercent(0.15).build() }
         .diskCache {
             DiskCache.Builder()

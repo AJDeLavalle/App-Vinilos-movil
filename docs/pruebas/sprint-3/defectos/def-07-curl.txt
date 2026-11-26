@@ -1,0 +1,9 @@
+# DEF-07 — códigos HTTP por User-Agent (2026-11-26T20:28Z)
+403  UA="okhttp/4.12.0"  https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png
+403  UA="okhttp/4.12.0"  https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Ruben_Blades_by_Gage_Skidmore.jpg/800px-Ruben_Blades_by_Gage_Skidmore.jpg
+000  UA="okhttp/4.12.0"  https://pm1.narvii.com/6724/a8b29909071e9d08517b40c748b6689649372852v2_hq.jpg
+200  UA="Vinilos/2.0 (Android 17; co.edu.uniandes.vinilos)"  https://upload.wikimedia.org/wikipedia/en/4/4d/Queen_A_Night_At_The_Opera.png
+400  UA="Vinilos/2.0 (Android 17; co.edu.uniandes.vinilos)"  https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Ruben_Blades_by_Gage_Skidmore.jpg/800px-Ruben_Blades_by_Gage_Skidmore.jpg
+000  UA="Vinilos/2.0 (Android 17; co.edu.uniandes.vinilos)"  https://pm1.narvii.com/6724/a8b29909071e9d08517b40c748b6689649372852v2_hq.jpg
+# Archivo original de Rubén Blades (corrección sugerida para sql/data.sql)
+200  UA="Vinilos/2.0 (Android 17; co.edu.uniandes.vinilos)"  https://upload.wikimedia.org/wikipedia/commons/b/bb/Ruben_Blades_by_Gage_Skidmore.jpg

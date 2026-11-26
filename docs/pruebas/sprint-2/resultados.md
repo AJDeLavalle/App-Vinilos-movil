@@ -32,6 +32,6 @@ Las 8 HU se recorrieron a mano en API 37 contra BackVynils local, con video y ca
 | DEF-04 | [Al asociar un track el detalle vuelve arriba y el track nuevo no se ve](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/70) | Media | Corregido en #68 |
 | DEF-05 | [La duración del track acepta minutos de tres cifras](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/71) | Baja | Corregido en #68 |
 | DEF-06 | [Track creado sin id se muestra como error](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/72) | Baja | Corregido en #68 |
-| DEF-07 | [Imágenes de Wikimedia responden 403 y se piden en cada visita](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/83) | Baja | Abierto (datos del backend) |
+| DEF-07 | [Imágenes de Wikimedia responden 403 y se piden en cada visita](https://github.com/AJDeLavalle/App-Vinilos-movil/issues/83) | Baja | Corregido en el Sprint 3 para la portada de Queen; 2 URL dependen de los datos del backend ([detalle](../sprint-3/defectos/DEF-07.md)) |
 
 Los defectos del Sprint 1 están en [`docs/pruebas/sprint-1/defectos.md`](../sprint-1/defectos.md).
