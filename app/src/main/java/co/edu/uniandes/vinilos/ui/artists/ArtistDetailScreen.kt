@@ -198,7 +198,6 @@ private fun AlbumRow(album: Album, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = MinTouchTarget)
-            .semantics(mergeDescendants = true) {}
             .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
             .clickable(
                 onClickLabel = stringResource(R.string.a11y_open_album),

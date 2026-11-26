@@ -208,7 +208,12 @@ private fun TrackFormBody(
             modifier = Modifier
                 .fillMaxWidth()
                 .testTag(AssociateTrackTags.SAVE)
-                .semantics { if (sending) contentDescription = saving },
+                .semantics {
+                    if (sending) {
+                        contentDescription = saving
+                        liveRegion = LiveRegionMode.Polite
+                    }
+                },
         ) {
             if (sending) {
                 CircularProgressIndicator(Modifier.size(20.dp).clearAndSetSemantics {}, strokeWidth = 2.dp)

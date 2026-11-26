@@ -259,10 +259,10 @@ private fun CommentRow(comment: Comment) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
-            .padding(horizontal = 12.dp, vertical = 10.dp)
             .semantics(mergeDescendants = true) {}
-            .testTag(AlbumDetailTags.comment(comment.id)),
+            .testTag(AlbumDetailTags.comment(comment.id))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
+            .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
         Text(
             text = "★".repeat(comment.rating) + "☆".repeat(5 - comment.rating),

@@ -26,7 +26,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -94,7 +93,6 @@ private fun ArtistItem(artist: Artist, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .testTag(ArtistListTags.item(artist.id))
-            .semantics(mergeDescendants = true) {}
             .clickable(
                 onClickLabel = stringResource(R.string.a11y_open_artist),
                 role = Role.Button,

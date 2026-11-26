@@ -40,7 +40,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -154,7 +153,6 @@ private fun AlbumItem(album: Album, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .testTag(AlbumListTags.item(album.id))
-            .semantics(mergeDescendants = true) {}
             .clickable(
                 onClickLabel = stringResource(R.string.a11y_open_album),
                 role = Role.Button,

@@ -296,7 +296,7 @@ private fun ArtistField(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            CircularProgressIndicator(Modifier.size(24.dp))
+            CircularProgressIndicator(Modifier.size(24.dp).clearAndSetSemantics {})
             Text(stringResource(R.string.artists_loading), style = MaterialTheme.typography.bodyMedium)
         }
         ArtistOptions.Error -> Column(Modifier.focusRequester(focusRequester).focusable()) {
@@ -420,7 +420,12 @@ private fun SaveButton(state: CreateAlbumUiState, actions: CreateAlbumActions) {
         modifier = Modifier
             .fillMaxWidth()
             .testTag(CreateAlbumTags.SAVE)
-            .semantics { if (sending) contentDescription = saving },
+            .semantics {
+                if (sending) {
+                    contentDescription = saving
+                    liveRegion = LiveRegionMode.Polite
+                }
+            },
     ) {
         if (sending) {
             CircularProgressIndicator(Modifier.size(20.dp).clearAndSetSemantics {}, strokeWidth = 2.dp)

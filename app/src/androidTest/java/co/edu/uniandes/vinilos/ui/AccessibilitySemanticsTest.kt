@@ -35,9 +35,15 @@ import co.edu.uniandes.vinilos.ui.albums.AlbumListUiState
 import co.edu.uniandes.vinilos.ui.artists.ArtistDetailContent
 import co.edu.uniandes.vinilos.ui.artists.ArtistDetailTags
 import co.edu.uniandes.vinilos.ui.artists.ArtistDetailUiState
+import co.edu.uniandes.vinilos.ui.artists.ArtistListContent
+import co.edu.uniandes.vinilos.ui.artists.ArtistListTags
+import co.edu.uniandes.vinilos.ui.artists.ArtistListUiState
 import co.edu.uniandes.vinilos.ui.collectors.CollectorDetailContent
 import co.edu.uniandes.vinilos.ui.collectors.CollectorDetailTags
 import co.edu.uniandes.vinilos.ui.collectors.CollectorDetailUiState
+import co.edu.uniandes.vinilos.ui.collectors.CollectorListContent
+import co.edu.uniandes.vinilos.ui.collectors.CollectorListTags
+import co.edu.uniandes.vinilos.ui.collectors.CollectorListUiState
 import co.edu.uniandes.vinilos.ui.common.ErrorType
 import co.edu.uniandes.vinilos.ui.common.StateTags
 import co.edu.uniandes.vinilos.ui.create.ArtistOptions
@@ -89,6 +95,49 @@ class AccessibilitySemanticsTest {
     }
 
     @Test
+    fun artistas_tituloEsEncabezado_yTarjetasUnicasConAccion() {
+        composeRule.setContent {
+            VinilosTheme {
+                ArtistListContent(
+                    state = ArtistListUiState.Success(FakeArtistRepository.sampleArtists),
+                    onRetry = {},
+                    onArtistClick = {},
+                )
+            }
+        }
+
+        composeRule.onNode(hasText("Artistas") and isHeading()).assertExists()
+        composeRule.onAllNodesWithContentDescription("Imagen de Rubén Blades Bellido de Luna").assertCountEquals(1)
+        composeRule.onAllNodesWithContentDescription("Imagen de Queen").assertCountEquals(1)
+        composeRule.onNodeWithTag(ArtistListTags.item(1))
+            .assert(hasText("Rubén Blades Bellido de Luna"))
+            .assert(onClickLabel("ver detalles del artista"))
+        composeRule.onAllNodesWithText("Ver detalles ›").assertCountEquals(0)
+    }
+
+    @Test
+    fun coleccionistas_tituloEsEncabezado_yTarjetasConAccion() {
+        composeRule.setContent {
+            VinilosTheme {
+                CollectorListContent(
+                    state = CollectorListUiState.Success(FakeCollectorRepository.sampleCollectors),
+                    onRetry = {},
+                    onCollectorClick = {},
+                )
+            }
+        }
+
+        composeRule.onNode(hasText("Coleccionistas") and isHeading()).assertExists()
+        composeRule.onNodeWithTag(CollectorListTags.item(100))
+            .assert(hasText("Manolo Bellon"))
+            .assert(onClickLabel("ver detalles del coleccionista"))
+        composeRule.onNodeWithTag(CollectorListTags.item(101))
+            .assert(hasText("Jaime Monsalve"))
+            .assert(onClickLabel("ver detalles del coleccionista"))
+        composeRule.onAllNodesWithText("Ver detalles ›").assertCountEquals(0)
+    }
+
+    @Test
     fun detalleDeAlbum_encabezadosFilasFusionadasYEnlaceDe48dp() {
         composeRule.setContent {
             VinilosTheme {
@@ -107,7 +156,10 @@ class AccessibilitySemanticsTest {
 
         composeRule.onNodeWithTag(AlbumDetailTags.CONTENT)
             .performScrollToNode(hasTestTag(AlbumDetailTags.artist(1)))
-        composeRule.onNodeWithTag(AlbumDetailTags.artist(1)).assertHeightIsAtLeast(48.dp)
+        composeRule.onNodeWithTag(AlbumDetailTags.artist(1))
+            .assertHeightIsAtLeast(48.dp)
+            .assert(onClickLabel("ver detalles del artista"))
+            .assert(!hasText("›", substring = true))
 
         composeRule.onNodeWithTag(AlbumDetailTags.CONTENT)
             .performScrollToNode(hasTestTag(AlbumDetailTags.track(1)))
@@ -174,11 +226,15 @@ class AccessibilitySemanticsTest {
 
         composeRule.onNodeWithTag(CollectorDetailTags.CONTENT)
             .performScrollToNode(hasTestTag(CollectorDetailTags.artist(1)))
-        composeRule.onNodeWithTag(CollectorDetailTags.artist(1)).assertHeightIsAtLeast(48.dp)
+        composeRule.onNodeWithTag(CollectorDetailTags.artist(1))
+            .assertHeightIsAtLeast(48.dp)
+            .assert(onClickLabel("ver detalles del artista"))
 
         composeRule.onNodeWithTag(CollectorDetailTags.CONTENT)
             .performScrollToNode(hasTestTag(CollectorDetailTags.album(100)))
-        composeRule.onNodeWithTag(CollectorDetailTags.album(100)).assertHeightIsAtLeast(48.dp)
+        composeRule.onNodeWithTag(CollectorDetailTags.album(100))
+            .assertHeightIsAtLeast(48.dp)
+            .assert(onClickLabel("ver detalles del álbum"))
     }
 
     @Test
@@ -228,7 +284,9 @@ class AccessibilitySemanticsTest {
             }
         }
 
-        composeRule.onNodeWithTag(CreateAlbumTags.SAVE).assert(hasContentDescription("Guardando…"))
+        composeRule.onNodeWithTag(CreateAlbumTags.SAVE)
+            .assert(hasContentDescription("Guardando…"))
+            .assert(polite)
         composeRule.onNode(hasText("Información del álbum") and isHeading()).assertExists()
     }
 
@@ -269,7 +327,9 @@ class AccessibilitySemanticsTest {
             }
         }
 
-        composeRule.onNodeWithTag(AssociateTrackTags.SAVE).assert(hasContentDescription("Guardando…"))
+        composeRule.onNodeWithTag(AssociateTrackTags.SAVE)
+            .assert(hasContentDescription("Guardando…"))
+            .assert(polite)
         composeRule.onNodeWithTag(AssociateTrackTags.ALBUM).assert(isHeading())
         composeRule.onNode(hasText("Decisiones") and hasText("5:05")).assertExists()
     }
