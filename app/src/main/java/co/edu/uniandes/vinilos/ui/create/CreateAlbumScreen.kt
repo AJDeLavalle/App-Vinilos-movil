@@ -139,8 +139,8 @@ fun CreateAlbumContent(state: CreateAlbumUiState, actions: CreateAlbumActions) {
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
                 .imePadding()
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
