@@ -26,7 +26,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,8 +38,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -54,6 +55,7 @@ import co.edu.uniandes.vinilos.ui.common.EmptyView
 import co.edu.uniandes.vinilos.ui.common.ErrorType
 import co.edu.uniandes.vinilos.ui.common.ErrorView
 import co.edu.uniandes.vinilos.ui.common.LoadingView
+import co.edu.uniandes.vinilos.ui.common.VinilosTopBar
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 
 object AlbumListTags {
@@ -106,9 +108,7 @@ fun AlbumListContent(
     onCreateAlbum: () -> Unit,
 ) {
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.albums_title), fontWeight = FontWeight.Bold) })
-        },
+        topBar = { VinilosTopBar(stringResource(R.string.albums_title)) },
         floatingActionButton = {
             FloatingActionButton(onClick = onCreateAlbum, modifier = Modifier.testTag(AlbumListTags.CREATE)) {
                 Icon(
@@ -154,7 +154,12 @@ private fun AlbumItem(album: Album, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .testTag(AlbumListTags.item(album.id))
-            .clickable(onClick = onClick),
+            .semantics(mergeDescendants = true) {}
+            .clickable(
+                onClickLabel = stringResource(R.string.a11y_open_album),
+                role = Role.Button,
+                onClick = onClick,
+            ),
     ) {
         // Maqueta P01: portada, nombre, "Artista · Año" y enlace "Ver detalles".
         Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -165,21 +170,18 @@ private fun AlbumItem(album: Album, onClick: () -> Unit) {
                     text = album.name,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     // remember: el subtítulo concatena intérpretes y año; no hace falta rehacerlo en cada recomposición.
                     text = remember(album) { album.subtitle(" · ") }.ifBlank { stringResource(R.string.album_unknown_artist) },
                     style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = stringResource(R.string.album_view_details),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.clearAndSetSemantics {},
                 )
             }
         }
