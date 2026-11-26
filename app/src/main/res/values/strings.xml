@@ -43,7 +43,7 @@
     <string name="album_comments">Comentarios</string>
     <string name="album_no_comments">Este álbum aún no tiene comentarios.</string>
     <string name="album_comment_rating">Calificación: %1$d de 5</string>
-    <string name="album_view_artist">Ver artista: %1$s ›</string>
+    <string name="album_view_artist">Ver artista: %1$s</string>
     <string name="navigate_back">Volver</string>
 
     <!-- HU03: listado de artistas -->
@@ -117,4 +117,11 @@
         <item quantity="one">La descripción admite hasta %1$d carácter.</item>
         <item quantity="other">La descripción admite hasta %1$d caracteres.</item>
     </plurals>
+
+    <!-- Accesibilidad (T31) -->
+    <string name="a11y_open_album">ver detalles del álbum</string>
+    <string name="a11y_open_artist">ver detalles del artista</string>
+    <string name="a11y_open_collector">ver detalles del coleccionista</string>
+    <string name="form_saving">Guardando…</string>
+    <string name="link_chevron" translatable="false">›</string>
 </resources>

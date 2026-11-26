@@ -9,25 +9,25 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,7 +42,9 @@ import co.edu.uniandes.vinilos.ui.common.ErrorType
 import co.edu.uniandes.vinilos.ui.common.ErrorView
 import co.edu.uniandes.vinilos.ui.common.InfoLine
 import co.edu.uniandes.vinilos.ui.common.LoadingView
+import co.edu.uniandes.vinilos.ui.common.MinTouchTarget
 import co.edu.uniandes.vinilos.ui.common.SectionTitle
+import co.edu.uniandes.vinilos.ui.common.VinilosTopBar
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 
 object CollectorDetailTags {
@@ -81,16 +83,10 @@ fun CollectorDetailContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.collector_detail_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack, modifier = Modifier.testTag(CollectorDetailTags.BACK)) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = stringResource(R.string.navigate_back),
-                        )
-                    }
-                },
+            VinilosTopBar(
+                title = stringResource(R.string.collector_detail_title),
+                onBack = onBack,
+                backTag = CollectorDetailTags.BACK,
             )
         },
     ) { innerPadding ->
@@ -139,7 +135,7 @@ private fun CollectorDetail(
                 text = collector.name,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.testTag(CollectorDetailTags.TITLE),
+                modifier = Modifier.testTag(CollectorDetailTags.TITLE).semantics { heading() },
             )
         }
         item {
@@ -157,6 +153,7 @@ private fun CollectorDetail(
                 LinkRow(
                     text = performer.name,
                     tag = CollectorDetailTags.artist(performer.id),
+                    clickLabel = stringResource(R.string.a11y_open_artist),
                     onClick = { onArtistClick(performer) },
                 )
             }
@@ -172,6 +169,7 @@ private fun CollectorDetail(
                 LinkRow(
                     text = album.name,
                     tag = CollectorDetailTags.album(album.id),
+                    clickLabel = stringResource(R.string.a11y_open_album),
                     onClick = { onAlbumClick(album.id) },
                 )
             }
@@ -180,17 +178,19 @@ private fun CollectorDetail(
 }
 
 @Composable
-private fun LinkRow(text: String, tag: String, onClick: () -> Unit) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.bodyMedium,
+private fun LinkRow(text: String, tag: String, clickLabel: String, onClick: () -> Unit) {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
+            .heightIn(min = MinTouchTarget)
             .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
-            .clickable(onClick = onClick)
+            .clickable(onClickLabel = clickLabel, role = Role.Button, onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 12.dp)
             .testTag(tag),
-    )
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        Text(text = text, style = MaterialTheme.typography.bodyMedium)
+    }
 }
 
 @Preview(showBackground = true)

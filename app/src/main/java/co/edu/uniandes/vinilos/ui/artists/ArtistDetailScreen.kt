@@ -11,18 +11,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,6 +30,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,7 +49,9 @@ import co.edu.uniandes.vinilos.ui.common.ErrorType
 import co.edu.uniandes.vinilos.ui.common.ErrorView
 import co.edu.uniandes.vinilos.ui.common.InfoLine
 import co.edu.uniandes.vinilos.ui.common.LoadingView
+import co.edu.uniandes.vinilos.ui.common.MinTouchTarget
 import co.edu.uniandes.vinilos.ui.common.SectionTitle
+import co.edu.uniandes.vinilos.ui.common.VinilosTopBar
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 
 object ArtistDetailTags {
@@ -85,16 +88,10 @@ fun ArtistDetailContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.artist_detail_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack, modifier = Modifier.testTag(ArtistDetailTags.BACK)) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = stringResource(R.string.navigate_back),
-                        )
-                    }
-                },
+            VinilosTopBar(
+                title = stringResource(R.string.artist_detail_title),
+                onBack = onBack,
+                backTag = ArtistDetailTags.BACK,
             )
         },
     ) { innerPadding ->
@@ -137,7 +134,7 @@ private fun ArtistDetail(artist: Artist, onAlbumClick: (Int) -> Unit, modifier: 
                 text = artist.name,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.testTag(ArtistDetailTags.TITLE),
+                modifier = Modifier.testTag(ArtistDetailTags.TITLE).semantics { heading() },
             )
         }
         if (artist.year.isNotBlank()) {
@@ -200,10 +197,16 @@ private fun AlbumRow(album: Album, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .heightIn(min = MinTouchTarget)
             .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
-            .clickable(onClick = onClick)
+            .clickable(
+                onClickLabel = stringResource(R.string.a11y_open_album),
+                role = Role.Button,
+                onClick = onClick,
+            )
             .padding(horizontal = 12.dp, vertical = 12.dp)
             .testTag(ArtistDetailTags.album(album.id)),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = album.name,
@@ -223,6 +226,7 @@ private fun PrizeRow(prize: ArtistPrize) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .semantics(mergeDescendants = true) {}
             .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
             .padding(horizontal = 12.dp, vertical = 10.dp)
             .testTag(ArtistDetailTags.prize(prize.id)),

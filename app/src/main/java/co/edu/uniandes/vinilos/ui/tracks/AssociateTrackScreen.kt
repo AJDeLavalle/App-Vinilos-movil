@@ -17,13 +17,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,9 +32,14 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,6 +53,7 @@ import co.edu.uniandes.vinilos.ui.common.ErrorType
 import co.edu.uniandes.vinilos.ui.common.ErrorView
 import co.edu.uniandes.vinilos.ui.common.LoadingView
 import co.edu.uniandes.vinilos.ui.common.SectionTitle
+import co.edu.uniandes.vinilos.ui.common.VinilosTopBar
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 
 object AssociateTrackTags {
@@ -98,16 +101,10 @@ fun AssociateTrackContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.associate_track_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack, modifier = Modifier.testTag(AssociateTrackTags.BACK)) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = stringResource(R.string.navigate_back),
-                        )
-                    }
-                },
+            VinilosTopBar(
+                title = stringResource(R.string.associate_track_title),
+                onBack = onBack,
+                backTag = AssociateTrackTags.BACK,
             )
         },
     ) { innerPadding ->
@@ -172,7 +169,7 @@ private fun TrackFormBody(
             text = stringResource(R.string.associate_track_album, album.name),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.testTag(AssociateTrackTags.ALBUM),
+            modifier = Modifier.testTag(AssociateTrackTags.ALBUM).semantics { heading() },
         )
         TrackTextField(
             field = TrackField.NAME,
@@ -204,13 +201,22 @@ private fun TrackFormBody(
         }
         SubmitErrorMessage(state.submission)
         Spacer(Modifier.height(4.dp))
+        val saving = stringResource(R.string.form_saving)
         Button(
             onClick = onSave,
             enabled = !sending,
-            modifier = Modifier.fillMaxWidth().testTag(AssociateTrackTags.SAVE),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(AssociateTrackTags.SAVE)
+                .semantics {
+                    if (sending) {
+                        contentDescription = saving
+                        liveRegion = LiveRegionMode.Polite
+                    }
+                },
         ) {
             if (sending) {
-                CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+                CircularProgressIndicator(Modifier.size(20.dp).clearAndSetSemantics {}, strokeWidth = 2.dp)
             } else {
                 Text(stringResource(R.string.associate_track_title))
             }
@@ -267,6 +273,7 @@ private fun ExistingTrackRow(track: Track) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .semantics(mergeDescendants = true) {}
             .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
             .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
@@ -292,7 +299,9 @@ private fun SubmitErrorMessage(submission: TrackSubmission) {
         text = message,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.error,
-        modifier = Modifier.testTag(AssociateTrackTags.SUBMIT_ERROR),
+        modifier = Modifier
+            .testTag(AssociateTrackTags.SUBMIT_ERROR)
+            .semantics { liveRegion = LiveRegionMode.Polite },
     )
 }
 

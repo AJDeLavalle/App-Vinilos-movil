@@ -20,7 +20,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,8 +29,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,6 +41,7 @@ import co.edu.uniandes.vinilos.ui.albums.errorMessage
 import co.edu.uniandes.vinilos.ui.common.EmptyView
 import co.edu.uniandes.vinilos.ui.common.ErrorView
 import co.edu.uniandes.vinilos.ui.common.LoadingView
+import co.edu.uniandes.vinilos.ui.common.VinilosTopBar
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 
 object CollectorListTags {
@@ -65,9 +66,7 @@ fun CollectorListContent(
     onCollectorClick: (Int) -> Unit,
 ) {
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.nav_collectors), fontWeight = FontWeight.Bold) })
-        },
+        topBar = { VinilosTopBar(stringResource(R.string.nav_collectors)) },
     ) { innerPadding ->
         val modifier = Modifier.padding(innerPadding)
         when (state) {
@@ -98,7 +97,11 @@ private fun CollectorItem(collector: Collector, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .testTag(CollectorListTags.item(collector.id))
-            .clickable(onClick = onClick),
+            .clickable(
+                onClickLabel = stringResource(R.string.a11y_open_collector),
+                role = Role.Button,
+                onClick = onClick,
+            ),
     ) {
         // Maqueta P05: imagen, nombre, cantidad de álbumes y enlace "Ver detalles". El backend no
         // tiene la ciudad del coleccionista, así que no se muestra.
@@ -110,8 +113,6 @@ private fun CollectorItem(collector: Collector, onClick: () -> Unit) {
                     text = collector.name,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = pluralStringResource(R.plurals.collector_album_count, collector.albumCount, collector.albumCount),
@@ -122,6 +123,7 @@ private fun CollectorItem(collector: Collector, onClick: () -> Unit) {
                     text = stringResource(R.string.album_view_details),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.clearAndSetSemantics {},
                 )
             }
         }
@@ -133,6 +135,7 @@ private fun CollectorItem(collector: Collector, onClick: () -> Unit) {
 fun CollectorImage(modifier: Modifier = Modifier) {
     Image(
         painter = painterResource(R.drawable.ic_collector_placeholder),
+        // Imagen genérica decorativa: el backend no guarda foto del coleccionista.
         contentDescription = null,
         modifier = modifier.clip(RoundedCornerShape(4.dp)),
     )
