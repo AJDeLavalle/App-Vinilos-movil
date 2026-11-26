@@ -153,8 +153,8 @@ class AccessibilityChecksTest {
         composeRule.onRoot().tryPerformAccessibilityChecks()
 
         composeRule.onNodeWithTag(AlbumDetailTags.CONTENT)
-            .performScrollToNode(hasTestTag(AlbumDetailTags.COMMENTS))
-        composeRule.onNodeWithTag(AlbumDetailTags.COMMENTS).assertIsDisplayed()
+            .performScrollToNode(hasTestTag(AlbumDetailTags.comment(1)))
+        composeRule.onNodeWithTag(AlbumDetailTags.comment(1)).assertIsDisplayed()
         composeRule.onRoot().tryPerformAccessibilityChecks()
     }
 
@@ -210,8 +210,8 @@ class AccessibilityChecksTest {
         composeRule.onRoot().tryPerformAccessibilityChecks()
 
         composeRule.onNodeWithTag(ArtistDetailTags.CONTENT)
-            .performScrollToNode(hasTestTag(ArtistDetailTags.PRIZES))
-        composeRule.onNodeWithTag(ArtistDetailTags.PRIZES).assertIsDisplayed()
+            .performScrollToNode(hasTestTag(ArtistDetailTags.prize(100)))
+        composeRule.onNodeWithTag(ArtistDetailTags.prize(100)).assertIsDisplayed()
         composeRule.onRoot().tryPerformAccessibilityChecks()
     }
 
