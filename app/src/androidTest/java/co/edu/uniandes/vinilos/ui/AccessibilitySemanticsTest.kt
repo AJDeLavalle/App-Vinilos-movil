@@ -144,6 +144,7 @@ class AccessibilitySemanticsTest {
         composeRule.onNodeWithTag(CollectorListTags.item(100))
             .assert(hasText("Manolo Bellon"))
             .assert(onClickLabel("ver detalles del coleccionista"))
+            .assert(leeVerDetallesSinChevron)
         composeRule.onNodeWithTag(CollectorListTags.item(101))
             .assert(hasText("Jaime Monsalve"))
             .assert(onClickLabel("ver detalles del coleccionista"))
@@ -438,7 +439,6 @@ class AccessibilitySemanticsTest {
         node.config.getOrNull(SemanticsActions.OnClick)?.label == label
     }
 
-    // T45: la tarjeta lee el texto visible «Ver detalles», pero no el «›» decorativo.
     private val leeVerDetallesSinChevron = hasText("Ver detalles") and !hasText("›", substring = true)
 
     private val polite = SemanticsMatcher.expectValue(

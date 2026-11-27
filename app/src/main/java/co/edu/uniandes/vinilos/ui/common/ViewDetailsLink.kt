@@ -12,13 +12,7 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import co.edu.uniandes.vinilos.R
 
-/**
- * Enlace «Ver detalles ›» de las tarjetas de los listados (maquetas P01, P03 y P05).
- *
- * El texto queda expuesto a TalkBack, que lo lee dentro de la tarjeta; solo se oculta el «›»,
- * que es decorativo. Si se ocultara el texto completo, Accessibility Scanner lo marca como
- * «Texto no expuesto» porque sigue visible en pantalla (T45).
- */
+/** Enlace «Ver detalles ›» de las tarjetas de los listados; solo el «›» queda oculto a TalkBack. */
 @Composable
 fun ViewDetailsLink(modifier: Modifier = Modifier) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
