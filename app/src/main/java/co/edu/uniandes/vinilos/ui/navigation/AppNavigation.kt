@@ -13,11 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Density
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -79,6 +82,17 @@ private const val ALBUM_CREATED_KEY = "album_created"
 /** Aviso del formulario al detalle del álbum para que muestre el track nuevo. */
 private const val TRACK_ADDED_KEY = "track_added"
 
+private const val MAX_NAV_LABEL_FONT_SCALE = 1.3f
+
+@Composable
+private fun NavigationLabel(text: String) {
+    val density = LocalDensity.current
+    val limited = Density(density.density, fontScale = density.fontScale.coerceAtMost(MAX_NAV_LABEL_FONT_SCALE))
+    CompositionLocalProvider(LocalDensity provides limited) {
+        Text(text = text, maxLines = 1, softWrap = false)
+    }
+}
+
 /** Pestañas de la barra inferior de la maqueta. */
 enum class TopLevelDestination(
     val route: String,
@@ -136,7 +150,7 @@ fun VinilosApp(
                             }
                         },
                         icon = { Icon(painterResource(destination.icon), contentDescription = null) },
-                        label = { Text(stringResource(destination.label)) },
+                        label = { NavigationLabel(stringResource(destination.label)) },
                         modifier = Modifier.testTag(destination.testTag),
                     )
                 }

@@ -1,7 +1,10 @@
 package co.edu.uniandes.vinilos.ui
 
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.SemanticsActions
@@ -12,6 +15,7 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -30,6 +34,7 @@ import co.edu.uniandes.vinilos.testutil.FakeAlbumRepository
 import co.edu.uniandes.vinilos.testutil.FakeArtistRepository
 import co.edu.uniandes.vinilos.testutil.FakeCollectorRepository
 import co.edu.uniandes.vinilos.testutil.enableVinilosAccessibilityChecks
+import co.edu.uniandes.vinilos.testutil.grantLocalNetworkPermission
 import co.edu.uniandes.vinilos.ui.albums.AlbumListContent
 import co.edu.uniandes.vinilos.ui.albums.AlbumListTags
 import co.edu.uniandes.vinilos.ui.albums.AlbumListUiState
@@ -57,6 +62,8 @@ import co.edu.uniandes.vinilos.ui.create.SubmitError
 import co.edu.uniandes.vinilos.ui.detail.AlbumDetailContent
 import co.edu.uniandes.vinilos.ui.detail.AlbumDetailTags
 import co.edu.uniandes.vinilos.ui.detail.AlbumDetailUiState
+import co.edu.uniandes.vinilos.ui.navigation.TopLevelDestination
+import co.edu.uniandes.vinilos.ui.navigation.VinilosApp
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 import co.edu.uniandes.vinilos.ui.tracks.AlbumLoad
 import co.edu.uniandes.vinilos.ui.tracks.AssociateTrackContent
@@ -382,6 +389,36 @@ class AccessibilitySemanticsTest {
             .assert(sinRecorte())
     }
 
+    @Test
+    fun barraInferior_conFuenteAl200_noPartePalabrasEnAncho360() {
+        grantLocalNetworkPermission()
+        composeRule.setContent {
+            val base = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(base.density, fontScale = 2f)) {
+                VinilosTheme {
+                    Box(Modifier.width(360.dp)) {
+                        VinilosApp(
+                            repository = FakeAlbumRepository(),
+                            artistRepository = FakeArtistRepository(),
+                            collectorRepository = FakeCollectorRepository(),
+                        )
+                    }
+                }
+            }
+        }
+
+        mapOf(
+            TopLevelDestination.ALBUMS to "Álbumes",
+            TopLevelDestination.ARTISTS to "Artistas",
+            TopLevelDestination.COLLECTORS to "Coleccionistas",
+        ).forEach { (destination, nombre) ->
+            composeRule.onNode(
+                hasText(nombre) and hasAnyAncestor(hasTestTag(destination.testTag)),
+                useUnmergedTree = true,
+            ).assert(enUnaLinea())
+        }
+    }
+
     private fun emptyCreateActions() = CreateAlbumActions(
         onNameChange = {},
         onArtistChange = {},
@@ -406,6 +443,15 @@ class AccessibilitySemanticsTest {
         SemanticsProperties.LiveRegion,
         LiveRegionMode.Polite,
     )
+
+    private fun enUnaLinea() = SemanticsMatcher("texto en una línea sin desbordar") { node ->
+        val results = mutableListOf<TextLayoutResult>()
+        node.config.getOrNull(SemanticsActions.GetTextLayoutResult)?.action?.invoke(results)
+        results.isNotEmpty() && results.all { layout ->
+            layout.lineCount == 1 &&
+                layout.multiParagraph.maxIntrinsicWidth <= layout.layoutInput.constraints.maxWidth
+        }
+    }
 
     private fun sinRecorte() = SemanticsMatcher("texto sin recortar") { node ->
         val results = mutableListOf<TextLayoutResult>()
