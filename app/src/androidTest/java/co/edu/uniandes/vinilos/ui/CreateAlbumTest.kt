@@ -257,7 +257,9 @@ class CreateAlbumTest {
     fun cp37_sinArtistas_guardarNoCierraLaApp_yReintentarLosCarga() {
         val artists = FakeArtistRepository(error = IOException("sin red"))
         val albums = FakeAlbumRepository()
-        openForm(albums, artists)
+        // Guardar con el formulario vacío lleva el foco al primer campo con error y abre el teclado,
+        // así que aplica el mismo falso positivo de ATF que en el resto de los casos (T45).
+        openForm(albums, artists, configure = suppressImeClippedField)
 
         save()
 
