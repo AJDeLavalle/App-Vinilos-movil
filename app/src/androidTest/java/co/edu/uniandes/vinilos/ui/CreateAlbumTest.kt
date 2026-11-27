@@ -18,13 +18,22 @@ import co.edu.uniandes.vinilos.domain.model.ArtistType
 import co.edu.uniandes.vinilos.testutil.FakeAlbumRepository
 import co.edu.uniandes.vinilos.testutil.FakeArtistRepository
 import co.edu.uniandes.vinilos.testutil.FakeCollectorRepository
+import co.edu.uniandes.vinilos.testutil.enableVinilosAccessibilityChecks
 import co.edu.uniandes.vinilos.testutil.grantLocalNetworkPermission
 import co.edu.uniandes.vinilos.ui.albums.AlbumListTags
 import co.edu.uniandes.vinilos.ui.create.AlbumField
 import co.edu.uniandes.vinilos.ui.create.CreateAlbumTags
 import co.edu.uniandes.vinilos.ui.navigation.VinilosApp
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
+import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResultUtils.matchesCheck
+import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResultUtils.matchesElements
+import com.google.android.apps.common.testing.accessibility.framework.checks.SpeakableTextPresentCheck
+import com.google.android.apps.common.testing.accessibility.framework.integrations.espresso.AccessibilityValidator
+import com.google.android.apps.common.testing.accessibility.framework.uielement.ViewHierarchyElement
 import kotlinx.coroutines.CompletableDeferred
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.Description
+import org.hamcrest.TypeSafeMatcher
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -38,11 +47,36 @@ class CreateAlbumTest {
     @get:Rule
     val composeRule = createAndroidComposeRule<ComponentActivity>()
 
+    private val formFieldTags = AlbumField.entries.map(CreateAlbumTags::field).toSet()
+
+    private val imeClippedFieldMatcher = object : TypeSafeMatcher<ViewHierarchyElement>() {
+        override fun describeTo(description: Description) {
+            description.appendText("EditText de CreateAlbumScreen recortado por el teclado sin hijos visibles")
+        }
+
+        override fun matchesSafely(item: ViewHierarchyElement): Boolean =
+            item.className?.toString() == "android.widget.EditText" &&
+                item.isEditable == true &&
+                item.childViewCount == 0 &&
+                item.testTag?.toString() in formFieldTags
+    }
+
+    private val suppressImeClippedField: AccessibilityValidator.() -> Unit = {
+        setSuppressingResultMatcher(
+            allOf(
+                matchesCheck(SpeakableTextPresentCheck::class.java),
+                matchesElements(imeClippedFieldMatcher),
+            ),
+        )
+    }
+
     private fun openForm(
         albums: FakeAlbumRepository = FakeAlbumRepository(),
         artists: FakeArtistRepository = FakeArtistRepository(),
+        configure: AccessibilityValidator.() -> Unit = {},
     ) {
         grantLocalNetworkPermission()
+        composeRule.enableVinilosAccessibilityChecks(configure)
         composeRule.setContent {
             VinilosTheme {
                 VinilosApp(
@@ -91,7 +125,7 @@ class CreateAlbumTest {
     @Test
     fun cp21_guardarVacio_muestraUnErrorPorCampo_yNoEnvia() {
         val albums = FakeAlbumRepository()
-        openForm(albums)
+        openForm(albums, configure = suppressImeClippedField)
 
         save()
 
@@ -107,7 +141,7 @@ class CreateAlbumTest {
 
     @Test
     fun cp22_fechaInexistente_muestraError() {
-        openForm()
+        openForm(configure = suppressImeClippedField)
         type(AlbumField.RELEASE_DATE, "31/02/2020")
 
         save()
@@ -117,7 +151,7 @@ class CreateAlbumTest {
 
     @Test
     fun cp23_fechaFutura_muestraError() {
-        openForm()
+        openForm(configure = suppressImeClippedField)
         type(AlbumField.RELEASE_DATE, "01/01/2999")
 
         save()
@@ -127,7 +161,7 @@ class CreateAlbumTest {
 
     @Test
     fun cp24_urlSinHttp_muestraError_yAlCorregirDesaparece() {
-        openForm()
+        openForm(configure = suppressImeClippedField)
         type(AlbumField.COVER, "portada.jpg")
 
         save()
@@ -142,7 +176,7 @@ class CreateAlbumTest {
     @Test
     fun cp25_musico_creaElAlbum_loAsocia_yApareceEnElCatalogo() {
         val albums = FakeAlbumRepository()
-        openForm(albums)
+        openForm(albums, configure = suppressImeClippedField)
         fillValidForm(artist = "Rubén Blades Bellido de Luna")
 
         save()
@@ -155,7 +189,7 @@ class CreateAlbumTest {
     @Test
     fun cp26_banda_asociaConElRecursoDeBandas() {
         val albums = FakeAlbumRepository()
-        openForm(albums)
+        openForm(albums, configure = suppressImeClippedField)
         fillValidForm(artist = "Queen")
 
         save()
@@ -167,7 +201,7 @@ class CreateAlbumTest {
     @Test
     fun cp27_falloDeRed_muestraError_yConservaLosDatos() {
         val albums = FakeAlbumRepository(createError = IOException("sin red"))
-        openForm(albums)
+        openForm(albums, configure = suppressImeClippedField)
         fillValidForm()
 
         save()
@@ -184,7 +218,7 @@ class CreateAlbumTest {
     @Test
     fun cp28_falloAlAsociar_reintentarNoDuplicaElAlbum() {
         val albums = FakeAlbumRepository(linkError = IOException("sin red"))
-        openForm(albums)
+        openForm(albums, configure = suppressImeClippedField)
         fillValidForm()
 
         save()
@@ -206,7 +240,7 @@ class CreateAlbumTest {
     fun cp29_mientrasEnvia_elBotonSeDeshabilita_ySoloHayUnaSolicitud() {
         val gate = CompletableDeferred<Unit>()
         val albums = FakeAlbumRepository(createGate = gate)
-        openForm(albums)
+        openForm(albums, configure = suppressImeClippedField)
         fillValidForm()
 
         save()

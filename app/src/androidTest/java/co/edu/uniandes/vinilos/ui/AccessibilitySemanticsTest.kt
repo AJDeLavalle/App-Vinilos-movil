@@ -29,6 +29,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import co.edu.uniandes.vinilos.testutil.FakeAlbumRepository
 import co.edu.uniandes.vinilos.testutil.FakeArtistRepository
 import co.edu.uniandes.vinilos.testutil.FakeCollectorRepository
+import co.edu.uniandes.vinilos.testutil.enableVinilosAccessibilityChecks
 import co.edu.uniandes.vinilos.ui.albums.AlbumListContent
 import co.edu.uniandes.vinilos.ui.albums.AlbumListTags
 import co.edu.uniandes.vinilos.ui.albums.AlbumListUiState
@@ -62,6 +63,7 @@ import co.edu.uniandes.vinilos.ui.tracks.AssociateTrackContent
 import co.edu.uniandes.vinilos.ui.tracks.AssociateTrackTags
 import co.edu.uniandes.vinilos.ui.tracks.AssociateTrackUiState
 import co.edu.uniandes.vinilos.ui.tracks.TrackSubmission
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -71,6 +73,11 @@ class AccessibilitySemanticsTest {
 
     @get:Rule
     val composeRule = createAndroidComposeRule<ComponentActivity>()
+
+    @Before
+    fun setUp() {
+        composeRule.enableVinilosAccessibilityChecks()
+    }
 
     @Test
     fun catalogo_tituloEsEncabezado_yTarjetasUnicasConAccion() {

@@ -15,6 +15,7 @@ import co.edu.uniandes.vinilos.domain.model.CollectorNotFoundException
 import co.edu.uniandes.vinilos.testutil.FakeAlbumRepository
 import co.edu.uniandes.vinilos.testutil.FakeArtistRepository
 import co.edu.uniandes.vinilos.testutil.FakeCollectorRepository
+import co.edu.uniandes.vinilos.testutil.enableVinilosAccessibilityChecks
 import co.edu.uniandes.vinilos.testutil.grantLocalNetworkPermission
 import co.edu.uniandes.vinilos.ui.artists.ArtistDetailTags
 import co.edu.uniandes.vinilos.ui.collectors.CollectorDetailTags
@@ -38,6 +39,7 @@ class CollectorTest {
 
     private fun openCollectorsTab(repository: FakeCollectorRepository = FakeCollectorRepository()) {
         grantLocalNetworkPermission()
+        composeRule.enableVinilosAccessibilityChecks()
         composeRule.setContent {
             VinilosTheme {
                 VinilosApp(
