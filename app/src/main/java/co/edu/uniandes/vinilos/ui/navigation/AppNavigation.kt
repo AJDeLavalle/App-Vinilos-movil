@@ -10,16 +10,17 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -89,7 +90,7 @@ private fun NavigationLabel(text: String) {
     val density = LocalDensity.current
     val limited = Density(density.density, fontScale = density.fontScale.coerceAtMost(MAX_NAV_LABEL_FONT_SCALE))
     CompositionLocalProvider(LocalDensity provides limited) {
-        Text(text = text, maxLines = 1, softWrap = false)
+        Text(text = text, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis)
     }
 }
 
