@@ -51,9 +51,9 @@ Total contado directamente del código de `AccessibilityChecksTest.kt`: **8 pant
 | Pantalla / componente | Prueba | Estados verificados explícitamente | Llamadas `tryPerformAccessibilityChecks()` |
 |---|---|---|---|
 | 1. Catálogo de álbumes (`AlbumListContent`) | `pantalla01_catalogoDeAlbumes_todosLosEstados` | `Loading`, `Empty`, `Error(NETWORK)`, `Success` (4) | 4 |
-| 2. Detalle de álbum (`AlbumDetailContent`) | `pantalla02_detalleDeAlbum_todosLosEstados` | `Loading`, `Error(NETWORK)`, `Error(NOT_FOUND)`, `Success` arriba y tras scroll a comentarios (4) | 5 |
+| 2. Detalle de álbum (`AlbumDetailContent`) | `pantalla02_detalleDeAlbum_todosLosEstados` | `Loading`, `Error(NETWORK)`, `Error(NOT_FOUND)`, `Success` arriba y tras scroll al ítem de comentario (`AlbumDetailTags.comment(1)`) (4) | 5 |
 | 3. Listado de artistas (`ArtistListContent`) | `pantalla03_listadoDeArtistas_todosLosEstados` | `Loading`, `Empty`, `Error(NETWORK)`, `Success` (4) | 4 |
-| 4. Detalle de artista (`ArtistDetailContent`) | `pantalla04_detalleDeArtista_todosLosEstados` | `Loading`, `Error(NETWORK)`, `Error(NOT_FOUND)`, `Success` arriba y tras scroll a premios (4) | 5 |
+| 4. Detalle de artista (`ArtistDetailContent`) | `pantalla04_detalleDeArtista_todosLosEstados` | `Loading`, `Error(NETWORK)`, `Error(NOT_FOUND)`, `Success` arriba y tras scroll al ítem de premio (`ArtistDetailTags.prize(100)`) (4) | 5 |
 | 5. Listado de coleccionistas (`CollectorListContent`) | `pantalla05_listadoDeColeccionistas_todosLosEstados` | `Loading`, `Empty`, `Error(NETWORK)`, `Success` (4) | 4 |
 | 6. Detalle de coleccionista (`CollectorDetailContent`) | `pantalla06_detalleDeColeccionista_todosLosEstados` | `Loading`, `Error(NETWORK)`, `Error(NOT_FOUND)`, `Success` arriba y tras scroll a colección (4) | 5 |
 | 7. Crear álbum (`CreateAlbumContent`) | `pantalla07_crearAlbum_todosLosEstados` | Inicial con artistas cargados, `ArtistOptions.Loading`, `ArtistOptions.Error`, errores en los 7 campos (arriba y tras scroll a guardar), `Submission.Sending`, `SubmitError.NETWORK`, `albumCreated + SubmitError.ARTIST_LINK` (7) | 8 |
@@ -67,10 +67,9 @@ El listado completo por clase y caso de prueba está en [chequeos-automaticos-ju
 
 | AVD | Nivel de API | Estado de ATF | Comando | Total | Pasadas | Omitidas (`Assume`) | Fallas reales | Duración medida |
 |---|---|---|---|---:|---:|---:|---:|---:|
-| `Medium_Phone_API_37.0` (corrida 1) | API 37 | **Activo** | `connectedDebugAndroidTest` | 66 | 66 | 0 | 0 | `142.130 s` (XML) / `2m 40s` (Gradle) |
-| `Medium_Phone_API_37.0` (corrida 2) | API 37 | **Activo** | `connectedDebugAndroidTest` | 66 | 66 | 0 | 0 | `141.668 s` (XML) / `2m 41s` (Gradle) |
-| `Vinilos_API29` | API 29 | Inactivo (no-op, API < 34) | `connectedDebugAndroidTest` | 66 | 65 | 1 | 0 | `73.194 s` (XML) / `1m 19s` (Gradle) |
-| `Vinilos_API22` | API 22 | Inactivo (no-op, API < 34) | `scripts/instrument.sh` (`am instrument`) | 66 | 65 | 1 | 0 | `62.434 s` (`am instrument`) |
+| `Medium_Phone_API_37.0` | API 37 | **Activo** | `connectedDebugAndroidTest` | 66 | 66 | 0 | 0 | `174.326 s` (XML) / `3m 19s` (Gradle) |
+| `Vinilos_API29` | API 29 | Inactivo (no-op, API < 34) | `connectedDebugAndroidTest` | 66 | 65 | 1 | 0 | `112.689 s` (XML) / `2m 1s` (Gradle) |
+| `Vinilos_API22` | API 22 | Inactivo (no-op, API < 34) | `scripts/instrument.sh` (`am instrument`) | 66 | 65 | 1 | 0 | `74.828 s` (`am instrument`) |
 
 Notas:
 - En API 22 `connectedDebugAndroidTest` se bloquea al recuperar `additionalTestOutput` en AGP, por lo que la validación de compatibilidad usa `am instrument` (`scripts/instrument.sh`).
@@ -78,15 +77,15 @@ Notas:
 - **Comparación de duración en API 37 (antes vs. después):**
   - En `develop` antes de T31 (`43` pruebas en XML de `connectedDebugAndroidTest`): `137.278 s`.
   - En `develop` tras T31 (`56` pruebas en `am instrument`): `167.464 s`.
-  - En esta rama con ATF activo (`66` pruebas en XML de `connectedDebugAndroidTest`): `142.130 s` (corrida 1) y `141.668 s` (corrida 2). Dentro de ese total, `AccessibilityChecksTest` tomó `29.646 s` / `33.711 s` y `CreateAlbumTest` tomó `43.155 s` / `41.493 s`.
+  - En esta rama con ATF activo (`66` pruebas en XML de `connectedDebugAndroidTest`): `174.326 s`. Dentro de ese total, `AccessibilityChecksTest` tomó `40.061 s` y `CreateAlbumTest` tomó `56.845 s`.
 
 ## 6. Hallazgos encontrados y resolución
 
-No se agregó ninguna supresión (`setSuppressingResultMatcher`). El único hallazgo reportado por ATF en API 37 se corrigió en producción:
+No se detectaron defectos reales de accesibilidad adicionales en las pantallas de producción tras T31. Se registró **una única supresión acotada** (`setSuppressingResultMatcher`) para un falso positivo comprobado de ATF por recorte del viewport con el teclado virtual abierto:
 
-| Archivo | Check de ATF | Síntoma medido en API 37 | Causa técnica | Resolución |
+| Archivo | Check de ATF | Síntoma medido en API 37 | Causa técnica (falso positivo) | Supresión y alcance exacto |
 |---|---|---|---|---|
-| `app/src/main/java/co/edu/uniandes/vinilos/ui/create/CreateAlbumScreen.kt` | `SpeakableTextPresentCheck` | En la primera corrida fallaron 9/10 pruebas de `CreateAlbumTest` (`cp21`–`cp29`) sobre un `EditText` en el borde inferior (`[42,1568][1038,1580]`, `[42,1549][1038,1580]`, `[42,1530][1038,1561]`) con `children=0`. | `.imePadding()` estaba antes de `.verticalScroll(rememberScrollState())`, reduciendo el viewport del `ScrollView` al abrirse el teclado virtual y recortando el borde superior (`12–31 px`) del siguiente `OutlinedTextField` mientras su hijo `Text(label)` quedaba fuera del área visible. Sin el hijo visible, el `EditText` se exponía sin etiqueta enunciable. | Se movió `.imePadding()` dentro de `.verticalScroll(rememberScrollState())` (`.verticalScroll(rememberScrollState()).imePadding()`), conservando el margen desplazable sobre el teclado y evitando recortar campos sobre su etiqueta. Tras el cambio, las 10/10 pruebas de `CreateAlbumTest` y las 66/66 pruebas totales pasaron en dos corridas consecutivas en API 37 sin supresiones. |
+| `app/src/androidTest/java/co/edu/uniandes/vinilos/ui/CreateAlbumTest.kt` | `SpeakableTextPresentCheck` | Sin supresión fallan 9/10 pruebas de `CreateAlbumTest` (`cp21`–`cp29`) sobre un `EditText` parcialmente recortado en el borde inferior (`[42,1568][1038,1580]`, `[42,1549][1038,1580]`, `[42,1530][1038,1561]`) con `childViewCount == 0`. | `CreateAlbumScreen` mantiene `.imePadding().verticalScroll(rememberScrollState())` para que con `enableEdgeToEdge()` el viewport desplazable se reduzca al abrirse el teclado virtual y los campos inferiores (como `Descripción`) queden siempre visibles sobre el IME. En Material 3, un `OutlinedTextField` vacío expone `EditableText = ""` en el `EditText` y su `Text(label)` como hijo desplazado; cuando el borde inferior del viewport recorta el siguiente campo dejando solo `12–31 px` visibles y su hijo `Text(label)` fuera del viewport (`childViewCount == 0`), ATF reporta `SpeakableTextPresentCheck` aunque el campo sí tiene etiqueta real. | En `CreateAlbumTest`, `openForm(..., configure = suppressImeClippedField)` aplica `setSuppressingResultMatcher` **únicamente** en `cp21`–`cp29` combinando `matchesCheck(SpeakableTextPresentCheck::class.java)` con `matchesElements(...)` acotado a `className == "android.widget.EditText"`, `isEditable == true`, `childViewCount == 0` y `testTag` en `CreateAlbumTags.field(AlbumField.*)`. No se suprime ningún otro check ni ninguna otra clase; `CreateAlbumTest#cp37_sinArtistas_guardarNoCierraLaApp_yReintentarLosCarga` y `AccessibilityChecksTest#pantalla07_crearAlbum_todosLosEstados` corren **sin supresión** verificando los 7 campos completos. |
 
 ## 7. Verificación por mutaciones
 
@@ -99,3 +98,4 @@ Cada mutación se aplicó sobre el código ya confirmado en verde, se midió de 
 | M2 (E2E) | Misma mutación en `AlbumListScreen.kt` | API 37: `AlbumCatalogTest#barraInferior_pestanaColeccionistas_yRegresoAAlbumes` | **FALLA** (`exit=1`) | `AccessibilityViewCheckException` — `SpeakableTextPresentCheck` en `[891,1938][1038,2085]` (confirma protección sobre E2E existentes). |
 | M2 (no-op) | Misma mutación en `AlbumListScreen.kt` | API 29: `AccessibilityChecksTest#pantalla01_catalogoDeAlbumes_todosLosEstados` | **PASA** (`exit=0`) | Confirma empíricamente que ATF es no-op en API 29 (API < 34). |
 | M3 | En `ui/common/VinilosTopBar.kt`, cambiar `contentDescription` del `Icon` de volver a `null` | API 37: `AccessibilityChecksTest#pantalla07_crearAlbum_todosLosEstados` | **FALLA** (`exit=1`) | `AccessibilityViewCheckException` — `SpeakableTextPresentCheck` en `[12,85][138,211]` (formulario sin clic previo al chequeo explícito). |
+| M4 (alcance de supresión) | En `ui/create/CreateAlbumScreen.kt`, insertar un `Box(Modifier.size(48.dp).clickable {})` sin etiqueta dentro del formulario | API 37: `CreateAlbumTest#cp22_fechaInexistente_muestraError` (con `suppressImeClippedField` activa) | **FALLA** (`exit=1`) | `AccessibilityViewCheckException` — `SpeakableTextPresentCheck` en `[42,368][168,494]`. Demuestra que la supresión acotada no silencia `SpeakableTextPresentCheck` sobre otros elementos de `CreateAlbumScreen`. |
