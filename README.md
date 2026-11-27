@@ -53,7 +53,13 @@ Descarga el APK desde la [última release](https://github.com/AJDeLavalle/App-Vi
 
 ## Configuración del backend (BackVynils)
 
-La app consume [BackVynils](https://github.com/TheSoftwareDesignLab/BackVynils) (`GET /albums` y `GET /albums/{id}`). La URL depende del tipo de build:
+La app consume [BackVynils](https://github.com/TheSoftwareDesignLab/BackVynils) con estos endpoints:
+
+- Álbumes: `GET /albums`, `GET /albums/{id}`, `POST /albums`, `POST /albums/{id}/musicians/{id}`, `POST /albums/{id}/bands/{id}` y `POST /albums/{id}/tracks`.
+- Artistas: `GET /musicians`, `GET /musicians/{id}`, `GET /bands`, `GET /bands/{id}` y `GET /prizes`.
+- Coleccionistas: `GET /collectors`, `GET /collectors/{id}` y `GET /collectors/{id}/albums`.
+
+La URL depende del tipo de build:
 
 | Build | URL por defecto | Uso |
 |---|---|---|
@@ -94,6 +100,9 @@ Desde la raíz del repositorio:
 
 # Instalar en el emulador o dispositivo conectado
 ./gradlew installDebug
+
+# Compilar e instalar debug contra el backend en Heroku, sin levantar BackVynils
+./gradlew installDebug -Pvinilos.apiUrl=https://vinilos-oozma-kappa-b117aeae2e73.herokuapp.com/
 
 # Pruebas unitarias
 ./gradlew test
@@ -210,7 +219,29 @@ El botón "+ Asociar track" del detalle del álbum abre el formulario. Al guarda
 
 Capturas con el backend local: [formulario](docs/evidencias/sprint-3/HU08-formulario.png) y [track asociado](docs/evidencias/sprint-3/HU08-track-asociado.png).
 
-## Desempeño (Sprint 2)
+## Resultados y documentación (wiki)
+
+Los resultados, videos y logs de las pruebas viven en la wiki; los scripts de Monkey están en [`docs/pruebas/sprint-3/monkey/`](docs/pruebas/sprint-3/monkey/).
+
+| Tema | Enlace |
+|---|---|
+| Resultados de pruebas (E2E en API 22, 29 y 37) | [Resultados de Pruebas — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Resultados-de-Pruebas-%E2%80%94-Sprint-3) |
+| Estrategia de pruebas | [Estrategia de Pruebas — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Estrategia-de-Pruebas-%E2%80%94-Sprint-3) |
+| Monkey | [Resultados de Monkey — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Resultados-de-Monkey-%E2%80%94-Sprint-3) |
+| Robo (Firebase Test Lab) | [Resultados de Robo — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Resultados-de-Robo-%E2%80%94-Sprint-3) |
+| Pruebas exploratorias | [Pruebas Exploratorias — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Pruebas-Exploratorias-%E2%80%94-Sprint-3) |
+| Accessibility Scanner | [Accessibility Scanner — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Accessibility-Scanner-%E2%80%94-Sprint-3) |
+| TalkBack | [Recorrido con TalkBack — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Recorrido-con-TalkBack-%E2%80%94-Sprint-3) |
+| Accesibilidad | [Reporte de Accesibilidad — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Reporte-de-Accesibilidad-%E2%80%94-Sprint-3) |
+| Perfilamiento | [Reporte de Perfilamiento — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Reporte-de-Perfilamiento-%E2%80%94-Sprint-3) |
+| Arquitectura | [Arquitectura del Sistema](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Arquitectura-del-Sistema) |
+| Defectos | [Issues con el label `bug`](https://github.com/AJDeLavalle/App-Vinilos-movil/issues?q=label%3Abug) |
+
+## Desempeño
+
+El perfilamiento del Sprint 3 está en la wiki: [Reporte de Perfilamiento — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Reporte-de-Perfilamiento-%E2%80%94-Sprint-3).
+
+### Sprint 2
 
 Optimizaciones aplicadas: Lint sin advertencias, corrutinas en paralelo y StrictMode en debug, caché en memoria acotada, un solo cliente HTTP, Coil configurado y R8 en release. El detalle está en la wiki: [Micro‐optimizaciones — Sprint 2](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Micro‐optimizaciones-—-Sprint-2).
 
@@ -238,8 +269,10 @@ Para repetir la medición con el emulador o el dispositivo conectado:
 App-Vinilos-movil/
 ├── README.md
 ├── docs/
-│   ├── evidencias/   # Capturas de las entregas
-│   └── pruebas/      # Reportes de defectos por sprint
+│   ├── desempeno/    # Scripts de medición y reporte de perfilamiento (sprint-2)
+│   ├── diseno/       # Reglas de los formularios (sprint-2, sprint-3)
+│   ├── evidencias/   # Capturas de las entregas (sprint-1 a sprint-3)
+│   └── pruebas/      # Defectos, accesibilidad y Monkey (sprint-1 a sprint-3)
 ├── app/
 │   └── src/
 │       ├── debug/           # Manifest solo de debug (permiso de red local)

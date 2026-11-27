@@ -13,6 +13,6 @@ Capturas tomadas en emulador `Medium_Phone_API_37.0` con fuente al 100 % (`font_
 | 7. Crear álbum | [antes 1.0](antes/scale-1.0/07-create-album.jpg) | [después 1.0](despues/scale-1.0/07-create-album.jpg) | [antes 2.0](antes/scale-2.0/07-create-album.jpg) | [después 2.0](despues/scale-2.0/07-create-album.jpg) |
 | 8. Asociar track | [antes 1.0](antes/scale-1.0/08-associate-track.jpg) | [después 1.0](despues/scale-1.0/08-associate-track.jpg) | [antes 2.0](antes/scale-2.0/08-associate-track.jpg) | [después 2.0](despues/scale-2.0/08-associate-track.jpg) |
 
-## Pendiente
+## Barra inferior con fuente al 200 %
 
-En las capturas con fuente al 200 %, la barra de navegación inferior parte la etiqueta «Coleccionistas» en dos líneas. Ese archivo está reservado por trabajo paralelo, por lo que queda pendiente para corregirse en un issue de seguimiento.
+En las capturas al 200 %, la barra de navegación inferior partía la etiqueta «Coleccionistas» en dos líneas. Se corrigió en el [PR #113](https://github.com/AJDeLavalle/App-Vinilos-movil/pull/113).
