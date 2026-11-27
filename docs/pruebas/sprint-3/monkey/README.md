@@ -8,6 +8,7 @@
 | `monkey-mejorado.sh` | T36 (#95). Abre a la fuerza cada una de las 8 pantallas con `adb shell am start` y en cada una lanza una ráfaga de Monkey. |
 | `comun.sh` | Funciones que comparten los dos scripts (verificación del entorno, logcat, análisis de la salida). No se ejecuta solo. |
 | `resultados/` | Salidas de Monkey, logcat, cobertura y resúmenes de las corridas completas. |
+| `videos/` | Dos corridas cortas grabadas con la semilla 9401, con los toques visibles, para validar sin instalar nada. |
 
 Los dos scripts detectan CRASH y ANR por la salida de Monkey y por logcat, guardan los registros y un
 resumen en Markdown, y miden qué pantallas visitó Monkey.
@@ -121,44 +122,50 @@ Archivos que deja cada script en `resultados/`:
 
 ## Resultados
 
-_Se completa con las corridas completas (3 semillas de cada script contra BackVynils local en el
-emulador Vinilos_API29)._
+Corridas completas del 26-nov en el emulador Vinilos_API29 (Android 10) contra BackVynils local:
+3 semillas (9401, 9402 y 9403) × 5000 eventos con cada script. **Sin crashes ni ANR.**
 
-Monkey (`resultados/resumen-monkey.md`):
-
-| Semilla | Eventos pedidos | Eventos inyectados | Resultado | Detalle | Pantallas visitadas |
-|---|---|---|---|---|---|
-
-Monkey mejorado (`resultados/resumen-mejorado.md`), totales por semilla:
-
-| Semilla | Pantallas que abrieron | Eventos inyectados | Resultado | Pantallas visitadas |
-|---|---|---|---|---|
-
-Cobertura normal vs mejorado (`resultados/comparacion-cobertura.md`): semillas que visitaron cada
-pantalla.
-
-| Pantalla | Monkey normal | Monkey mejorado |
+| | Monkey (`resultados/resumen-monkey.md`) | Monkey mejorado (`resultados/resumen-mejorado.md`) |
 |---|---|---|
+| Eventos inyectados por semilla | 5000 de 5000 | 8 × 625 = 5000 |
+| Resultado de las 3 semillas | OK | OK (24 de 24 ráfagas) |
+| Pantallas visitadas | 7/8 (nunca HU07 Crear álbum) | 8/8 |
+
+Cobertura por pantalla (`resultados/comparacion-cobertura.md`), semillas que la visitaron:
+
+| Pantalla | Monkey | Monkey mejorado |
+|---|---|---|
+| HU01 Catálogo de álbumes | 3/3 | 3/3 |
+| HU02 Detalle de álbum | 3/3 | 3/3 |
+| HU03 Listado de artistas | 3/3 | 3/3 |
+| HU04 Detalle de artista | 3/3 | 3/3 |
+| HU05 Listado de coleccionistas | 3/3 | 3/3 |
+| HU06 Detalle de coleccionista | 3/3 | 3/3 |
+| HU07 Crear álbum | 0/3 | 3/3 |
+| HU08 Asociar track | 3/3 | 3/3 |
 
 ## Defectos encontrados
 
-_Se completa con las corridas completas._
+Ninguno: ninguna corrida tuvo CRASH ni ANR, así que no se abrieron issues de defecto.
 
-| Semilla | Pantalla | Excepción | Registro | Issue |
-|---|---|---|---|---|
+## Cómo validar
 
-## Texto para la Estrategia de Pruebas (5.1.1 Monkey mejorado)
+1. **Ver los videos** de `videos/` (semilla 9401, corridas cortas, unos 3 y 4 minutos):
+   - `monkey-normal.mp4`: 600 eventos; recorre la app y nunca entra a Crear álbum.
+   - `monkey-mejorado.mp4`: 75 eventos por pantalla; salta a cada una de las 8 pantallas, incluida
+     Crear álbum.
+2. **Revisar los resultados:** las tablas de arriba y los resúmenes de `resultados/`.
+3. **Repetirlo** (ver [Cómo reproducir](#cómo-reproducir)):
+   ```
+   ./gradlew installDebug
+   EVENTOS=600 SEMILLAS=9401 docs/pruebas/sprint-3/monkey/monkey.sh
+   EVENTOS_POR_PANTALLA=75 SEMILLAS=9401 docs/pruebas/sprint-3/monkey/monkey-mejorado.sh
+   ```
+   Con la misma semilla se repite la misma secuencia de eventos. Cada script termina con
+   `RESULTADO: OK` o `FALLA` y lista las pantallas visitadas.
 
-> **5.1.1 Monkey mejorado.** Monkey con semilla fija tiende a estancarse en la pantalla de inicio: la
-> mayoría de sus 5000 eventos caen en el catálogo y las pantallas profundas (detalles, formularios) casi
-> no se ejercitan. El Monkey mejorado reparte el mismo presupuesto (8 × 625 eventos) entre las 8 pantallas
-> de la app: antes de cada ráfaga abre la pantalla a la fuerza con `adb shell am start ... --es
-> start_route <ruta>`, un extra que solo existe en el APK debug y que navega directo a la ruta interna.
-> La cobertura se mide con la etiqueta de logcat `VinilosNav` (también solo en debug), que registra el
-> patrón de ruta de cada pantalla visitada; se compara con la del Monkey normal en
-> `comparacion-cobertura.md`. Una corrida falla si hay un CRASH o ANR de la app (en la salida de Monkey
-> o en logcat), si una pantalla no se pudo abrir o si Monkey no terminó. Scripts y resultados:
-> `docs/pruebas/sprint-3/monkey/`.
+La técnica, los resultados y los videos también están en la wiki, en *Estrategia de Pruebas — Sprint 3*,
+secciones 5.1 a 5.4.
 
 ## Limitaciones
 
