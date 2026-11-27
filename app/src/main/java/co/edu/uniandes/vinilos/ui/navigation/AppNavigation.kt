@@ -45,6 +45,7 @@ import co.edu.uniandes.vinilos.ui.collectors.CollectorDetailScreen
 import co.edu.uniandes.vinilos.ui.collectors.CollectorDetailViewModel
 import co.edu.uniandes.vinilos.ui.collectors.CollectorListScreen
 import co.edu.uniandes.vinilos.ui.collectors.CollectorListViewModel
+import co.edu.uniandes.vinilos.ui.common.exposeTestTagsAsResourceId
 import co.edu.uniandes.vinilos.ui.create.CreateAlbumScreen
 import co.edu.uniandes.vinilos.ui.create.CreateAlbumViewModel
 import co.edu.uniandes.vinilos.ui.detail.AlbumDetailScreen
@@ -121,6 +122,7 @@ fun VinilosApp(
     }
 
     Scaffold(
+        modifier = Modifier.exposeTestTagsAsResourceId(),
         bottomBar = {
             NavigationBar {
                 TopLevelDestination.entries.forEach { destination ->
