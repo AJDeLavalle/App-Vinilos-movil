@@ -10,14 +10,17 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -88,16 +91,34 @@ enum class TopLevelDestination(
     val testTag: String get() = "nav_$route"
 }
 
-/** Raíz de la app. Recibe los repositorios para poder inyectar fakes en las pruebas de UI. */
+/**
+ * Raíz de la app. Recibe los repositorios para poder inyectar fakes en las pruebas de UI.
+ *
+ * @param startRoute ruta que se abre al arrancar, encima del catálogo; si no existe, la app se queda
+ * en el catálogo.
+ * @param onRouteChange recibe el patrón de ruta (p. ej. `albums/{albumId}`) de cada pantalla visitada.
+ */
 @Composable
 fun VinilosApp(
     repository: AlbumRepository,
     artistRepository: ArtistRepository,
     collectorRepository: CollectorRepository,
+    startRoute: String? = null,
+    onRouteChange: ((String) -> Unit)? = null,
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
+    if (onRouteChange != null) {
+        val currentOnRouteChange by rememberUpdatedState(onRouteChange)
+        DisposableEffect(navController) {
+            val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+                destination.route?.let { route -> currentOnRouteChange(route) }
+            }
+            navController.addOnDestinationChangedListener(listener)
+            onDispose { navController.removeOnDestinationChangedListener(listener) }
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -240,6 +261,17 @@ fun VinilosApp(
                         },
                         onAlbumClick = { albumId -> navController.navigate(Routes.albumDetail(albumId)) },
                     )
+                }
+            }
+        }
+        // Ruta pedida al abrir la app (solo debug, ver MainActivity). Va después del NavHost para que
+        // el grafo ya exista al navegar.
+        if (startRoute != null) {
+            LaunchedEffect(navController, startRoute) {
+                try {
+                    navController.navigate(startRoute)
+                } catch (_: IllegalArgumentException) {
+                    // Ruta inexistente: se ignora y la app se queda en el catálogo.
                 }
             }
         }
