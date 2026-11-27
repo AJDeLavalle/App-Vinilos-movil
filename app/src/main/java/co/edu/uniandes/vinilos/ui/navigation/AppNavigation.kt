@@ -10,14 +10,21 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -42,6 +49,7 @@ import co.edu.uniandes.vinilos.ui.collectors.CollectorDetailScreen
 import co.edu.uniandes.vinilos.ui.collectors.CollectorDetailViewModel
 import co.edu.uniandes.vinilos.ui.collectors.CollectorListScreen
 import co.edu.uniandes.vinilos.ui.collectors.CollectorListViewModel
+import co.edu.uniandes.vinilos.ui.common.exposeTestTagsAsResourceId
 import co.edu.uniandes.vinilos.ui.create.CreateAlbumScreen
 import co.edu.uniandes.vinilos.ui.create.CreateAlbumViewModel
 import co.edu.uniandes.vinilos.ui.detail.AlbumDetailScreen
@@ -75,6 +83,17 @@ private const val ALBUM_CREATED_KEY = "album_created"
 /** Aviso del formulario al detalle del álbum para que muestre el track nuevo. */
 private const val TRACK_ADDED_KEY = "track_added"
 
+private const val MAX_NAV_LABEL_FONT_SCALE = 1.3f
+
+@Composable
+private fun NavigationLabel(text: String) {
+    val density = LocalDensity.current
+    val limited = Density(density.density, fontScale = density.fontScale.coerceAtMost(MAX_NAV_LABEL_FONT_SCALE))
+    CompositionLocalProvider(LocalDensity provides limited) {
+        Text(text = text, maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis)
+    }
+}
+
 /** Pestañas de la barra inferior de la maqueta. */
 enum class TopLevelDestination(
     val route: String,
@@ -88,18 +107,37 @@ enum class TopLevelDestination(
     val testTag: String get() = "nav_$route"
 }
 
-/** Raíz de la app. Recibe los repositorios para poder inyectar fakes en las pruebas de UI. */
+/**
+ * Raíz de la app. Recibe los repositorios para poder inyectar fakes en las pruebas de UI.
+ *
+ * @param startRoute ruta que se abre al arrancar, encima del catálogo; si no existe, la app se queda
+ * en el catálogo.
+ * @param onRouteChange recibe el patrón de ruta (p. ej. `albums/{albumId}`) de cada pantalla visitada.
+ */
 @Composable
 fun VinilosApp(
     repository: AlbumRepository,
     artistRepository: ArtistRepository,
     collectorRepository: CollectorRepository,
+    startRoute: String? = null,
+    onRouteChange: ((String) -> Unit)? = null,
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
+    if (onRouteChange != null) {
+        val currentOnRouteChange by rememberUpdatedState(onRouteChange)
+        DisposableEffect(navController) {
+            val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+                destination.route?.let { route -> currentOnRouteChange(route) }
+            }
+            navController.addOnDestinationChangedListener(listener)
+            onDispose { navController.removeOnDestinationChangedListener(listener) }
+        }
+    }
 
     Scaffold(
+        modifier = Modifier.exposeTestTagsAsResourceId(),
         bottomBar = {
             NavigationBar {
                 TopLevelDestination.entries.forEach { destination ->
@@ -113,7 +151,7 @@ fun VinilosApp(
                             }
                         },
                         icon = { Icon(painterResource(destination.icon), contentDescription = null) },
-                        label = { Text(stringResource(destination.label)) },
+                        label = { NavigationLabel(stringResource(destination.label)) },
                         modifier = Modifier.testTag(destination.testTag),
                     )
                 }
@@ -240,6 +278,17 @@ fun VinilosApp(
                         },
                         onAlbumClick = { albumId -> navController.navigate(Routes.albumDetail(albumId)) },
                     )
+                }
+            }
+        }
+        // Ruta pedida al abrir la app (solo debug, ver MainActivity). Va después del NavHost para que
+        // el grafo ya exista al navegar.
+        if (startRoute != null) {
+            LaunchedEffect(navController, startRoute) {
+                try {
+                    navController.navigate(startRoute)
+                } catch (_: IllegalArgumentException) {
+                    // Ruta inexistente: se ignora y la app se queda en el catálogo.
                 }
             }
         }

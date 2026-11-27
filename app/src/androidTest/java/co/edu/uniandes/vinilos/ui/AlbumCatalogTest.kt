@@ -10,6 +10,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import co.edu.uniandes.vinilos.testutil.FakeAlbumRepository
 import co.edu.uniandes.vinilos.testutil.FakeArtistRepository
 import co.edu.uniandes.vinilos.testutil.FakeCollectorRepository
+import co.edu.uniandes.vinilos.testutil.enableVinilosAccessibilityChecks
 import co.edu.uniandes.vinilos.testutil.grantLocalNetworkPermission
 import co.edu.uniandes.vinilos.ui.albums.AlbumListTags
 import co.edu.uniandes.vinilos.ui.collectors.CollectorListTags
@@ -32,6 +33,7 @@ class AlbumCatalogTest {
 
     private fun launch(repository: FakeAlbumRepository) {
         grantLocalNetworkPermission()
+        composeRule.enableVinilosAccessibilityChecks()
         composeRule.setContent {
             VinilosTheme {
                 VinilosApp(

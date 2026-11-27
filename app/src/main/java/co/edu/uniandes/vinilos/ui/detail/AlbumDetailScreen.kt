@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,21 +20,20 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,7 +50,9 @@ import co.edu.uniandes.vinilos.ui.common.ErrorType
 import co.edu.uniandes.vinilos.ui.common.ErrorView
 import co.edu.uniandes.vinilos.ui.common.InfoLine
 import co.edu.uniandes.vinilos.ui.common.LoadingView
+import co.edu.uniandes.vinilos.ui.common.MinTouchTarget
 import co.edu.uniandes.vinilos.ui.common.SectionTitle
+import co.edu.uniandes.vinilos.ui.common.VinilosTopBar
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 
 object AlbumDetailTags {
@@ -61,6 +63,7 @@ object AlbumDetailTags {
     const val ADD_TRACK = "album_detail_add_track"
     fun comment(id: Int) = "album_comment_$id"
     fun artist(id: Int) = "album_artist_$id"
+    fun track(id: Int) = "album_track_$id"
 }
 
 @Composable
@@ -91,16 +94,10 @@ fun AlbumDetailContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.album_detail_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack, modifier = Modifier.testTag(AlbumDetailTags.BACK)) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = stringResource(R.string.navigate_back),
-                        )
-                    }
-                },
+            VinilosTopBar(
+                title = stringResource(R.string.album_detail_title),
+                onBack = onBack,
+                backTag = AlbumDetailTags.BACK,
             )
         },
     ) { innerPadding ->
@@ -111,7 +108,12 @@ fun AlbumDetailContent(
             is AlbumDetailUiState.Error -> {
                 // Un id inexistente no se arregla reintentando: se informa y se ofrece volver.
                 if (state.type == ErrorType.NOT_FOUND) {
-                    ErrorView(stringResource(R.string.album_detail_not_found), onBack, modifier)
+                    ErrorView(
+                        message = stringResource(R.string.album_detail_not_found),
+                        onRetry = onBack,
+                        modifier = modifier,
+                        actionLabel = stringResource(R.string.navigate_back),
+                    )
                 } else {
                     ErrorView(errorMessage(state.type), onRetry, modifier)
                 }
@@ -143,7 +145,7 @@ private fun AlbumDetail(
                 text = album.name,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.testTag(AlbumDetailTags.TITLE),
+                modifier = Modifier.testTag(AlbumDetailTags.TITLE).semantics { heading() },
             )
         }
         item {
@@ -197,16 +199,34 @@ private fun AlbumDetail(
 /** Enlace al detalle del artista; un álbum puede tener varios intérpretes. */
 @Composable
 private fun ArtistLink(performer: Performer, onClick: () -> Unit) {
-    Text(
-        text = stringResource(R.string.album_view_artist, performer.name),
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.primary,
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .heightIn(min = MinTouchTarget)
+            .clickable(
+                onClickLabel = stringResource(R.string.a11y_open_artist),
+                role = Role.Button,
+                onClick = onClick,
+            )
             .padding(vertical = 12.dp)
             .testTag(AlbumDetailTags.artist(performer.id)),
-    )
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(R.string.album_view_artist, performer.name),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.weight(1f, fill = false),
+        )
+        Text(
+            text = stringResource(R.string.link_chevron),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .padding(start = 4.dp)
+                .clearAndSetSemantics {},
+        )
+    }
 }
 
 @Composable
@@ -214,6 +234,8 @@ private fun TrackRow(position: Int, track: Track) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .semantics(mergeDescendants = true) {}
+            .testTag(AlbumDetailTags.track(track.id))
             .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
             .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
@@ -237,9 +259,10 @@ private fun CommentRow(comment: Comment) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .semantics(mergeDescendants = true) {}
+            .testTag(AlbumDetailTags.comment(comment.id))
             .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
-            .padding(horizontal = 12.dp, vertical = 10.dp)
-            .testTag(AlbumDetailTags.comment(comment.id)),
+            .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
         Text(
             text = "★".repeat(comment.rating) + "☆".repeat(5 - comment.rating),

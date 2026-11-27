@@ -18,15 +18,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,6 +36,8 @@ import co.edu.uniandes.vinilos.ui.albums.errorMessage
 import co.edu.uniandes.vinilos.ui.common.EmptyView
 import co.edu.uniandes.vinilos.ui.common.ErrorView
 import co.edu.uniandes.vinilos.ui.common.LoadingView
+import co.edu.uniandes.vinilos.ui.common.ViewDetailsLink
+import co.edu.uniandes.vinilos.ui.common.VinilosTopBar
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 
 object ArtistListTags {
@@ -61,9 +62,7 @@ fun ArtistListContent(
     onArtistClick: (Artist) -> Unit,
 ) {
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.nav_artists), fontWeight = FontWeight.Bold) })
-        },
+        topBar = { VinilosTopBar(stringResource(R.string.artists_title)) },
     ) { innerPadding ->
         val modifier = Modifier.padding(innerPadding)
         when (state) {
@@ -94,7 +93,11 @@ private fun ArtistItem(artist: Artist, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .testTag(ArtistListTags.item(artist.id))
-            .clickable(onClick = onClick),
+            .clickable(
+                onClickLabel = stringResource(R.string.a11y_open_artist),
+                role = Role.Button,
+                onClick = onClick,
+            ),
     ) {
         // Maqueta P03: imagen, nombre, línea secundaria y enlace "Ver detalles". El backend no tiene
         // país ni género del artista, así que la línea muestra el tipo y el año.
@@ -106,21 +109,13 @@ private fun ArtistItem(artist: Artist, onClick: () -> Unit) {
                     text = artist.name,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = artistSubtitle(artist),
                     style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.album_view_details),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                ViewDetailsLink()
             }
         }
     }

@@ -20,8 +20,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
@@ -29,7 +27,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,10 +39,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,6 +55,7 @@ import co.edu.uniandes.vinilos.domain.model.ALBUM_GENRES
 import co.edu.uniandes.vinilos.domain.model.ALBUM_RECORD_LABELS
 import co.edu.uniandes.vinilos.domain.model.Artist
 import co.edu.uniandes.vinilos.ui.common.SectionTitle
+import co.edu.uniandes.vinilos.ui.common.VinilosTopBar
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 
 object CreateAlbumTags {
@@ -119,16 +120,10 @@ class CreateAlbumActions(
 fun CreateAlbumContent(state: CreateAlbumUiState, actions: CreateAlbumActions) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.create_album_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = actions.onBack, modifier = Modifier.testTag(CreateAlbumTags.BACK)) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = stringResource(R.string.navigate_back),
-                        )
-                    }
-                },
+            VinilosTopBar(
+                title = stringResource(R.string.create_album_title),
+                onBack = actions.onBack,
+                backTag = CreateAlbumTags.BACK,
             )
         },
     ) { innerPadding ->
@@ -294,11 +289,14 @@ private fun ArtistField(
         // Estos dos estados también enlazan el FocusRequester: guardar sin artista pide foco aquí,
         // y requestFocus lanza una excepción si no está unido a ningún elemento.
         ArtistOptions.Loading -> Row(
-            modifier = Modifier.focusRequester(focusRequester).focusable(),
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .focusable()
+                .semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            CircularProgressIndicator(Modifier.size(24.dp))
+            CircularProgressIndicator(Modifier.size(24.dp).clearAndSetSemantics {})
             Text(stringResource(R.string.artists_loading), style = MaterialTheme.typography.bodyMedium)
         }
         ArtistOptions.Error -> Column(Modifier.focusRequester(focusRequester).focusable()) {
@@ -306,6 +304,7 @@ private fun ArtistField(
                 text = stringResource(R.string.create_album_artists_error),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
             )
             OutlinedButton(
                 onClick = actions.onRetryArtists,
@@ -405,20 +404,31 @@ private fun SubmitErrorMessage(submission: Submission) {
         text = message,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.error,
-        modifier = Modifier.testTag(CreateAlbumTags.SUBMIT_ERROR),
+        modifier = Modifier
+            .testTag(CreateAlbumTags.SUBMIT_ERROR)
+            .semantics { liveRegion = LiveRegionMode.Polite },
     )
 }
 
 @Composable
 private fun SaveButton(state: CreateAlbumUiState, actions: CreateAlbumActions) {
     val sending = state.submission == Submission.Sending
+    val saving = stringResource(R.string.form_saving)
     Button(
         onClick = actions.onSave,
         enabled = !sending,
-        modifier = Modifier.fillMaxWidth().testTag(CreateAlbumTags.SAVE),
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag(CreateAlbumTags.SAVE)
+            .semantics {
+                if (sending) {
+                    contentDescription = saving
+                    liveRegion = LiveRegionMode.Polite
+                }
+            },
     ) {
         if (sending) {
-            CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+            CircularProgressIndicator(Modifier.size(20.dp).clearAndSetSemantics {}, strokeWidth = 2.dp)
         } else {
             val label = if (state.albumCreated) R.string.create_album_retry_link else R.string.create_album_save
             Text(stringResource(label))

@@ -5,6 +5,10 @@
     <string name="nav_albums">Álbumes</string>
     <string name="nav_artists">Artistas</string>
     <string name="nav_collectors">Coleccionistas</string>
+    <!-- Títulos de los listados -->
+    <string name="artists_title">Lista de artistas</string>
+    <string name="collectors_title">Lista de coleccionistas</string>
+    <string name="view_details">Ver detalles</string>
 
     <!-- HU05 y HU06: coleccionistas -->
     <string name="collectors_loading">Cargando coleccionistas…</string>
@@ -24,12 +28,11 @@
     <string name="collector_no_albums">Este coleccionista no tiene álbumes en su colección.</string>
 
     <!-- HU01: catálogo de álbumes -->
-    <string name="albums_title">Álbumes</string>
+    <string name="albums_title">Catálogo de álbumes</string>
     <string name="albums_empty">Aún no hay álbumes registrados.</string>
     <string name="albums_loading">Cargando álbumes…</string>
     <string name="album_cover_description">Portada de %1$s</string>
     <string name="album_unknown_artist">Artista no registrado</string>
-    <string name="album_view_details">Ver detalles ›</string>
 
     <!-- HU02: detalle de álbum -->
     <string name="album_detail_title">Detalle del álbum</string>
@@ -43,7 +46,7 @@
     <string name="album_comments">Comentarios</string>
     <string name="album_no_comments">Este álbum aún no tiene comentarios.</string>
     <string name="album_comment_rating">Calificación: %1$d de 5</string>
-    <string name="album_view_artist">Ver artista: %1$s ›</string>
+    <string name="album_view_artist">Ver artista: %1$s</string>
     <string name="navigate_back">Volver</string>
 
     <!-- HU03: listado de artistas -->
@@ -59,7 +62,7 @@
     <string name="artist_image_description">Imagen de %1$s</string>
     <string name="artist_musician_born">Músico • Nacido en %1$s</string>
     <string name="artist_band_formed">Banda • Formada en %1$s</string>
-    <string name="artist_albums">Álbumes</string>
+    <string name="artist_albums">Discografía</string>
     <string name="artist_no_albums">Este artista no tiene álbumes registrados.</string>
     <string name="artist_prizes">Premios y reconocimientos</string>
     <string name="artist_no_prizes">Este artista no tiene premios registrados.</string>
@@ -94,6 +97,7 @@
     <!-- HU08: asociar tracks -->
     <string name="associate_track_title">Asociar track</string>
     <string name="associate_track_add">+ Asociar track</string>
+    <string name="associate_track_save">Guardar track</string>
     <string name="associate_track_album">Álbum seleccionado: %1$s</string>
     <string name="associate_track_name">Nombre del track</string>
     <string name="associate_track_duration">Duración</string>
@@ -117,4 +121,11 @@
         <item quantity="one">La descripción admite hasta %1$d carácter.</item>
         <item quantity="other">La descripción admite hasta %1$d caracteres.</item>
     </plurals>
+
+    <!-- Accesibilidad (T31) -->
+    <string name="a11y_open_album">ver detalles del álbum</string>
+    <string name="a11y_open_artist">ver detalles del artista</string>
+    <string name="a11y_open_collector">ver detalles del coleccionista</string>
+    <string name="form_saving">Guardando…</string>
+    <string name="link_chevron" translatable="false">›</string>
 </resources>
