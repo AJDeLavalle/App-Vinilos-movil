@@ -43,6 +43,6 @@ adb shell monkey -p co.edu.uniandes.vinilos -s <semilla> --throttle 200 --pct-to
 | 9403 | HU07 | create_album | sí | 625 | OK | - | HU01 HU02 HU03 HU04 HU07 HU08 (6/8) |
 | 9403 | HU08 | albums/100/tracks/new | sí | 625 | OK | - | HU01 HU02 HU03 HU04 HU08 (5/8) |
 
-Registros: `mejorado-<semilla>.txt` y `mejorado-<semilla>-logcat.txt`.
+Registros completos en la wiki: 9401: [salida](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/pruebas/sprint-3/monkey/mejorado-9401.txt) y [logcat](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/pruebas/sprint-3/monkey/mejorado-9401-logcat.txt), 9402: [salida](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/pruebas/sprint-3/monkey/mejorado-9402.txt) y [logcat](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/pruebas/sprint-3/monkey/mejorado-9402-logcat.txt), 9403: [salida](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/pruebas/sprint-3/monkey/mejorado-9403.txt) y [logcat](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/pruebas/sprint-3/monkey/mejorado-9403-logcat.txt).
 
 RESULTADO: OK

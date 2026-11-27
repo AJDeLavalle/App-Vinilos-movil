@@ -7,7 +7,7 @@
 | `monkey.sh` | T35 (#94). Monkey con 3 semillas fijas × 5000 eventos sobre la app completa. |
 | `monkey-mejorado.sh` | T36 (#95). Abre a la fuerza cada una de las 8 pantallas con `adb shell am start` y en cada una lanza una ráfaga de Monkey. |
 | `comun.sh` | Funciones que comparten los dos scripts (verificación del entorno, logcat, análisis de la salida). No se ejecuta solo. |
-| `resultados/` | Salidas de Monkey, logcat, cobertura y resúmenes de las corridas completas. |
+| `resultados/` | Resúmenes y cobertura de las corridas completas. Las salidas completas de Monkey y el logcat (unos 2 MB) están en la wiki, carpeta `pruebas/sprint-3/monkey/`, y cada resumen enlaza las suyas. |
 
 Los dos scripts detectan CRASH y ANR por la salida de Monkey y por logcat, guardan los registros y un
 resumen en Markdown, y miden qué pantallas visitó Monkey.
@@ -31,6 +31,17 @@ resumen en Markdown, y miden qué pantallas visitó Monkey.
 
 Los scripts funcionan con el bash 3.2 de macOS.
 
+## Sistemas operativos
+
+Los scripts son de **bash** y solo usan `adb`, `curl`, `awk`, `grep`, `tr` y `mktemp`. Sirven en:
+
+- **macOS**: probados así (bash 3.2 del sistema).
+- **Linux**: los mismos comandos. Si `adb` no está en el `PATH`, se busca en `$ANDROID_HOME/platform-tools`.
+- **Windows**: desde **Git Bash** o **WSL**, con `adb` en el `PATH`. En PowerShell o CMD no corren.
+
+En los tres casos hace falta un emulador o teléfono conectado (`adb devices`) y BackVynils local; en Linux
+el backend se enciende con `docker start backvynils-db-1 backvynils-web-1`.
+
 ## Cómo reproducir
 
 Corrida completa (unos 55 min cada script), desde la raíz del repositorio:
@@ -47,7 +58,7 @@ EVENTOS=500 SEMILLAS=9401 ./docs/pruebas/sprint-3/monkey/monkey.sh
 EVENTOS_POR_PANTALLA=60 SEMILLAS=9401 ./docs/pruebas/sprint-3/monkey/monkey-mejorado.sh
 ```
 
-Para no pisar `resultados/`, usar `RESULTADOS=/otra/carpeta`. Otras variables: `THROTTLE`, `API_URL` y,
+Para no pisar `resultados/`, usar `RESULTADOS=/otra/carpeta`. Las salidas completas (`*-940X.txt` y su logcat) no se suben al repositorio: van a la wiki. Otras variables: `THROTTLE`, `API_URL` y,
 en el mejorado, `ALBUM_ID`, `ARTISTA_TIPO` (`BAND` o `MUSICIAN`), `ARTISTA_ID` y `COLECCIONISTA_ID`
 (por defecto, los primeros que devuelve el backend).
 
@@ -153,7 +164,7 @@ Ninguno: ninguna corrida tuvo CRASH ni ANR, así que no se abrieron issues de de
    - [Monkey normal](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/videos/monkey-normal.mp4): 600 eventos; recorre la app y nunca entra a Crear álbum.
    - [Monkey mejorado](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/videos/monkey-mejorado.mp4): 75 eventos por pantalla; salta a cada una de las 8 pantallas, incluida
      Crear álbum.
-2. **Revisar los resultados:** las tablas de arriba y los resúmenes de `resultados/`.
+2. **Revisar los resultados:** las tablas de arriba, los resúmenes de `resultados/` y, si hace falta el detalle, la salida completa y el logcat de cada semilla en la wiki (enlazados desde cada resumen).
 3. **Repetirlo** (ver [Cómo reproducir](#cómo-reproducir)):
    ```
    ./gradlew installDebug

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Funciones comunes de monkey.sh y monkey-mejorado.sh. No se ejecuta solo: los dos scripts lo cargan
 # con `source`.
-# Requiere adb (en el PATH o en ~/Library/Android/sdk/platform-tools), curl, el APK debug instalado
+# Requiere bash, adb (en el PATH, en $ANDROID_HOME/platform-tools o en ~/Library/Android/sdk/platform-tools), curl, el APK debug instalado
 # (o su ruta como primer argumento) y BackVynils respondiendo en $API_URL.
 # Con varios dispositivos conectados, usar ANDROID_SERIAL.
 set -u
@@ -14,7 +14,7 @@ API_URL=${API_URL:-http://localhost:3000}
 THROTTLE=${THROTTLE:-200}
 SEMILLAS=${SEMILLAS:-"9401 9402 9403"}
 PCT="--pct-touch 55 --pct-motion 20 --pct-nav 10 --pct-majornav 10 --pct-syskeys 0 --pct-rotation 5"
-ADB="$(command -v adb || echo "$HOME/Library/Android/sdk/platform-tools/adb")"
+ADB="$(command -v adb || echo "${ANDROID_HOME:-${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}}/platform-tools/adb")"
 LOGCAT_PID=""
 TEMPORALES=()
 
@@ -38,7 +38,7 @@ verificar_entorno() {
   fi
   if ! curl -sf -m 5 "$API_URL/albums" >/dev/null; then
     echo "ERROR: el backend no responde en $API_URL/albums." >&2
-    echo "Enciéndelo con: docker --context desktop-linux start backvynils-db-1 backvynils-web-1" >&2
+    echo "Enciende BackVynils local (p. ej. docker start backvynils-db-1 backvynils-web-1) o usa API_URL." >&2
     exit 2
   fi
   # start_route y la etiqueta VinilosNav solo existen en el APK debug.

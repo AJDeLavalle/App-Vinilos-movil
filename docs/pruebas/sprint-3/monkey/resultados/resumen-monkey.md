@@ -16,9 +16,9 @@ adb shell monkey -p co.edu.uniandes.vinilos -s <semilla> --throttle 200 --pct-to
 
 | Semilla | Eventos pedidos | Eventos inyectados | Resultado | Detalle | Pantallas visitadas | Registro |
 |---|---|---|---|---|---|---|
-| 9401 | 5000 | 5000 | OK | - | HU01 HU02 HU03 HU04 HU05 HU06 HU08 (7/8) | [monkey-9401.txt](monkey-9401.txt), [logcat](monkey-9401-logcat.txt) |
-| 9402 | 5000 | 5000 | OK | - | HU01 HU02 HU03 HU04 HU05 HU06 HU08 (7/8) | [monkey-9402.txt](monkey-9402.txt), [logcat](monkey-9402-logcat.txt) |
-| 9403 | 5000 | 5000 | OK | - | HU01 HU02 HU03 HU04 HU05 HU06 HU08 (7/8) | [monkey-9403.txt](monkey-9403.txt), [logcat](monkey-9403-logcat.txt) |
+| 9401 | 5000 | 5000 | OK | - | HU01 HU02 HU03 HU04 HU05 HU06 HU08 (7/8) | [monkey-9401.txt](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/pruebas/sprint-3/monkey/monkey-9401.txt), [logcat](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/pruebas/sprint-3/monkey/monkey-9401-logcat.txt) |
+| 9402 | 5000 | 5000 | OK | - | HU01 HU02 HU03 HU04 HU05 HU06 HU08 (7/8) | [monkey-9402.txt](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/pruebas/sprint-3/monkey/monkey-9402.txt), [logcat](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/pruebas/sprint-3/monkey/monkey-9402-logcat.txt) |
+| 9403 | 5000 | 5000 | OK | - | HU01 HU02 HU03 HU04 HU05 HU06 HU08 (7/8) | [monkey-9403.txt](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/pruebas/sprint-3/monkey/monkey-9403.txt), [logcat](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/pruebas/sprint-3/monkey/monkey-9403-logcat.txt) |
 
 Pantallas visitadas por alguna semilla: HU01 HU02 HU03 HU04 HU05 HU06 HU08 (7/8)
 
