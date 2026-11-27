@@ -22,7 +22,6 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isHeading
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
-import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performScrollToNode
@@ -99,13 +98,13 @@ class AccessibilitySemanticsTest {
             }
         }
 
-        composeRule.onNode(hasText("Álbumes") and isHeading()).assertExists()
+        composeRule.onNode(hasText("Catálogo de álbumes") and isHeading()).assertExists()
         composeRule.onAllNodesWithContentDescription("Portada de Buscando América").assertCountEquals(1)
         composeRule.onAllNodesWithContentDescription("Portada de Poeta del pueblo").assertCountEquals(1)
         composeRule.onNodeWithTag(AlbumListTags.item(100))
             .assert(hasText("Buscando América"))
             .assert(onClickLabel("ver detalles del álbum"))
-        composeRule.onAllNodesWithText("Ver detalles ›").assertCountEquals(0)
+            .assert(leeVerDetallesSinChevron)
     }
 
     @Test
@@ -120,13 +119,13 @@ class AccessibilitySemanticsTest {
             }
         }
 
-        composeRule.onNode(hasText("Artistas") and isHeading()).assertExists()
+        composeRule.onNode(hasText("Lista de artistas") and isHeading()).assertExists()
         composeRule.onAllNodesWithContentDescription("Imagen de Rubén Blades Bellido de Luna").assertCountEquals(1)
         composeRule.onAllNodesWithContentDescription("Imagen de Queen").assertCountEquals(1)
         composeRule.onNodeWithTag(ArtistListTags.item(1))
             .assert(hasText("Rubén Blades Bellido de Luna"))
             .assert(onClickLabel("ver detalles del artista"))
-        composeRule.onAllNodesWithText("Ver detalles ›").assertCountEquals(0)
+            .assert(leeVerDetallesSinChevron)
     }
 
     @Test
@@ -141,14 +140,14 @@ class AccessibilitySemanticsTest {
             }
         }
 
-        composeRule.onNode(hasText("Coleccionistas") and isHeading()).assertExists()
+        composeRule.onNode(hasText("Lista de coleccionistas") and isHeading()).assertExists()
         composeRule.onNodeWithTag(CollectorListTags.item(100))
             .assert(hasText("Manolo Bellon"))
             .assert(onClickLabel("ver detalles del coleccionista"))
         composeRule.onNodeWithTag(CollectorListTags.item(101))
             .assert(hasText("Jaime Monsalve"))
             .assert(onClickLabel("ver detalles del coleccionista"))
-        composeRule.onAllNodesWithText("Ver detalles ›").assertCountEquals(0)
+            .assert(leeVerDetallesSinChevron)
     }
 
     @Test
@@ -438,6 +437,9 @@ class AccessibilitySemanticsTest {
     private fun onClickLabel(label: String) = SemanticsMatcher("onClickLabel=$label") { node ->
         node.config.getOrNull(SemanticsActions.OnClick)?.label == label
     }
+
+    // T45: la tarjeta lee el texto visible «Ver detalles», pero no el «›» decorativo.
+    private val leeVerDetallesSinChevron = hasText("Ver detalles") and !hasText("›", substring = true)
 
     private val polite = SemanticsMatcher.expectValue(
         SemanticsProperties.LiveRegion,

@@ -218,7 +218,7 @@ private fun TrackFormBody(
             if (sending) {
                 CircularProgressIndicator(Modifier.size(20.dp).clearAndSetSemantics {}, strokeWidth = 2.dp)
             } else {
-                Text(stringResource(R.string.associate_track_title))
+                Text(stringResource(R.string.associate_track_save))
             }
         }
     }

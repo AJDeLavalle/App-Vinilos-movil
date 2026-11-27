@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,6 +36,7 @@ import co.edu.uniandes.vinilos.ui.albums.errorMessage
 import co.edu.uniandes.vinilos.ui.common.EmptyView
 import co.edu.uniandes.vinilos.ui.common.ErrorView
 import co.edu.uniandes.vinilos.ui.common.LoadingView
+import co.edu.uniandes.vinilos.ui.common.ViewDetailsLink
 import co.edu.uniandes.vinilos.ui.common.VinilosTopBar
 import co.edu.uniandes.vinilos.ui.theme.VinilosTheme
 
@@ -62,7 +62,7 @@ fun ArtistListContent(
     onArtistClick: (Artist) -> Unit,
 ) {
     Scaffold(
-        topBar = { VinilosTopBar(stringResource(R.string.nav_artists)) },
+        topBar = { VinilosTopBar(stringResource(R.string.artists_title)) },
     ) { innerPadding ->
         val modifier = Modifier.padding(innerPadding)
         when (state) {
@@ -115,12 +115,7 @@ private fun ArtistItem(artist: Artist, onClick: () -> Unit) {
                     style = MaterialTheme.typography.bodySmall,
                 )
                 Spacer(Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.album_view_details),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.clearAndSetSemantics {},
-                )
+                ViewDetailsLink()
             }
         }
     }
