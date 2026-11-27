@@ -7,7 +7,7 @@
 | `monkey.sh` | T35 (#94). Monkey con 3 semillas fijas × 5000 eventos sobre la app completa. |
 | `monkey-mejorado.sh` | T36 (#95). Abre a la fuerza cada una de las 8 pantallas con `adb shell am start` y en cada una lanza una ráfaga de Monkey. |
 | `comun.sh` | Funciones que comparten los dos scripts (verificación del entorno, logcat, análisis de la salida). No se ejecuta solo. |
-| `resultados/` | Resúmenes y cobertura de las corridas completas. Las salidas completas de Monkey y el logcat (unos 2 MB) están en la wiki, carpeta `pruebas/sprint-3/monkey/`, y cada resumen enlaza las suyas. |
+| `resultados/` | Carpeta de salida de los scripts al correrlos; no se sube al repositorio. Los resultados publicados están en la wiki: [Resultados de Monkey — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Resultados-de-Monkey-%E2%80%94-Sprint-3). |
 
 Los dos scripts detectan CRASH y ANR por la salida de Monkey y por logcat, guardan los registros y un
 resumen en Markdown, y miden qué pantallas visitó Monkey.
@@ -58,7 +58,7 @@ EVENTOS=500 SEMILLAS=9401 ./docs/pruebas/sprint-3/monkey/monkey.sh
 EVENTOS_POR_PANTALLA=60 SEMILLAS=9401 ./docs/pruebas/sprint-3/monkey/monkey-mejorado.sh
 ```
 
-Para no pisar `resultados/`, usar `RESULTADOS=/otra/carpeta`. Las salidas completas (`*-940X.txt` y su logcat) no se suben al repositorio: van a la wiki. Otras variables: `THROTTLE`, `API_URL` y,
+Para guardar la salida en otra carpeta, usar `RESULTADOS=/otra/carpeta`. Otras variables: `THROTTLE`, `API_URL` y,
 en el mejorado, `ALBUM_ID`, `ARTISTA_TIPO` (`BAND` o `MUSICIAN`), `ARTISTA_ID` y `COLECCIONISTA_ID`
 (por defecto, los primeros que devuelve el backend).
 
@@ -132,31 +132,9 @@ Archivos que deja cada script en `resultados/`:
 
 ## Resultados
 
-Corridas completas del 26-nov en el emulador Vinilos_API29 (Android 10) contra BackVynils local:
-3 semillas (9401, 9402 y 9403) × 5000 eventos con cada script. **Sin crashes ni ANR.**
-
-| | Monkey (`resultados/resumen-monkey.md`) | Monkey mejorado (`resultados/resumen-mejorado.md`) |
-|---|---|---|
-| Eventos inyectados por semilla | 5000 de 5000 | 8 × 625 = 5000 |
-| Resultado de las 3 semillas | OK | OK (24 de 24 ráfagas) |
-| Pantallas visitadas | 7/8 (nunca HU07 Crear álbum) | 8/8 |
-
-Cobertura por pantalla (`resultados/comparacion-cobertura.md`), semillas que la visitaron:
-
-| Pantalla | Monkey | Monkey mejorado |
-|---|---|---|
-| HU01 Catálogo de álbumes | 3/3 | 3/3 |
-| HU02 Detalle de álbum | 3/3 | 3/3 |
-| HU03 Listado de artistas | 3/3 | 3/3 |
-| HU04 Detalle de artista | 3/3 | 3/3 |
-| HU05 Listado de coleccionistas | 3/3 | 3/3 |
-| HU06 Detalle de coleccionista | 3/3 | 3/3 |
-| HU07 Crear álbum | 0/3 | 3/3 |
-| HU08 Asociar track | 3/3 | 3/3 |
-
-## Defectos encontrados
-
-Ninguno: ninguna corrida tuvo CRASH ni ANR, así que no se abrieron issues de defecto.
+Corridas completas del 26-nov en el emulador API 29: sin crashes ni ANR; el Monkey normal visitó 7 de 8
+pantallas (nunca Crear álbum) y el mejorado, las 8. Resúmenes por semilla, cobertura, salida completa
+de Monkey y logcat en la wiki: **[Resultados de Monkey — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Resultados-de-Monkey-%E2%80%94-Sprint-3)**.
 
 ## Cómo validar
 
@@ -164,7 +142,7 @@ Ninguno: ninguna corrida tuvo CRASH ni ANR, así que no se abrieron issues de de
    - [Monkey normal](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/videos/monkey-normal.mp4): 600 eventos; recorre la app y nunca entra a Crear álbum.
    - [Monkey mejorado](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/videos/monkey-mejorado.mp4): 75 eventos por pantalla; salta a cada una de las 8 pantallas, incluida
      Crear álbum.
-2. **Revisar los resultados:** las tablas de arriba, los resúmenes de `resultados/` y, si hace falta el detalle, la salida completa y el logcat de cada semilla en la wiki (enlazados desde cada resumen).
+2. **Revisar los resultados** en la wiki: [Resultados de Monkey — Sprint 3](https://github.com/AJDeLavalle/App-Vinilos-movil/wiki/Resultados-de-Monkey-%E2%80%94-Sprint-3).
 3. **Repetirlo** (ver [Cómo reproducir](#cómo-reproducir)):
    ```
    ./gradlew installDebug
@@ -174,8 +152,7 @@ Ninguno: ninguna corrida tuvo CRASH ni ANR, así que no se abrieron issues de de
    Con la misma semilla se repite la misma secuencia de eventos. Cada script termina con
    `RESULTADO: OK` o `FALLA` y lista las pantallas visitadas.
 
-La técnica, los resultados y los videos también están en la wiki, en *Estrategia de Pruebas — Sprint 3*,
-secciones 5.1 a 5.4.
+La técnica está descrita en la wiki, en *Estrategia de Pruebas — Sprint 3*, secciones 5.1 a 5.4.
 
 ## Limitaciones
 

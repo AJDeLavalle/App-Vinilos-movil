@@ -1,2 +1,2 @@
-monkey-*.txt
-mejorado-*.txt
+*
+!.gitignore
