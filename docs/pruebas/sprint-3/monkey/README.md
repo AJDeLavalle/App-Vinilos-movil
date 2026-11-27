@@ -8,7 +8,6 @@
 | `monkey-mejorado.sh` | T36 (#95). Abre a la fuerza cada una de las 8 pantallas con `adb shell am start` y en cada una lanza una ráfaga de Monkey. |
 | `comun.sh` | Funciones que comparten los dos scripts (verificación del entorno, logcat, análisis de la salida). No se ejecuta solo. |
 | `resultados/` | Salidas de Monkey, logcat, cobertura y resúmenes de las corridas completas. |
-| `videos/` | Dos corridas cortas grabadas con la semilla 9401, con los toques visibles, para validar sin instalar nada. |
 
 Los dos scripts detectan CRASH y ANR por la salida de Monkey y por logcat, guardan los registros y un
 resumen en Markdown, y miden qué pantallas visitó Monkey.
@@ -150,9 +149,9 @@ Ninguno: ninguna corrida tuvo CRASH ni ANR, así que no se abrieron issues de de
 
 ## Cómo validar
 
-1. **Ver los videos** de `videos/` (semilla 9401, corridas cortas, unos 3 y 4 minutos):
-   - `monkey-normal.mp4`: 600 eventos; recorre la app y nunca entra a Crear álbum.
-   - `monkey-mejorado.mp4`: 75 eventos por pantalla; salta a cada una de las 8 pantallas, incluida
+1. **Ver los videos** en la wiki (semilla 9401, corridas cortas, unos 3 y 4 minutos):
+   - [Monkey normal](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/videos/monkey-normal.mp4): 600 eventos; recorre la app y nunca entra a Crear álbum.
+   - [Monkey mejorado](https://raw.githubusercontent.com/wiki/AJDeLavalle/App-Vinilos-movil/videos/monkey-mejorado.mp4): 75 eventos por pantalla; salta a cada una de las 8 pantallas, incluida
      Crear álbum.
 2. **Revisar los resultados:** las tablas de arriba y los resúmenes de `resultados/`.
 3. **Repetirlo** (ver [Cómo reproducir](#cómo-reproducir)):
