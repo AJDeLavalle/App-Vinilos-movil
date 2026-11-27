@@ -5,7 +5,7 @@
     <string name="nav_albums">Álbumes</string>
     <string name="nav_artists">Artistas</string>
     <string name="nav_collectors">Coleccionistas</string>
-    <!-- Títulos de los listados: distintos de las pestañas para que no se repita la misma descripción (T45). -->
+    <!-- Títulos de los listados -->
     <string name="artists_title">Lista de artistas</string>
     <string name="collectors_title">Lista de coleccionistas</string>
     <string name="view_details">Ver detalles</string>
